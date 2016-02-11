@@ -1,26 +1,53 @@
-﻿#header {
+﻿html {
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;
+}
+
+#header {
   width: 100%;
-  height: 75px;
-  margin-top: 15px;
-  padding-bottom: 10px;
-  background-color: white;
-  border-bottom: 3px solid #777777;
+  margin-top: 0.5%;
+  padding-bottom: 0.25%;
+  background-color: #ffffff;
+  border-bottom: 0.2vw solid #777777;
 }
 
 #icon {
-  width: 225px;
-  height: 75px;
+  width: 12.5%;
 }
 
 #welcome {
-  margin-top: 65px;
+  width: 100%;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 2.5%;
+  padding-bottom: 2.5%;
+  background-color: #ffffff;
   text-align: center;
+  font-size: 2.5vw;
   font-family: Corbel;
-  font-size: 350%;
-  color: #555555;
+  color: #555555;  
 }
 
 #risk {
-  color: #FF5555;
+  color: #ff5555;
+}
+
+#profit {
+  color: #55bb55;
+}
+
+#watermark {
+  width: 100%;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 3%;
+  padding-bottom: 3%;
+  background-color: #ffffff;
+  text-align: center;
+}
+
+#icon2 {
+  width: 25%;
 }
 
