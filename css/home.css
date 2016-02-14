@@ -1,0 +1,23 @@
+﻿#welcome {
+  width: 100%;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 2.5%;
+  padding-bottom: 2.5%;
+  background-color: #ffffff;
+  text-align: center;
+  font-size: 2.5vw;
+  font-family: Corbel;
+  color: #555555;
+}
+
+#watermark {
+  width: 100%;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 3%;
+  padding-bottom: 3%;
+  background-color: #ffffff;
+  text-align: center;
+}
+
