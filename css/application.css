@@ -1,7 +1,11 @@
 ﻿html {
   margin: 0;
   padding: 0;
-  background-color: #ffffff;
+}
+
+body {
+  margin: 0.5vw;
+  padding: 0;
 }
 
 #loadScreen {
@@ -15,17 +19,21 @@
   z-index: 99;
 }
 
+#icon {
+  width: 12.5vw;
+}
+
 .nav-main {
-  width: 100%;
-  margin-top: 0.5%;
-  padding-bottom: 0.25%;
-  background-color: #ffffff;
-  border-bottom: 0.2vw solid #777777;
+  width: 99vw;
+  margin: 0;
+  padding-top: 0.2vw;
+  padding-bottom: 0.4vw;
+  border-bottom: 0.2vw solid #888888;
 }
 
 .nav-main > ul {
-  height: 4.5vw;
   margin: 0;
+  padding: 0;
   float: right;
   list-style-type: none;
 }
@@ -36,14 +44,67 @@
 
 .nav-item {
   display: inline-block;
-  padding: 1.4vw;
-  text-decoration: none;
-  font-size: 1.425vw;
+  margin: 0;
+  padding: 1.5vw;
+  background-color: #ffffff;
   font-family: Century Gothic;
-  color: #777777;
+  font-size: 1.4vw;
+  color: #666666;
+  text-decoration: none;
 }
 
 .nav-item:hover {
   background-color: #eeeeee;
+  color: #000000;
 }
+
+.nav-item:focus {
+  background-color: #dddddd;
+}
+
+.nav-item:focus ~ .nav-sub-container {
+  max-height: 6vw;
+  -webkit-transition:max-height 400ms ease-in;
+  -moz-transition:max-height 400ms ease-in;
+  transition:max-height 400ms ease-in;
+}
+
+.nav-sub-container {
+  overflow: hidden;
+  position: absolute;
+  top: 5.6vw;
+  right: 0.5vw;
+  max-height: 0;
+  background-color: #aaaaaa;
+}
+
+.nav-sub-container .nav-sub-item {
+  color: #000000;
+  font-family: Century Gothic;
+  font-size: 0.9vw;
+  text-decoration: none;
+}
+
+.nav-sub-container .nav-sub-item:hover {
+  color: #ffffff;
+}
+
+.nav-sub {
+  padding: 0.5vw;
+}
+
+.nav-sub ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.nav-sub-item {
+  display: inline-block;
+  padding: 0.5vw;
+}
+
+
+
+
 

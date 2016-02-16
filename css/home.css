@@ -1,23 +1,29 @@
 ﻿#welcome {
-  width: 100%;
-  margin-top: 0;
-  margin-bottom: 0;
-  padding-top: 2.5%;
-  padding-bottom: 2.5%;
-  background-color: #ffffff;
+  margin: 0;
+  padding-top: 5vw;
+  padding-bottom: 5vw;
   text-align: center;
-  font-size: 2.5vw;
   font-family: Corbel;
+  font-size: 2.5vw;
   color: #555555;
 }
 
+#risk {
+  color: #ff5555;
+}
+
+#profit {
+  color: #55bb55;
+}
+
 #watermark {
-  width: 100%;
-  margin-top: 0;
-  margin-bottom: 0;
-  padding-top: 3%;
-  padding-bottom: 3%;
-  background-color: #ffffff;
+  margin: 0;
+  padding-top: 0;
+  padding-bottom: 0;
   text-align: center;
+}
+
+#icon2 {
+  width: 25vw;
 }
 
