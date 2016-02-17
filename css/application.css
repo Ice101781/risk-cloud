@@ -45,7 +45,7 @@ body {
 .nav-item {
   display: inline-block;
   margin: 0;
-  padding: 1.5vw;
+  padding: 1.25vw;
   background-color: #ffffff;
   font-family: Century Gothic;
   font-size: 1.4vw;
@@ -54,7 +54,6 @@ body {
 }
 
 .nav-item:hover {
-  background-color: #eeeeee;
   color: #000000;
 }
 
@@ -63,7 +62,7 @@ body {
 }
 
 .nav-item:focus ~ .nav-sub-container {
-  max-height: 6vw;
+  max-height: 25vw;
   -webkit-transition:max-height 400ms ease-in;
   -moz-transition:max-height 400ms ease-in;
   transition:max-height 400ms ease-in;
@@ -72,21 +71,21 @@ body {
 .nav-sub-container {
   overflow: hidden;
   position: absolute;
-  top: 5.6vw;
+  top: 6vw;
   right: 0.5vw;
   max-height: 0;
-  background-color: #aaaaaa;
+  background-color: transparent;
 }
 
 .nav-sub-container .nav-sub-item {
   color: #000000;
   font-family: Century Gothic;
-  font-size: 0.9vw;
+  font-size: 1vw;
   text-decoration: none;
 }
 
 .nav-sub-container .nav-sub-item:hover {
-  color: #ffffff;
+  color: #ff5555;
 }
 
 .nav-sub {
@@ -103,8 +102,4 @@ body {
   display: inline-block;
   padding: 0.5vw;
 }
-
-
-
-
 
