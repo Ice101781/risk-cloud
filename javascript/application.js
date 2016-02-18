@@ -14,13 +14,14 @@
         return;
       };
 
-    var element = '<' + tag;
 
-    for(key in attributes) {
-      element += ' ' + key + '="' + attributes[key] + '"';
-    };
+    //BUILD THE START TAG AND ADD ANY ATTRIBUTES
+      var element = '<' + tag;
 
-    //SOME BASIC TAG HANDLING
+      for(key in attributes) { element += ' ' + key + '="' + attributes[key] + '"' };
+
+
+    //SOME BASIC TAG HANDLING TO RETURN THE APPROPRIATE HTML ELEMENT
       if(tag == 'meta' || tag == 'link' || tag == 'img') {
 
         return element + ' />';
@@ -32,52 +33,57 @@
   };
 
 
-//build the header common to all HTML pages, then build the content unique to each page; use the 'htmlString' function above
-  createHeader = function(callback) {
+//build the header common to all HTML pages, then add the content unique to each page
+  createPage = function(callback) {
 
     //HEADER ICON
-      icon = htmlString('img', '', { id: "icon", alt: "Risk Cloud", src: "../images/icon.png" });
+      icon = htmlString('a', htmlString('img', '', { alt: "Risk Cloud", src: "../images/icon.png" }), { id: "icon", href: '../html/home.htm' });
+
 
     //BUILD THE NAVIGATION MENU RECURSIVELY
       //BUILD THE SUB-MENUS
-        //MODELS SUB-MENU
-        var modelsSubHeadings = { one: 'European: &nbsp&nbsp Black-Scholes', two: 'American: &nbsp&nbsp Binomial' },
-            modelsListItems   = '';
+        var subMenus = {};
 
-        for(num in modelsSubHeadings) {        
-          modelsListItems += htmlString('li', htmlString('a', modelsSubHeadings[num], { href: "#", class: "nav-sub-item" }), {});
-        };
+        (createSubMenus = function() {
 
-        modelsSubMenu = htmlString('div', htmlString('div', htmlString('ul', modelsListItems, {}), { class: "nav-sub" }), { class: "nav-sub-container" });
+          var subMenusInfo = {
 
-        //INFO SUB-MENU
-        var infoSubHeadings = { one: 'about', two: 'white papers' },
-            infoListItems   = '';
+                models: {  one: { title: 'European: &nbsp&nbsp Black-Scholes', link: '../html/blackscholesmodel.htm' }, two: { title: 'American: &nbsp&nbsp Binomial', link: "#" }  },
 
-        for(num in infoSubHeadings) {
-          infoListItems += htmlString('li', htmlString('a', infoSubHeadings[num], { href: "#", class: "nav-sub-item" }), {});
-        };
+                info:   {  one: { title: 'about',                              link: "#" },                             two: { title: 'dig deeper',                    link: "#" }  }
+              };
 
-        infoSubMenu = htmlString('div', htmlString('div', htmlString('ul', infoListItems, {}), { class: "nav-sub" }), { class: "nav-sub-container" });
+          for(elem in subMenusInfo) {
 
-        //CREATE A SUB-MENUS OBJECT FOR EASY ADDITION TO THE MAIN MENU
-        var subMenus = { one: modelsSubMenu, two: infoSubMenu };
+            var listItems = '';
+
+            for(num in subMenusInfo[elem]) { listItems += htmlString('li', htmlString('a', subMenusInfo[elem][num].title, { href: subMenusInfo[elem][num].link, class: "nav-sub-item" }), {}) };
+
+            subMenus[elem] = htmlString('div', htmlString('div', htmlString('ul', listItems, {}), { class: "nav-sub" }), { class: "nav-sub-container" });
+          };
+        })();
+
 
       //BUILD THE MAIN MENU
-      var menuHeadings  = { one: 'models', two: 'info' },
-          menuListItems = '';
+        var navMenu = {};
 
-      for(num in menuHeadings) {
-        menuListItems += htmlString('li', htmlString('a', menuHeadings[num], { href: "#", class: "nav-item" }) + subMenus[num], {});
-      };
+        (createNavMenu = function() {
 
-      navMenu = htmlString('ul', menuListItems, {});
+          var menuHeadings = { models: 'models', info: 'info' }, 
+              listItems    = '';
+
+          for(elem in menuHeadings) { listItems += htmlString('li', htmlString('a', menuHeadings[elem], { href: "#", class: "nav-item" }) + subMenus[elem], {}) };
+
+          navMenu = htmlString('ul', listItems, {});
+        })();
+
 
     //BUILD THE CONTAINER FOR THE HEADER, ADD THE ICON AND THE COMPLETED NAVIGATION MENU
       navMain = htmlString('div', icon + navMenu, { class: "nav-main" });
 
-    //CREATE ANY CONTENT UNIQUE TO THE CURRENT PAGE
+
+    //CREATE ANY CONTENT UNIQUE TO THE CURRENT PAGE AND RETURN THE HEADER AND THE CONTENT
       content = callback();
 
-    return document.write( navMain + content );
+      return document.write( navMain + content );
   };

@@ -19,7 +19,7 @@ body {
   z-index: 99;
 }
 
-#icon {
+#icon > img {
   width: 12.5vw;
 }
 
@@ -54,27 +54,32 @@ body {
 }
 
 .nav-item:hover {
-  color: #000000;
+  background-color: #dddddd;
 }
 
 .nav-item:focus {
-  background-color: #dddddd;
+  background-color: #aaaaaa;
+  color: #000000;
 }
 
 .nav-item:focus ~ .nav-sub-container {
   max-height: 25vw;
-  -webkit-transition:max-height 400ms ease-in;
-  -moz-transition:max-height 400ms ease-in;
-  transition:max-height 400ms ease-in;
+  -webkit-transition:max-height 0.3s ease-in;
+  -moz-transition:max-height 0.3s ease-in;
+  transition:max-height 0.3s ease-in;
 }
 
 .nav-sub-container {
-  overflow: hidden;
   position: absolute;
-  top: 6vw;
+  top: 6.25vw;
   right: 0.5vw;
+  overflow: hidden;
   max-height: 0;
-  background-color: transparent;
+  background-color: cyan;          /*position debug*/
+}
+
+.nav-sub-container:active {
+  max-height: 25vw;
 }
 
 .nav-sub-container .nav-sub-item {
@@ -88,10 +93,6 @@ body {
   color: #ff5555;
 }
 
-.nav-sub {
-  padding: 0.5vw;
-}
-
 .nav-sub ul {
   margin: 0;
   padding: 0;
@@ -100,6 +101,7 @@ body {
 
 .nav-sub-item {
   display: inline-block;
-  padding: 0.5vw;
+  padding-top: 0.5vw;
+  padding-bottom: 0.5vw;
 }
 

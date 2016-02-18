@@ -1,0 +1,16 @@
+﻿#num-legs-dropdown, #num-legs-button {
+  height: 2vw;
+  margin-left: 2.5vw;
+  font-family: Century Gothic;
+  font-size: 1.25vw;
+}
+
+#form {
+  width: 75vw;
+  padding: 2vw;
+  padding-bottom: 1vw;
+  background-color: cyan;          /*position debug*/
+  font-family: Century Gothic;
+  font-size: 1.25vw;
+}
+
