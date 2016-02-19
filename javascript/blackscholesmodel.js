@@ -1,5 +1,5 @@
 ﻿//build HTML elements native to the Black-Scholes model page
-  BSM = function() {
+  blackScholesContent = function() {
 
     //BUILD ELEMENTS NEEDED TO SPECIFY THE NUMBER OF TRADE LEGS
       numLegsText = htmlString('span', 'Please select the number of legs in the trade:', { id: "num-legs-text" });
@@ -9,9 +9,7 @@
         htmlString('option', '1', { value: "1" }) +
         htmlString('option', '2', { value: "2", selected: "selected" }) +
         htmlString('option', '3', { value: "3" }) +
-        htmlString('option', '4', { value: "4" }) +
-        htmlString('option', '5', { value: "5" }) +
-        htmlString('option', '6', { value: "6" }),
+        htmlString('option', '4', { value: "4" }),
 
         { id: "num-legs-dropdown" }
       );
@@ -22,8 +20,10 @@
 
 
     //BUILD ELEMENTS NEEDED TO SPECIFY ADDITIONAL TRADE PARAMETERS
+      moreParamsContainer = htmlString('ul', 'more params here as an unordered list', { id: "more-params-container" });
+
       specifyAdditionalParams = function() {
-       
+
         //DISABLE THE TRADE LEGS DROPDOWN MENU AND 'CONTINUE' BUTTON
           (disableLegsElements = function() {
 
@@ -33,23 +33,20 @@
           })();
 
 
-        var numLegs = document.getElementById("num-legs-dropdown").value;
+        //CAPTURE # OF TRADE LEGS PARAMETER AND DYNAMICALLY BUILD ADDITIONAL ELEMENTS
+          globalParams.numLegs = document.getElementById("num-legs-dropdown").value;
 
-        (moreParamsElements = function() {
+          (moreParamsElements = function() {
 
-          //MORE CODE BUILDING ADDITIONAL HTML ELEMENTS AND IMPLEMENTING 'numLegs' GOES HERE...
-          //
-          //
-          //
-          //
-          //
-          /////////////////////////////////////////////////////////////////////////////////////
-        })();
+            //MORE CODE HERE>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+            elementEaseIn("more-params-container", 0.2, 20);
+          })();
       };
 
 
     //BUILD AND RETURN THE FORM
-      form = htmlString('div', numLegsContainer, { id: "form" });
+      form = htmlString('div', numLegsContainer + moreParamsContainer, { id: "form" });
 
       return form;
   };

@@ -1,5 +1,5 @@
 ﻿//build HTML elements native to the home page
-  home = function() {
+  homeContent = function() {
 
     //THE HOME PAGE WELCOME MESSAGE
       risk = htmlString('span', 'risk', { id: "risk" });

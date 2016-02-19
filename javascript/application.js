@@ -1,4 +1,4 @@
-﻿//HTML elements helper - thanks to MARC GRABANSKI for his helpful example!
+﻿//HTML element creation helper - thanks to MARC GRABANSKI for his example!
   htmlString = function(tag, content, attributes) {
 
     //SOME BASIC PARAMETER HANDLING
@@ -30,6 +30,29 @@
 
         return element + '>' + content + '</' + tag + '>';
       };
+  };
+
+
+//HTML element animation helper - thanks to HTTP://WWW.W3SCHOOLS.COM for the example!
+  elementEaseIn = function(id, increment, targetHeight) {
+
+    var elem    = document.getElementById(id),
+        height  = 0,
+        animate = setInterval(frame, increment);
+
+    elem.style.display = 'block';
+
+    function frame() {
+
+      if(height == targetHeight) {
+
+        clearInterval(animate);
+      } else {
+
+        height++;
+        elem.style.height = height + 'vw';
+      };
+    };
   };
 
 
@@ -87,3 +110,24 @@
 
       return document.write( navMain + content );
   };
+
+
+//declare global parameters 
+  var globalParams = { numLegs: null, 
+
+      };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

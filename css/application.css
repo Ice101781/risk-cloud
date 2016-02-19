@@ -64,9 +64,9 @@ body {
 
 .nav-item:focus ~ .nav-sub-container {
   max-height: 25vw;
-  -webkit-transition:max-height 0.3s ease-in;
-  -moz-transition:max-height 0.3s ease-in;
-  transition:max-height 0.3s ease-in;
+  -webkit-transition:max-height 0.25s ease-in;
+  -moz-transition:max-height 0.25s ease-in;
+  transition:max-height 0.25s ease-in;
 }
 
 .nav-sub-container {
