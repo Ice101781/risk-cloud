@@ -1,29 +1,30 @@
 ﻿#welcome {
-  margin: 0;
-  padding-top: 7vw;
+  padding-top: 5vw;
   padding-bottom: 5vw;
+}
+
+#welcome > pre {
+  margin: 0;
+  padding: 0;
   text-align: center;
   font-family: Corbel;
   font-size: 2.5vw;
   color: #555555;
 }
 
-#risk {
+pre > #risk {
   color: #ff5555;
 }
 
-#profit {
+pre > #profit {
   color: #55bb55;
 }
 
 #watermark {
-  margin: 0;
-  padding-top: 0;
-  padding-bottom: 0;
   text-align: center;
 }
 
-#icon2 {
+#watermark > #icon2 {
   width: 25vw;
 }
 

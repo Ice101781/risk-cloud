@@ -1,133 +1,213 @@
-﻿//HTML element creation helper - thanks to MARC GRABANSKI for his example!
-  htmlString = function(tag, content, attributes) {
+﻿//GLOBAL PARAMETERS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //SOME BASIC PARAMETER HANDLING
-      if(arguments.length == 0) {
-
-        tag        =  'p';
-        content    =  'This is a test paragraph created by the htmlString javascript function.';
-        attributes =  { id: "defaultParagraph" };
-
-  	  } else if(arguments.length !== 3) {
-
-        console.warn("The htmlString function requires three valid arguments to build HTML elements. You may alternatively use no arguments for testing purposes.");
-        return;
+  var globalParams = { 
+        
+        numLegs: null,
       };
 
-
-    //BUILD THE START TAG AND ADD ANY ATTRIBUTES
-      var element = '<' + tag;
-
-      for(key in attributes) { element += ' ' + key + '="' + attributes[key] + '"' };
+//END GLOBAL PARAMETERS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    //SOME BASIC TAG HANDLING TO RETURN THE APPROPRIATE HTML ELEMENT
-      if(tag == 'meta' || tag == 'link' || tag == 'img') {
 
-        return element + ' />';
+//HELPERS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  //HTML element selection
+    __select = function(identifier) {
+
+      return document.getElementById(identifier) || document.querySelector(identifier);
+    };
+
+
+  //HTML element creation
+    __element = function(params, appendIdentifier) {
+
+      //CREATE A NEW ELEMENT
+        var elem = document.createElement(params.tag);
+
+      //ADD ANY CONTENT
+        if(typeof params.content === 'undefined') { params.content = "" };
+
+        elem.appendChild(document.createTextNode(params.content));
+
+      //SET ANY ATTRIBUTES
+        for(attr in params.attributes) { elem.setAttribute(attr, params.attributes[attr]) };
+
+      //APPEND THE NEW ELEMENT
+        __select(appendIdentifier).appendChild(elem);
+
+      return elem;
+    };
+
+
+  //HTML element availability
+    elementAvail = function(identifierHash, boolean) {
+
+      if(boolean == false) {
+
+        for(elem in identifierHash) { __select(identifierHash[elem]).disabled = true };
 
       } else {
 
-        return element + '>' + content + '</' + tag + '>';
-      };
-  };
-
-
-//HTML element animation helper - thanks to HTTP://WWW.W3SCHOOLS.COM for the example!
-  elementEaseIn = function(id, increment, targetHeight) {
-
-    var elem    = document.getElementById(id),
-        height  = 0,
-        animate = setInterval(frame, increment);
-
-    elem.style.display = 'block';
-
-    function frame() {
-
-      if(height == targetHeight) {
-
-        clearInterval(animate);
-      } else {
-
-        height++;
-        elem.style.height = height + 'vw';
+        for(elem in identifierHash) { __select(identifierHash[elem]).disabled = false };
       };
     };
-  };
 
 
-//build the header common to all HTML pages, then add the content unique to each page
-  createPage = function(callback) {
+  //HTML element animation
+    elementAnim = function(properties) {
 
-    //HEADER ICON
-      icon = htmlString('a', htmlString('img', '', { alt: "Risk Cloud", src: "../images/icon.png" }), { id: "icon", href: '../html/home.htm' });
+      var self = function() { return };
+
+      for(property in properties) { self[property] = properties[property] };
+
+      return self; 
+    }({
+      
+      ease: function(type, identifier, execSpeed, increment, target) {
+
+        var elem    = __select(identifier),
+            height  = 0,
+            animate = setInterval(frame, execSpeed);
+
+        function frame() {
+
+          if(height == target) {
+
+            clearInterval(animate);
+
+          } else {
+
+            height += increment;
+
+            if(type == "in") { elem.style.height = height + 'vw' } else if(type == "out") { elem.style.height = target - height + 'vw' };
+          };
+        };
+      },
+    });
+
+//END HELPERS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    //BUILD THE NAVIGATION MENU RECURSIVELY
-      //BUILD THE SUB-MENUS
-        var subMenus = {};
 
-        (createSubMenus = function() {
+//HEADER/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-          var subMenusInfo = {
+  createHeader = function(content) {
 
-                models: {  one: { title: 'European: &nbsp&nbsp Black-Scholes', link: '../html/blackscholesmodel.htm' }, two: { title: 'American: &nbsp&nbsp Binomial', link: "#" }  },
+    //CONTAINER
+      __element({tag: "div", attributes: {id: "header-main"}}, ".body");
 
-                info:   {  one: { title: 'about',                              link: "#" },                             two: { title: 'dig deeper',                    link: "#" }  }
-              };
 
-          for(elem in subMenusInfo) {
+    //ICON
+      __element({tag: "a", attributes: {id: "icon", href: "../html/home.htm"}}, "header-main");
+        
+        __element({tag: "img", attributes: {alt: "Risk Cloud", src: "../images/icon.png"}}, "icon");
 
-            var listItems = '';
 
-            for(num in subMenusInfo[elem]) { listItems += htmlString('li', htmlString('a', subMenusInfo[elem][num].title, { href: subMenusInfo[elem][num].link, class: "nav-sub-item" }), {}) };
+    //NAVIGATION
+      //MAIN MENU
+        (mainMenu = function() {
 
-            subMenus[elem] = htmlString('div', htmlString('div', htmlString('ul', listItems, {}), { class: "nav-sub" }), { class: "nav-sub-container" });
+          var headings = { 1: "models", 2: "info" };
+
+          __element({tag: "ul", attributes: {id: "nav-menu"}}, "header-main");
+
+          for(num in headings) {
+
+            __element({tag: "li", attributes: {id: "nav-list-item-"+num, class: "nav-list-item"}}, "nav-menu");
+
+              __element({tag: "a", content: headings[num], attributes: {href: "#", class: "nav-list-item-link", onclick: "dropDownAnim."+headings[num]+"(20, 0.5, 4)"}}, "nav-list-item-"+num);
           };
         })();
 
 
-      //BUILD THE MAIN MENU
-        var navMenu = {};
+      //SUB-MENUS
+        (subMenus = function() {
 
-        (createNavMenu = function() {
+          var subHeadings = {  1: { a: {heading: "Black-Scholes-Merton", link: "../html/blackscholesmerton.htm"}, b: {heading: "Binomial",   link: "#"} }, 
 
-          var menuHeadings = { models: 'models', info: 'info' }, 
-              listItems    = '';
+                               2: { a: {heading: "about",                link: "#"                             }, b: {heading: "dig deeper", link: "#"} }  };
 
-          for(elem in menuHeadings) { listItems += htmlString('li', htmlString('a', menuHeadings[elem], { href: "#", class: "nav-item" }) + subMenus[elem], {}) };
+          for(num in subHeadings) {
 
-          navMenu = htmlString('ul', listItems, {});
+            __element({tag: "div", attributes: {id: "nav-sub-container-"+num, class: "nav-sub-container", "data-open": "false"}}, ".body");
+
+              __element({tag: "ul", attributes: {id: "nav-sub-menu-"+num, class: "nav-sub-menu"}}, "nav-sub-container-"+num);
+
+              for(letter in subHeadings[num]) {
+
+                __element({tag: "li", attributes: {id: "nav-sub-list-item-"+num+letter, class: "nav-sub-list-item"}}, "nav-sub-menu-"+num);
+
+                  __element({tag: "a", content: subHeadings[num][letter].heading, attributes: {href: subHeadings[num][letter].link, class: "nav-sub-list-item-link"}}, "nav-sub-list-item-"+num+letter);
+              };
+          };
         })();
 
-
-    //BUILD THE CONTAINER FOR THE HEADER, ADD THE ICON AND THE COMPLETED NAVIGATION MENU
-      navMain = htmlString('div', icon + navMenu, { class: "nav-main" });
-
-
-    //CREATE ANY CONTENT UNIQUE TO THE CURRENT PAGE AND RETURN THE HEADER AND THE CONTENT
-      content = callback();
-
-      return document.write( navMain + content );
+    
+    //ADD ANY PAGE-SPECIFIC CONTENT
+      if(typeof content === 'function') { content() } else { content = null };
   };
 
 
-//declare global parameters 
-  var globalParams = { numLegs: null, 
+  //nav menu dropdown animation logic
+    dropDownAnim = function(properties) {
 
-      };
+      var self = function() { return };
+      
+      for(property in properties) { self[property] = properties[property] };
 
+      return self;   
+    }({
 
+      models: function(execSpeed, increment, target) {
 
+        //CLOSE 'INFO' SUB-MENU IF IT'S OPEN
+          if(__select("nav-sub-container-2").getAttribute("data-open") == "true") {
 
+            elementAnim.ease("out", "nav-sub-container-2", execSpeed, increment, target);
+            __select("nav-sub-container-2").setAttribute("data-open", "false");
+          };
 
+        //OPEN OR CLOSE 'MODELS' SUB-MENU
+          switch(__select("nav-sub-container-1").getAttribute("data-open")) {
 
+            case "false":
+              elementAnim.ease("in", "nav-sub-container-1", execSpeed, increment, target);
+              __select("nav-sub-container-1").setAttribute("data-open", "true");
+              break;
 
+            case "true":
+              elementAnim.ease("out", "nav-sub-container-1", execSpeed, increment, target);
+              __select("nav-sub-container-1").setAttribute("data-open", "false");
+              break;
+          };
+      },
 
+      info: function(execSpeed, increment, target) {
 
+        //CLOSE 'MODELS' SUB-MENU IF IT'S OPEN
+          if(__select("nav-sub-container-1").getAttribute("data-open") == "true") {
 
+            elementAnim.ease("out", "nav-sub-container-1", execSpeed, increment, target);
+            __select("nav-sub-container-1").setAttribute("data-open", "false");
+          };
 
+        //OPEN OR CLOSE 'INFO' SUB-MENU
+          switch(__select("nav-sub-container-2").getAttribute("data-open")) {
 
+            case "false":
+              elementAnim.ease("in", "nav-sub-container-2", execSpeed, increment, target);
+              __select("nav-sub-container-2").setAttribute("data-open", "true");
+              break;
+
+            case "true":
+              elementAnim.ease("out", "nav-sub-container-2", execSpeed, increment, target);
+              __select("nav-sub-container-2").setAttribute("data-open", "false");
+              break;
+          };
+      },
+    });
+
+//END HEADER/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 

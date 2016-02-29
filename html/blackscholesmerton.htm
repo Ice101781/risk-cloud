@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+  <html lang="en-US">
+
+    <head>
+      <meta charset="UTF-8" />
+      <link rel="stylesheet" href="../css/application.css" />
+      <script src="../javascript/application.js"></script>
+
+      <title>Option(s) Trade Analytics | Black-Scholes-Merton Model | Risk Cloud</title>
+      <link rel="stylesheet" href="../css/blackscholesmerton.css" />
+      <script src="../javascript/blackscholesmerton.js"></script>
+    </head>
+
+    <body class="body">
+      <div id="loadScreen"></div>
+
+      <script>createHeader()</script>
+
+      <div id="form">
+        <div id="num-legs-container">
+          <span id="num-legs-text">Please select the number of legs in the trade:</span>
+          
+          <select id="num-legs-dropdown">
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+
+          <button id="num-legs-button" type="button" onclick="specifyAdditionalParams()">continue</button>
+        </div>
+      </div>
+
+      <script>window.onload = function() { document.getElementById("loadScreen").style.display = "none"; }</script>
+    </body>
+
+  </html>

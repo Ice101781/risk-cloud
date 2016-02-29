@@ -1,0 +1,43 @@
+﻿#form {
+  width: 95vw;
+  margin-top: 5vw;
+  margin-left: 1vw;
+  margin-right: 1vw;
+  padding: 1vw;
+  padding-top: 2vw;
+  padding-bottom: 2vw;
+  background-color: lightblue;          /*position debug*/
+  border: 0.15vw solid #666666;
+}
+
+#form, #num-legs-dropdown, #num-legs-button {
+  font-family: Century Gothic;
+  font-size: 1vw;
+}
+
+#num-legs-container {
+  background-color: lightyellow;          /*position debug*/
+}
+
+#num-legs-dropdown, #num-legs-button {
+  margin-left: 2.5vw;
+  overflow: hidden;
+  height: 2vw;
+}
+
+#more-params-container {
+  padding-top: 2vw;
+  padding-bottom: 2vw;
+  overflow: hidden;
+  height: 0;
+  background-color: lightgreen;          /*position debug*/
+}
+
+.trade-leg {
+  display: inline-block;
+  width: 10vw;
+  height: 15vw;
+  background-color: lightyellow;          /*position debug*/
+  border: 0.1vw solid #666666;
+}
+

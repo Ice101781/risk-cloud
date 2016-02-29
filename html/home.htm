@@ -8,13 +8,20 @@
 
       <title>Option(s) Trade Analytics | Home | Risk Cloud</title>
       <link rel="stylesheet" href="../css/home.css" />
-      <script src="../javascript/home.js"></script>
     </head>
 
-    <body>
+    <body class="body">
       <div id="loadScreen"></div>
 
-      <script>createPage(homeContent)</script>
+      <script>createHeader()</script>
+
+      <h1 id="welcome">
+        <pre>Estimate <span id="risk">risk</span> and <span id="profit">profit</span> potential in option(s) trades.</pre>
+      </h1>
+
+      <div id="watermark">
+        <img id="icon2" alt="Watermark Icon" src="../images/icon2.png" />
+      </div>  
 
       <script>window.onload = function() { document.getElementById("loadScreen").style.display = "none"; }</script>
     </body>

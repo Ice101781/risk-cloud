@@ -1,11 +1,10 @@
-﻿html {
+html {
   margin: 0;
   padding: 0;
 }
 
-body {
+.body {
   margin: 0.5vw;
-  padding: 0;
 }
 
 #loadScreen {
@@ -23,28 +22,25 @@ body {
   width: 12.5vw;
 }
 
-.nav-main {
+#header-main {
   width: 99vw;
-  margin: 0;
   padding-top: 0.2vw;
   padding-bottom: 0.4vw;
-  border-bottom: 0.2vw solid #888888;
 }
 
-.nav-main > ul {
+#nav-menu {
   margin: 0;
   padding: 0;
   float: right;
   list-style-type: none;
 }
 
-.nav-main > ul > li {
+.nav-list-item {
   float: left;
 }
 
-.nav-item {
+.nav-list-item-link {
   display: inline-block;
-  margin: 0;
   padding: 1.25vw;
   background-color: #ffffff;
   font-family: Century Gothic;
@@ -53,55 +49,45 @@ body {
   text-decoration: none;
 }
 
-.nav-item:hover {
+.nav-list-item-link:hover {
   background-color: #dddddd;
-}
-
-.nav-item:focus {
-  background-color: #aaaaaa;
   color: #000000;
-}
-
-.nav-item:focus ~ .nav-sub-container {
-  max-height: 25vw;
-  -webkit-transition:max-height 0.25s ease-in;
-  -moz-transition:max-height 0.25s ease-in;
-  transition:max-height 0.25s ease-in;
 }
 
 .nav-sub-container {
   position: absolute;
-  top: 6.25vw;
-  right: 0.5vw;
+  width: 99vw;
   overflow: hidden;
-  max-height: 0;
-  background-color: cyan;          /*position debug*/
+  height: 0;
+  background-color: #eeeeee;
+  border-top: 0.2vw solid #888888;
 }
 
-.nav-sub-container:active {
-  max-height: 25vw;
-}
-
-.nav-sub-container .nav-sub-item {
-  color: #000000;
-  font-family: Century Gothic;
-  font-size: 1vw;
-  text-decoration: none;
-}
-
-.nav-sub-container .nav-sub-item:hover {
-  color: #ff5555;
-}
-
-.nav-sub ul {
+.nav-sub-menu {
+  width: 12vw;
   margin: 0;
   padding: 0;
+  position: relative;
+  left: 87vw;
+  background-color: transparent;
   list-style-type: none;
 }
 
-.nav-sub-item {
+.nav-sub-list-item {
+  text-align: right;
+}
+
+.nav-sub-list-item-link {
   display: inline-block;
+  padding-right: 0.5vw;
   padding-top: 0.5vw;
-  padding-bottom: 0.5vw;
+  font-family: Century Gothic;
+  font-size: 1vw;
+  color: #000000;
+  text-decoration: none;
+}
+
+.nav-sub-list-item-link:hover {
+  color: #ff5555;
 }
 
