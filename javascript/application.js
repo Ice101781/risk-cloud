@@ -63,7 +63,7 @@
       return self; 
     }({
       
-      ease: function(type, identifier, execSpeed, increment, target) {
+      ease: function(type, identifier, execSpeed, increment, maxHeight) {
 
         var elem    = __select(identifier),
             height  = 0,
@@ -71,7 +71,7 @@
 
         function frame() {
 
-          if(height == target) {
+          if(height == maxHeight) {
 
             clearInterval(animate);
 
@@ -79,7 +79,7 @@
 
             height += increment;
 
-            if(type == "in") { elem.style.height = height + 'vw' } else if(type == "out") { elem.style.height = target - height + 'vw' };
+            if(type == "in") { elem.style.height = height + 'vw' } else if(type == "out") { elem.style.height = maxHeight - height + 'vw' };
           };
         };
       },
@@ -115,7 +115,7 @@
 
             __element({tag: "li", attributes: {id: "nav-list-item-"+num, class: "nav-list-item"}}, "nav-menu");
 
-              __element({tag: "a", content: headings[num], attributes: {href: "#", class: "nav-list-item-link", onclick: "dropDownAnim."+headings[num]+"(20, 0.5, 4)"}}, "nav-list-item-"+num);
+              __element({tag: "a", content: headings[num], attributes: {href: "#", class: "nav-list-item-link", onclick: "navDropDown.anim("+num+")"}}, "nav-list-item-"+num);
           };
         })();
 
@@ -149,7 +149,7 @@
 
 
   //nav menu dropdown animation logic
-    dropDownAnim = function(properties) {
+    navDropDown = function(properties) {
 
       var self = function() { return };
       
@@ -158,50 +158,32 @@
       return self;   
     }({
 
-      models: function(execSpeed, increment, target) {
+      anim: function(index) {
 
-        //CLOSE 'INFO' SUB-MENU IF IT'S OPEN
-          if(__select("nav-sub-container-2").getAttribute("data-open") == "true") {
+        //LOCAL PARAMETERS
+          var otherIndex = (index == "1") ? "2" : "1",
+              execSpeed  = 20,
+              increment  = 0.5,
+              maxHeight  = 4;
 
-            elementAnim.ease("out", "nav-sub-container-2", execSpeed, increment, target);
-            __select("nav-sub-container-2").setAttribute("data-open", "false");
+        //CLOSE OTHER SUB-MENU IF IT'S OPEN
+          if(__select("nav-sub-container-"+otherIndex).getAttribute("data-open") == "true") {
+
+            elementAnim.ease("out", "nav-sub-container-"+otherIndex, execSpeed, increment, maxHeight);
+            __select("nav-sub-container-"+otherIndex).setAttribute("data-open", "false");
           };
 
-        //OPEN OR CLOSE 'MODELS' SUB-MENU
-          switch(__select("nav-sub-container-1").getAttribute("data-open")) {
+        //OPEN OR CLOSE RELEVANT SUB-MENU
+          switch(__select("nav-sub-container-"+index).getAttribute("data-open")) {
 
             case "false":
-              elementAnim.ease("in", "nav-sub-container-1", execSpeed, increment, target);
-              __select("nav-sub-container-1").setAttribute("data-open", "true");
+              elementAnim.ease("in", "nav-sub-container-"+index, execSpeed, increment, maxHeight);
+              __select("nav-sub-container-"+index).setAttribute("data-open", "true");
               break;
 
             case "true":
-              elementAnim.ease("out", "nav-sub-container-1", execSpeed, increment, target);
-              __select("nav-sub-container-1").setAttribute("data-open", "false");
-              break;
-          };
-      },
-
-      info: function(execSpeed, increment, target) {
-
-        //CLOSE 'MODELS' SUB-MENU IF IT'S OPEN
-          if(__select("nav-sub-container-1").getAttribute("data-open") == "true") {
-
-            elementAnim.ease("out", "nav-sub-container-1", execSpeed, increment, target);
-            __select("nav-sub-container-1").setAttribute("data-open", "false");
-          };
-
-        //OPEN OR CLOSE 'INFO' SUB-MENU
-          switch(__select("nav-sub-container-2").getAttribute("data-open")) {
-
-            case "false":
-              elementAnim.ease("in", "nav-sub-container-2", execSpeed, increment, target);
-              __select("nav-sub-container-2").setAttribute("data-open", "true");
-              break;
-
-            case "true":
-              elementAnim.ease("out", "nav-sub-container-2", execSpeed, increment, target);
-              __select("nav-sub-container-2").setAttribute("data-open", "false");
+              elementAnim.ease("out", "nav-sub-container-"+index, execSpeed, increment, maxHeight);
+              __select("nav-sub-container-"+index).setAttribute("data-open", "false");
               break;
           };
       },

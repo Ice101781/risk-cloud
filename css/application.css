@@ -28,30 +28,35 @@ html {
   padding-bottom: 0.4vw;
 }
 
-#nav-menu {
+#nav-menu, .nav-sub-menu {
   margin: 0;
   padding: 0;
-  float: right;
   list-style-type: none;
+}
+
+#nav-menu {
+  float: right;
 }
 
 .nav-list-item {
   float: left;
 }
 
-.nav-list-item-link {
+.nav-list-item-link, .nav-sub-list-item-link {
   display: inline-block;
-  padding: 1.25vw;
-  background-color: #ffffff;
   font-family: Century Gothic;
-  font-size: 1.4vw;
-  color: #666666;
   text-decoration: none;
 }
 
-.nav-list-item-link:hover {
-  background-color: #dddddd;
-  color: #000000;
+.nav-list-item-link {
+  padding: 1.25vw;
+  background-color: #ffffff;
+  font-size: 1.4vw;
+  color: #666666;
+}
+
+.nav-list-item-link:hover, .nav-sub-list-item-link:hover {
+  color: #ff5555;
 }
 
 .nav-sub-container {
@@ -65,12 +70,9 @@ html {
 
 .nav-sub-menu {
   width: 12vw;
-  margin: 0;
-  padding: 0;
   position: relative;
   left: 87vw;
   background-color: transparent;
-  list-style-type: none;
 }
 
 .nav-sub-list-item {
@@ -78,16 +80,9 @@ html {
 }
 
 .nav-sub-list-item-link {
-  display: inline-block;
   padding-right: 0.5vw;
   padding-top: 0.5vw;
-  font-family: Century Gothic;
   font-size: 1vw;
   color: #000000;
-  text-decoration: none;
-}
-
-.nav-sub-list-item-link:hover {
-  color: #ff5555;
 }
 
