@@ -1,7 +1,8 @@
-﻿//GLOBAL PARAMETERS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+﻿//USER-PROVIDED GLOBAL PARAMETERS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  var globalParams = { 
-        
+  var globalParams = {
+
+        currentPrice: null,
         numLegs: null,
       };
 
@@ -40,15 +41,15 @@
 
 
   //HTML element availability
-    elementAvail = function(identifierHash, boolean) {
+    elementAvail = function(identifiersHash, boolean) {
 
       if(boolean == false) {
 
-        for(elem in identifierHash) { __select(identifierHash[elem]).disabled = true };
+        for(elem in identifiersHash) { __select(identifiersHash[elem]).disabled = true };
 
       } else {
 
-        for(elem in identifierHash) { __select(identifierHash[elem]).disabled = false };
+        for(elem in identifiersHash) { __select(identifiersHash[elem]).disabled = false };
       };
     };
 
@@ -98,9 +99,9 @@
 
 
     //ICON
-      __element({tag: "a", attributes: {id: "icon", href: "../html/home.htm"}}, "header-main");
+      __element({tag: "a", attributes: {id: "icon-link", href: "../html/home.htm"}}, "header-main");
         
-        __element({tag: "img", attributes: {alt: "Risk Cloud", src: "../images/icon.png"}}, "icon");
+        __element({tag: "img", attributes: {id: "icon", alt: "Risk Cloud", src: "../images/icon.png"}}, "icon-link");
 
 
     //NAVIGATION
@@ -164,7 +165,7 @@
           var otherIndex = (index == "1") ? "2" : "1",
               execSpeed  = 20,
               increment  = 0.5,
-              maxHeight  = 4;
+              maxHeight  = 3.5;
 
         //CLOSE OTHER SUB-MENU IF IT'S OPEN
           if(__select("nav-sub-container-"+otherIndex).getAttribute("data-open") == "true") {

@@ -18,7 +18,7 @@ html {
   z-index: 99;
 }
 
-#icon > img {
+#icon {
   width: 12.5vw;
 }
 
@@ -81,7 +81,7 @@ html {
 
 .nav-sub-list-item-link {
   padding-right: 0.5vw;
-  padding-top: 0.5vw;
+  padding-top: 0.35vw;
   font-size: 1vw;
   color: #000000;
 }

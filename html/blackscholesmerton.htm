@@ -17,8 +17,12 @@
       <script>createHeader()</script>
 
       <div id="form">
+        <form id="underlying-container">
+          Enter the current price of the underlying asset: <input type="number" min="0" step=".01" id="current-price-field" placeholder="Ex:  5432.10" />
+        </form>
+
         <div id="num-legs-container">
-          <span id="num-legs-text">Please select the number of legs in the trade:</span>
+          <span id="num-legs-text">Select the number of legs in the trade:</span>
           
           <select id="num-legs-dropdown">
             <option value="1">1</option>
@@ -26,8 +30,10 @@
             <option value="3">3</option>
             <option value="4">4</option>
           </select>
+        </div>
 
-          <button id="num-legs-button" type="button" onclick="specifyAdditionalParams()">continue</button>
+        <div id="continue-button-1-container">
+          <button id="continue-button-1" type="button" onclick="specifyAdditionalParams()">continue</button>
         </div>
       </div>
 

@@ -1,43 +1,56 @@
 ﻿#form {
-  width: 95vw;
-  margin-top: 5vw;
-  margin-left: 1vw;
-  margin-right: 1vw;
-  padding: 1vw;
-  padding-top: 2vw;
-  padding-bottom: 2vw;
-  background-color: lightblue;          /*position debug*/
-  border: 0.15vw solid #666666;
+  width: 90vw;
+  margin: 4vw;
+  margin-top: 7vw;
+  padding: 0.5vw;
+  background-color: #fafafa;
 }
 
-#form, #num-legs-dropdown, #num-legs-button {
+#form, #current-price-field, #num-legs-dropdown, #continue-button-1 {
+  overflow: hidden;
   font-family: Century Gothic;
-  font-size: 1vw;
+  font-size: 1.15vw;
 }
 
-#num-legs-container {
+#form, .trade-leg {
+  border: 0.1vw solid #666666;
+}
+
+#underlying-container, #num-legs-container, #continue-button-1-container, #more-params-container {
+  margin: 1.25vw;
   background-color: lightyellow;          /*position debug*/
 }
 
-#num-legs-dropdown, #num-legs-button {
-  margin-left: 2.5vw;
-  overflow: hidden;
+#current-price-field {
+  width: 7.5vw;
+  padding-left: 0.5vw;
+  text-align: left;
+}
+
+#current-price-field, #num-legs-dropdown {
+  margin-left: 3vw;
   height: 2vw;
 }
 
+#continue-button-1-container {
+  padding-left: 0.75vw;
+}
+
+#continue-button-1 {
+  height: 2vw;
+  background-color: #dddddd;
+}
+
 #more-params-container {
-  padding-top: 2vw;
-  padding-bottom: 2vw;
+  padding: 0.75vw;
   overflow: hidden;
   height: 0;
-  background-color: lightgreen;          /*position debug*/
 }
 
 .trade-leg {
   display: inline-block;
   width: 10vw;
   height: 15vw;
-  background-color: lightyellow;          /*position debug*/
-  border: 0.1vw solid #666666;
+  background-color: white;          /*position debug*/
 }
 

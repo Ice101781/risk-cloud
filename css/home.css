@@ -12,11 +12,11 @@
   color: #555555;
 }
 
-pre > #risk {
+#risk {
   color: #ff5555;
 }
 
-pre > #profit {
+#profit {
   color: #55bb55;
 }
 
@@ -24,7 +24,7 @@ pre > #profit {
   text-align: center;
 }
 
-#watermark > #icon2 {
+#icon2 {
   width: 25vw;
 }
 
