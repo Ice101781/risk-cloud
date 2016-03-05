@@ -2,6 +2,7 @@
 
   var globalParams = {
 
+        fees: null,
         currentPrice: null,
         numLegs: null,
       };
@@ -165,7 +166,7 @@
           var otherIndex = (index == "1") ? "2" : "1",
               execSpeed  = 20,
               increment  = 0.5,
-              maxHeight  = 3.5;
+              maxHeight  = 5;
 
         //CLOSE OTHER SUB-MENU IF IT'S OPEN
           if(__select("nav-sub-container-"+otherIndex).getAttribute("data-open") == "true") {

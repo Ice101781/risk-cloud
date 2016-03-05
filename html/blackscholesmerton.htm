@@ -6,7 +6,7 @@
       <link rel="stylesheet" href="../css/application.css" />
       <script src="../javascript/application.js"></script>
 
-      <title>Option(s) Trade Analytics | Black-Scholes-Merton Model | Risk Cloud</title>
+      <title>Stock Option Trade Analytics | Black-Scholes-Merton Model | Risk Cloud</title>
       <link rel="stylesheet" href="../css/blackscholesmerton.css" />
       <script src="../javascript/blackscholesmerton.js"></script>
     </head>
@@ -16,24 +16,48 @@
 
       <script>createHeader()</script>
 
-      <div id="form">
-        <form id="underlying-container">
-          Enter the current price of the underlying asset: <input type="number" min="0" step=".01" id="current-price-field" placeholder="Ex:  5432.10" />
+      <h1 class="model-heading">
+        <pre>THE BLACK-SCHOLES-MERTON MODEL:   European-style options with continuously-payable dividends</pre>
+      </h1>
+
+      <div id="user-params-container">
+        <form>
+          <div class="align-helper"><b>- apply the same values to all trade legs for the following :</b></div>
+
+          <input type="checkbox" id="time-to-expiry-checkbox" value="timeToExpiry" checked> time to expiry
+          <input type="checkbox" id="dividend-yield-checkbox" value="dividendYield" checked> dividend yield
+          <input type="checkbox" id="risk-free-rate-checkbox" value="riskFreeRate" checked> risk-free rate
         </form>
 
+
+        <form>
+          <div class="align-helper"><b>- total commissions and fees per contract :</b></div>
+
+          <input type="number" id="fees-field" min="0" step=".01" value="1.50" placeholder="Ex:   1.00" />
+        </form>
+
+
+        <form>
+          <div class="align-helper"><b>- current price of the underlying asset :</b></div>
+
+          <input type="number" id="current-price-field" min=".01" step=".01" placeholder="Ex:   5432.10" />
+        </form>
+
+
         <div id="num-legs-container">
-          <span id="num-legs-text">Select the number of legs in the trade:</span>
-          
+          <div class="align-helper"><b>- number of legs in the trade :</b></div>
+
           <select id="num-legs-dropdown">
             <option value="1">1</option>
-            <option value="2" selected>2</option>
+            <option value="2">2</option>
             <option value="3">3</option>
-            <option value="4">4</option>
+            <option value="4" selected>4</option>
           </select>
         </div>
 
+
         <div id="continue-button-1-container">
-          <button id="continue-button-1" type="button" onclick="specifyAdditionalParams()">continue</button>
+          <button id="continue-button-1" type="button" onclick="validateInitialParams()">continue</button>
         </div>
       </div>
 

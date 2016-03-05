@@ -1,56 +1,78 @@
-﻿#form {
-  width: 90vw;
-  margin: 4vw;
-  margin-top: 7vw;
-  padding: 0.5vw;
-  background-color: #fafafa;
+﻿.model-heading {
+  margin-top: 2vw;
+  padding: 0;
 }
 
-#form, #current-price-field, #num-legs-dropdown, #continue-button-1 {
+.model-heading > pre {
+  text-align: center;
+  font-family: Corbel;
+  font-size: 1.5vw;
+  color: #555555;
+}
+
+#user-params-container {
+  width: 96.75vw;
+  margin: 0.5vw;
+  margin-top: 2vw;
+  padding: 0.5vw;
+  background-color: #f2f2f2;
+  border: 0.125vw solid #888888;
+}
+
+#user-params-container, #fees-field, #current-price-field, #num-legs-dropdown, #continue-button-1 {
   overflow: hidden;
   font-family: Century Gothic;
-  font-size: 1.15vw;
+  font-size: 1vw;
 }
 
-#form, .trade-leg {
-  border: 0.1vw solid #666666;
+form, #num-legs-container {
+  margin: 0.5vw;
+  margin-top: 1.25vw;
+  /*background-color: lightyellow;          /*position debug*/
 }
 
-#underlying-container, #num-legs-container, #continue-button-1-container, #more-params-container {
-  margin: 1.25vw;
-  background-color: lightyellow;          /*position debug*/
+.align-helper {
+  display: inline-block;
+  width: 32.5vw;
+  /*background-color: lightblue;          /*position debug*/
+  color: #555555;
 }
 
-#current-price-field {
-  width: 7.5vw;
+#dividend-yield-checkbox, #risk-free-rate-checkbox {
+  margin-left: 3vw;
+}
+
+#fees-field, #current-price-field {
+  width: 7vw;
   padding-left: 0.5vw;
   text-align: left;
 }
 
-#current-price-field, #num-legs-dropdown {
-  margin-left: 3vw;
-  height: 2vw;
+#fees-field, #current-price-field, #num-legs-dropdown, #continue-button-1 {
+  height: 1.5vw;
+  border-color: #f5f5f5;
 }
 
 #continue-button-1-container {
-  padding-left: 0.75vw;
-}
-
-#continue-button-1 {
-  height: 2vw;
-  background-color: #dddddd;
+  margin: 1vw;
+  margin-top: 1.5vw;
+  /*background-color: lightblue;          /*position debug*/
 }
 
 #more-params-container {
-  padding: 0.75vw;
+  padding: 1vw;
   overflow: hidden;
   height: 0;
 }
 
 .trade-leg {
   display: inline-block;
-  width: 10vw;
-  height: 15vw;
+  overflow: hidden;
+  width: 22vw;
+  height: 16vw;
+  margin-left: 0.725vw;
+  margin-right: 0.725vw;
   background-color: white;          /*position debug*/
+  border: 0.125vw solid #555555;
 }
 
