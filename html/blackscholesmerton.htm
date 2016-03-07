@@ -22,42 +22,30 @@
 
       <div id="user-params-container">
         <form>
-          <div class="align-helper"><b>- apply the same values to all trade legs for the following :</b></div>
-
-          <input type="checkbox" id="time-to-expiry-checkbox" value="timeToExpiry" checked> time to expiry
-          <input type="checkbox" id="dividend-yield-checkbox" value="dividendYield" checked> dividend yield
-          <input type="checkbox" id="risk-free-rate-checkbox" value="riskFreeRate" checked> risk-free rate
-        </form>
-
-
-        <form>
-          <div class="align-helper"><b>- total commissions and fees per contract :</b></div>
+          <div class="align-helper">Total commissions and fees per contract :</div>
 
           <input type="number" id="fees-field" min="0" step=".01" value="1.50" placeholder="Ex:   1.00" />
         </form>
-
-
+  
         <form>
-          <div class="align-helper"><b>- current price of the underlying asset :</b></div>
+          <div class="align-helper">Apply the same values to all trade legs :</div>
 
-          <input type="number" id="current-price-field" min=".01" step=".01" placeholder="Ex:   5432.10" />
+          <input type="checkbox" id="time-to-expiry-checkbox" value="" checked /><label for="time-to-expiry-checkbox">time to expiry</label>
+          <input type="checkbox" id="dividend-yield-checkbox" value="" checked /><label for="dividend-yield-checkbox">dividend yield</label>
+          <input type="checkbox" id="risk-free-rate-checkbox" value="" checked /><label for="risk-free-rate-checkbox">risk-free rate</label>
         </form>
 
+        <form>    
+          <div class="align-helper">Number of legs in the trade :</div>
 
-        <div id="num-legs-container">
-          <div class="align-helper"><b>- number of legs in the trade :</b></div>
-
-          <select id="num-legs-dropdown">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4" selected>4</option>
-          </select>
-        </div>
-
+          <input type="radio" id="num-legs-radio-1" name="num-legs-radio" value="1" /><label for="num-legs-radio-1">1</label>
+          <input type="radio" id="num-legs-radio-2" name="num-legs-radio" value="2" /><label for="num-legs-radio-2">2</label>
+          <input type="radio" id="num-legs-radio-3" name="num-legs-radio" value="3" /><label for="num-legs-radio-3">3</label>
+          <input type="radio" id="num-legs-radio-4" name="num-legs-radio" value="4" checked /><label for="num-legs-radio-4">4</label>
+        </form>
 
         <div id="continue-button-1-container">
-          <button id="continue-button-1" type="button" onclick="validateInitialParams()">continue</button>
+          <button id="continue-button-1" type="button" onclick="validateInitialParams()">Continue</button>
         </div>
       </div>
 

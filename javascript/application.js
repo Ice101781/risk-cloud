@@ -2,9 +2,9 @@
 
   var globalParams = {
 
-        fees: null,
+        contractFees: null,
+        tradeLegs:    null,
         currentPrice: null,
-        numLegs: null,
       };
 
 //END GLOBAL PARAMETERS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

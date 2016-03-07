@@ -13,33 +13,29 @@
 #user-params-container {
   width: 96.75vw;
   margin: 0.5vw;
-  margin-top: 2vw;
-  padding: 0.5vw;
+  margin-left: 1vw;
+  margin-top: 1.5vw;
   background-color: #f2f2f2;
   border: 0.125vw solid #888888;
 }
 
-#user-params-container, #fees-field, #current-price-field, #num-legs-dropdown, #continue-button-1 {
+#user-params-container, #fees-field, #continue-button-1, #current-price-field {
   overflow: hidden;
   font-family: Century Gothic;
   font-size: 1vw;
 }
 
-form, #num-legs-container {
-  margin: 0.5vw;
-  margin-top: 1.25vw;
+form {
+  margin: 1.5vw;
   /*background-color: lightyellow;          /*position debug*/
 }
 
 .align-helper {
   display: inline-block;
-  width: 32.5vw;
+  width: 22.5vw;
   /*background-color: lightblue;          /*position debug*/
+  font-weight: bold;
   color: #555555;
-}
-
-#dividend-yield-checkbox, #risk-free-rate-checkbox {
-  margin-left: 3vw;
 }
 
 #fees-field, #current-price-field {
@@ -48,19 +44,39 @@ form, #num-legs-container {
   text-align: left;
 }
 
-#fees-field, #current-price-field, #num-legs-dropdown, #continue-button-1 {
-  height: 1.5vw;
+#fees-field, #continue-button-1, #current-price-field {
+  height: 1.75vw;
   border-color: #f5f5f5;
 }
 
+input[type=checkbox], input[type=radio] {
+  display: none;
+}
+
+input[type=checkbox] + label, input[type=radio] + label {
+  display: inline-block;
+  height: 1vw;
+  margin-right: 1vw;
+  padding: 0.5vw;
+  padding-top: 0.25vw;
+  background-color: #d5d5d5;
+  color: #333333;
+  border: 0.1vw solid #888888;
+}
+
+input[type=checkbox]:checked + label, input[type=radio]:checked + label {
+  color: #ff5555;
+}
+
 #continue-button-1-container {
-  margin: 1vw;
-  margin-top: 1.5vw;
+  margin: 1.5vw;
+  margin-bottom: 1.75vw;
   /*background-color: lightblue;          /*position debug*/
 }
 
 #more-params-container {
-  padding: 1vw;
+  padding-left: 1vw;
+  padding-right: 0vw;
   overflow: hidden;
   height: 0;
 }
@@ -68,11 +84,11 @@ form, #num-legs-container {
 .trade-leg {
   display: inline-block;
   overflow: hidden;
-  width: 22vw;
-  height: 16vw;
-  margin-left: 0.725vw;
-  margin-right: 0.725vw;
-  background-color: white;          /*position debug*/
+  width: 20vw;
+  height: 15vw;
+  margin-left: 1.25vw;
+  margin-right: 1.25vw;
+  background-color: white;          /*debug*/
   border: 0.125vw solid #555555;
 }
 
