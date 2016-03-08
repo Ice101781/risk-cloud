@@ -27,25 +27,19 @@
 
 form {
   margin: 1.5vw;
-  /*background-color: lightyellow;          /*position debug*/
 }
 
 .align-helper {
   display: inline-block;
-  width: 22.5vw;
-  /*background-color: lightblue;          /*position debug*/
+  width: 23.25vw;
   font-weight: bold;
   color: #555555;
 }
 
-#fees-field, #current-price-field {
-  width: 7vw;
-  padding-left: 0.5vw;
-  text-align: left;
-}
-
 #fees-field, #continue-button-1, #current-price-field {
+  width: 7vw;
   height: 1.75vw;
+  text-align: center;
   border-color: #f5f5f5;
 }
 
@@ -61,6 +55,7 @@ input[type=checkbox] + label, input[type=radio] + label {
   padding-top: 0.25vw;
   background-color: #d5d5d5;
   color: #333333;
+  text-align: center;
   border: 0.1vw solid #888888;
 }
 
@@ -68,10 +63,13 @@ input[type=checkbox]:checked + label, input[type=radio]:checked + label {
   color: #ff5555;
 }
 
+input[name=num-legs-radio] + label {
+  width: 2vw;
+}
+
 #continue-button-1-container {
   margin: 1.5vw;
   margin-bottom: 1.75vw;
-  /*background-color: lightblue;          /*position debug*/
 }
 
 #more-params-container {
@@ -85,10 +83,15 @@ input[type=checkbox]:checked + label, input[type=radio]:checked + label {
   display: inline-block;
   overflow: hidden;
   width: 20vw;
-  height: 15vw;
+  height: 15.75vw;
   margin-left: 1.25vw;
   margin-right: 1.25vw;
-  background-color: white;          /*debug*/
-  border: 0.125vw solid #555555;
+  background-color: #fcfcfc;
+  border: 0.1vw solid #888888;
+}
+
+.buy-sell-radio {
+  width: 5vw;
+  margin-left: 1.2vw;
 }
 
