@@ -16,7 +16,7 @@
 
         initialConditions = {
 
-          feesField:         (__select(initialInputs.feesField).value != "" && __select(initialInputs.feesField).value >= 0),
+          feesField: (__select(initialInputs.feesField).value != "" && __select(initialInputs.feesField).value >= 0),
         };
 
 
@@ -37,9 +37,9 @@
       //SOME INPUT ERROR MESSAGE HANDLING
         if(!initialConditions.feesField) {
 
-          __select(initialInputs.feesField).style.borderColor = '#ff0000';
+          __select(initialInputs.feesField).style.border = '0.1vw solid #ff0000';
             alert("Please enter a valid number string greater than or equal to 0 for the total commissions and fees per contract.");
-          __select(initialInputs.feesField).style.borderColor = '#f5f5f5';
+          __select(initialInputs.feesField).style.border = 'none';
 
           return;
         };
@@ -54,14 +54,14 @@
       __element({tag: "div", attributes: {id: "more-params-container"}}, "user-params-container");
 
 
-      //CREATE USER-SPECIFIED NUMBER OF TRADE LEG CONTAINERS, ADD CHILD ELEMENTS
+      //CREATE USER-SPECIFIED NUMBER OF TRADE LEG CONTAINERS, ADD CHILD FORM ELEMENTS
         for(var i=0; i<globalParams.tradeLegs; i++) {
 
           __element({tag: "div", attributes: {id: "leg-"+(i+1), class: "trade-leg"}}, "more-params-container");
 
           
           //BUY/SELL RADIO
-            __element({tag: "form", attributes: {id: "buy-sell-form-"+(i+1)}}, "leg-"+(i+1));
+            __element({tag: "form", attributes: {id: "buy-sell-form-"+(i+1), class: "buy-sell-form"}}, "leg-"+(i+1));
 
               __element({tag: "input", attributes: {type: "radio", id: "buy-radio-"+(i+1), name: "buy-sell-radio-"+(i+1), value: "1"}}, "buy-sell-form-"+(i+1));
               __element({tag: "label", content: "Buy", attributes: {"for": "buy-radio-"+(i+1), class: "buy-sell-radio"}}, "buy-sell-form-"+(i+1));
@@ -69,9 +69,22 @@
               __element({tag: "input", attributes: {type: "radio", id: "sell-radio-"+(i+1), name: "buy-sell-radio-"+(i+1), value: "-1"}}, "buy-sell-form-"+(i+1));
               __element({tag: "label", content: "Sell", attributes: {"for": "sell-radio-"+(i+1), class: "buy-sell-radio"}}, "buy-sell-form-"+(i+1));
 
-          
-            //ALTERNATE BUY/SELL DEFAULT SELECTION TO SAVE TIME SETTING UP CERTAIN TRADES - VERTICALS, BUTTERFLIES, ETC.
+            //ALTERNATE BUY/SELL DEFAULT SELECTION TO SAVE TIME SETTING UP COMMON TRADES - VERTICALS, BUTTERFLIES, ETC.
               if(i % 2 == 0) { __select("buy-radio-"+(i+1)).setAttribute("checked", "") } else { __select("sell-radio-"+(i+1)).setAttribute("checked", "") };
+
+
+          //NUMBER OF CONTRACTS FIELD
+            __element({tag: "form", content: "No. of contracts :", attributes: {id: "num-contracts-form-"+(i+1), class: "num-contracts-form"}}, "leg-"+(i+1));
+
+              __element({tag: "input", attributes: {
+                                         type:        "number",
+                                         id:          "num-contracts-field-"+(i+1),
+                                         class:       "num-contracts-field",
+                                         min:         "1",
+                                         step:        "1",
+                                         value:       "1",
+                                       }
+                        }, "num-contracts-form-"+(i+1));
         };
 
 
@@ -80,7 +93,16 @@
 
         __element({tag: "div", content: "Current price of the underlying asset :", attributes: {class: "align-helper"}}, "current-price-form");
 
-        __element({tag: "input", attributes: {type: "number", id: "current-price-field", min: ".01", step: ".01", placeholder: "Ex:  5432.10", onblur: "this.placeholder='Ex:  5432.10'", onfocus: "this.placeholder=''"}}, "current-price-form");
+        __element({tag: "input", attributes: {
+                                   type: "number",
+                                   id:   "current-price-field",
+                                   min:  ".01",
+                                   step: ".01",
+                                   placeholder: "Ex:  432.10",
+                                   onblur: "this.placeholder='Ex:  5432.10'",
+                                   onfocus: "this.placeholder=''"
+                                 }
+                  }, "current-price-form");
 
 
     //EASE-IN ANIMATION FOR THE NEW ELEMENTS
@@ -110,7 +132,7 @@
       //CAPTURE FINAL USER-DEFINED PARAMETERS
         for(var i=0; i<globalParams.tradeLegs; i++) {
     
-          globalParams.signs[(i+1)] = __select("input[name=buy-sell-radio-"+(i+1)+"]:checked").value;
+          globalParams.legSigns[(i+1)] = __select("input[name=buy-sell-radio-"+(i+1)+"]:checked").value;
         };
 
         globalParams.currentPrice = Math.round(__select("current-price-field").value*100)/100;

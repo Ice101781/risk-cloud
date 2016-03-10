@@ -4,7 +4,7 @@
 
         contractFees: null,
         tradeLegs:    null,
-        signs:        {  },
+        legSigns:     {  },
         currentPrice: null,
       };
 
@@ -167,7 +167,7 @@
           var otherIndex = (index == "1") ? "2" : "1",
               execSpeed  = 20,
               increment  = 0.5,
-              maxHeight  = 4.5;
+              maxHeight  = 4;
 
         //CLOSE OTHER SUB-MENU IF IT'S OPEN
           if(__select("nav-sub-container-"+otherIndex).getAttribute("data-open") == "true") {

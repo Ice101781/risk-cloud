@@ -24,7 +24,7 @@
         <form>
           <div class="align-helper">Total commissions and fees per contract :</div>
 
-          <input type="number" id="fees-field" min="0" step=".01" value="1.50" onblur="this.placeholder='Ex:  1.00'" onfocus="this.placeholder=''" />
+          <input type="number" id="fees-field" min="0" step=".01" value="1.50" />
         </form>
   
         <form>
@@ -42,11 +42,9 @@
           <input type="radio" id="num-legs-radio-2" name="num-legs-radio" value="2" /><label for="num-legs-radio-2">2</label>
           <input type="radio" id="num-legs-radio-3" name="num-legs-radio" value="3" /><label for="num-legs-radio-3">3</label>
           <input type="radio" id="num-legs-radio-4" name="num-legs-radio" value="4" checked /><label for="num-legs-radio-4">4</label>
-        </form>
 
-        <div id="continue-button-1-container">
           <button id="continue-button-1" type="button" onclick="validateInitialParams()">Continue</button>
-        </div>
+        </form>
       </div>
 
       <script>window.onload = function() { document.getElementById("loadScreen").style.display = "none"; }</script>
