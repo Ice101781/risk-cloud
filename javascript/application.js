@@ -5,6 +5,7 @@
         contractFees: null,
         tradeLegs:    null,
         legSigns:     {  },
+        numContracts: {  },
         currentPrice: null,
       };
 
@@ -126,7 +127,7 @@
       //SUB-MENUS
         (subMenus = function() {
 
-          var subHeadings = {  1: { a: {heading: "Black-Scholes-Merton", link: "../html/blackscholesmerton.htm"}, b: {heading: "Binomial",   link: "#"} }, 
+          var subHeadings = {  1: { a: {heading: "Black-Scholes-Merton", link: "../html/blackscholesmerton.htm"}, /* b: {heading: "Binomial",   link: "#"} */ },
 
                                2: { a: {heading: "about",                link: "#"                             }, b: {heading: "dig deeper", link: "#"} }  };
 
@@ -165,9 +166,9 @@
 
         //LOCAL PARAMETERS
           var otherIndex = (index == "1") ? "2" : "1",
-              execSpeed  = 20,
-              increment  = 0.5,
-              maxHeight  = 4;
+              execSpeed  = 10,
+              increment  = 0.25,
+              maxHeight  = 4.25;
 
         //CLOSE OTHER SUB-MENU IF IT'S OPEN
           if(__select("nav-sub-container-"+otherIndex).getAttribute("data-open") == "true") {

@@ -5,6 +5,7 @@ html {
 
 .body {
   margin: 0.5vw;
+  padding: 0;
 }
 
 #loadScreen {
@@ -24,8 +25,8 @@ html {
 
 #header-main {
   width: 99vw;
-  padding-top: 0.2vw;
-  padding-bottom: 0.4vw;
+  padding-top: 0.1vw;
+  padding-bottom: 0.2vw;
 }
 
 #nav-menu, .nav-sub-menu {
@@ -39,12 +40,17 @@ html {
 }
 
 .nav-list-item {
+  margin: 0;
+  padding: 0;
   float: left;
 }
 
 .nav-list-item-link {
-  padding: 1vw;
+  margin: 0;
+  padding-left: 2vw;
+  padding-right: 0.375vw;
   padding-top: 2vw;
+  padding-bottom: 1vw;
   font-size: 1.4vw;
   background-color: #ffffff;
   color: #666666;
@@ -70,20 +76,25 @@ html {
 }
 
 .nav-sub-menu {
-  width: 11.5vw;
-  height: 4vw;
+  width: 13vw;
+  height: 4.25vw;
   position: relative;
-  left: 87.5vw;
-  background-color: #eeeeee;
+  left: 86vw;
+  background-color: transparent;
 }
 
 .nav-sub-list-item {
+  margin: 0;
+  padding: 0;
   text-align: right;
+  background-color: #d8d8d8;
 }
 
 .nav-sub-list-item-link {
+  margin: 0;
+  padding-top: 0.25vw;
+  padding-bottom: 0.375vw;
   padding-right: 0.5vw;
-  padding-top: 0.5vw;
   font-size: 1vw;
   color: #000000;
 }
