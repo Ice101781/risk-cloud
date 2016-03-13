@@ -6,6 +6,7 @@
         tradeLegs:    null,
         legSigns:     {  },
         numContracts: {  },
+        contractType: {  },
         currentPrice: null,
       };
 
@@ -14,6 +15,17 @@
 
 
 //HELPERS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  //Object size - thanks to James Coglan on stackoverflow.com for this
+    Object.size = function(obj) {
+    
+      var size = 0, 
+          key;
+ 
+      for (key in obj) { if(obj.hasOwnProperty(key)) {size++} };
+      return size;
+    };
+
 
   //HTML element selection
     __select = function(identifier) {
@@ -127,9 +139,9 @@
       //SUB-MENUS
         (subMenus = function() {
 
-          var subHeadings = {  1: { a: {heading: "Black-Scholes-Merton", link: "../html/blackscholesmerton.htm"}, /* b: {heading: "Binomial",   link: "#"} */ },
+          var subHeadings = {  1: { a: {heading: "Black-Scholes-Merton", link: "../html/blackscholesmerton.htm"}, /* b: {heading: "Variance-Gamma",   link: "#"} */ },
 
-                               2: { a: {heading: "about",                link: "#"                             }, b: {heading: "dig deeper", link: "#"} }  };
+                               2: { a: {heading: "about",                link: "#"                             }, b: {heading: "more", link: "#"} }  };
 
           for(num in subHeadings) {
 

@@ -25,8 +25,8 @@ html {
 
 #header-main {
   width: 99vw;
-  padding-top: 0.1vw;
-  padding-bottom: 0.2vw;
+  padding-top: 0.2vw;
+  padding-bottom: 0.4vw;
 }
 
 #nav-menu, .nav-sub-menu {
@@ -49,8 +49,7 @@ html {
   margin: 0;
   padding-left: 2vw;
   padding-right: 0.375vw;
-  padding-top: 2vw;
-  padding-bottom: 1vw;
+  padding-top: 2.7vw;
   font-size: 1.4vw;
   background-color: #ffffff;
   color: #666666;
@@ -58,7 +57,7 @@ html {
 
 .nav-list-item-link, .nav-sub-list-item-link {
   display: inline-block;
-  font-family: Century Gothic;
+  font-family: Verdana;
   text-decoration: none;
 }
 
@@ -76,11 +75,19 @@ html {
 }
 
 .nav-sub-menu {
-  width: 13vw;
   height: 4.25vw;
   position: relative;
-  left: 86vw;
   background-color: transparent;
+}
+
+#nav-sub-menu-1 { 
+  width: 14.25vw;
+  left: 85.75vw;
+}
+
+#nav-sub-menu-2 { 
+  width: 6vw;
+  left: 94vw;
 }
 
 .nav-sub-list-item {
@@ -92,9 +99,9 @@ html {
 
 .nav-sub-list-item-link {
   margin: 0;
-  padding-top: 0.25vw;
+  padding-top: 0.125vw;
   padding-bottom: 0.375vw;
-  padding-right: 0.5vw;
+  padding-right: 1.5vw;
   font-size: 1vw;
   color: #000000;
 }

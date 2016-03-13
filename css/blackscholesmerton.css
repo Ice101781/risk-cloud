@@ -14,22 +14,22 @@
 
 #user-params-container {
   width: 92vw;
-  margin-left: 3.25vw;
+  margin-left: 3.375vw;
   padding-top: 1vw;
-  padding-bottom: 1vw;
+  padding-bottom: 0.9375vw;
   background-color: #f2f2f2;
 }
 
 #user-params-container, #initial-params-container, #fees-field,
-.checkbox, .radio, #continue-button-1, #more-params-container,
-.trade-leg, .num-contracts-field, #current-price-field {
+#continue-button-1, #more-params-container, .trade-leg, .radio.buy-sell,
+.num-contracts-field, .radio.call-put, #current-price-field {
   overflow: hidden;
   font-family: Century Gothic;
   font-size: 1vw;
 }
 
 #initial-params-container {
-  height: 9.375vw;
+  height: 9.0625vw;
 }
 
 #initial-params-container, #current-price-form {
@@ -51,8 +51,8 @@ form {
 }
 
 #fees-field {
-  margin-left: 1.5vw;
-  margin-right: 1.5vw;
+  margin-left: 1.375vw;
+  margin-right: 1.375vw;
 }
 
 #fees-field, #continue-button-1, #current-price-field {
@@ -70,10 +70,11 @@ input[type=checkbox], input[type=radio] {
   display: none;
 }
 
-input[type=checkbox] + label, input[type=radio] + label {
+input[type=checkbox] + .checkbox, input[type=radio] + .radio {
   display: inline-block;
   height: 1vw;
-  margin-left: 1.5vw;
+  margin-left: 1.375vw;
+  margin-right: 0.125vw;
   padding-left: 0.625vw;
   padding-right: 0.625vw;
   padding-top: 0.25vw;
@@ -83,11 +84,11 @@ input[type=checkbox] + label, input[type=radio] + label {
   color: #333333;
 }
 
-input[type=checkbox]:checked + label, input[type=radio]:checked + label {
+input[type=checkbox]:checked + .checkbox, input[type=radio]:checked + .radio {
   color: #ff5555;
 }
 
-input[name=num-legs-radio] + label {
+input[name=num-legs-radio] + .radio {
   width: 1.8vw;
 }
 
@@ -115,21 +116,23 @@ input[name=num-legs-radio] + label {
   background-color: #fafafa;
 }
 
-.buy-sell-form {
-  padding-left: 1.5vw;
+.buy-sell-form, .call-put-form {
+  margin: 0;
+  padding-left: 1.625vw;
   padding-right: 1vw;
   padding-top: 0.75vw;
+  padding-bottom: 0.25vw;
 }
 
-.radio.buy-sell {
+.radio.buy-sell, .radio.call-put {
   width: 5vw;
-  padding-left: 0.75vw;
-  padding-right: 0.75vw;
 }
 
 .num-contracts-form {
   display: inline-block;
-  padding-left: 4vw;
+  margin: 0;
+  padding: 0;
+  padding-left: 3.75vw;
   padding-top: 0.25vw;
 }
 
@@ -141,11 +144,10 @@ input[name=num-legs-radio] + label {
 }
 
 #current-price-form {
-  margin-top: 1vw;
+  margin-top: 1.5vw;
 }
 
 #current-price-field {
-  margin-left: 1vw;
-  margin-right: 1vw;
+  margin-left: 0.375vw;
 }
 
