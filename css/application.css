@@ -50,14 +50,13 @@ html {
   padding-left: 2vw;
   padding-right: 0.375vw;
   padding-top: 2.7vw;
-  font-size: 1.4vw;
-  background-color: #ffffff;
+  font-size: 1.3vw;
   color: #666666;
 }
 
 .nav-list-item-link, .nav-sub-list-item-link {
   display: inline-block;
-  font-family: Verdana;
+  font-family: Century Gothic;
   text-decoration: none;
 }
 
@@ -70,24 +69,21 @@ html {
   height: 0;
   position: absolute;
   overflow: hidden;
-  background-color: transparent;
   border-top: 0.2vw solid #888888;
 }
 
 .nav-sub-menu {
-  height: 4.25vw;
   position: relative;
-  background-color: transparent;
 }
 
-#nav-sub-menu-1 { 
-  width: 14.25vw;
-  left: 85.75vw;
+#nav-sub-menu-1 {
+  width: 14vw;
+  left: 86vw;
 }
 
 #nav-sub-menu-2 { 
-  width: 6vw;
-  left: 94vw;
+  width: 7vw;
+  left: 93vw;
 }
 
 .nav-sub-list-item {
@@ -99,10 +95,10 @@ html {
 
 .nav-sub-list-item-link {
   margin: 0;
-  padding-top: 0.125vw;
-  padding-bottom: 0.375vw;
+  padding-top: 0.25vw;
+  padding-bottom: 0.25vw;
   padding-right: 1.5vw;
-  font-size: 1vw;
+  font-size: 0.9vw;
   color: #000000;
 }
 

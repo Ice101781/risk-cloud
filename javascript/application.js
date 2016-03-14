@@ -16,17 +16,6 @@
 
 //HELPERS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  //Object size - thanks to James Coglan on stackoverflow.com for this
-    Object.size = function(obj) {
-    
-      var size = 0, 
-          key;
- 
-      for (key in obj) { if(obj.hasOwnProperty(key)) {size++} };
-      return size;
-    };
-
-
   //HTML element selection
     __select = function(identifier) {
 
@@ -56,15 +45,20 @@
 
 
   //HTML element availability
-    elementAvail = function(identifiersHash, boolean) {
+    elementAvail = function(identifiersHash, bool) {
 
-      if(boolean == false) {
+      for(elem in identifiersHash) {
 
-        for(elem in identifiersHash) { __select(identifiersHash[elem]).disabled = true };
+        switch( typeof(identifiersHash[elem]) ) {
 
-      } else {
+          case 'string':
+            __select(identifiersHash[elem]).disabled = !bool;
+            break;
 
-        for(elem in identifiersHash) { __select(identifiersHash[elem]).disabled = false };
+          case 'object':
+            for (subElem in identifiersHash[elem]) { __select(identifiersHash[elem][subElem]).disabled = !bool };
+            break;
+        };
       };
     };
 
@@ -79,7 +73,7 @@
       return self; 
     }({
       
-      ease: function(type, identifier, execSpeed, increment, maxHeight) {
+      ease: function(type, identifier, execSpeed, increment, maxHeight, callback) {
 
         var elem    = __select(identifier),
             height  = 0,
@@ -91,6 +85,9 @@
 
             clearInterval(animate);
 
+            //ALLOW FOR COMPOUND ANIMATIONS BY CALLING elemAnim.ease() AGAIN AS A CALLBACK
+              if(typeof callback === 'function') { callback() };
+
           } else {
 
             height += increment;
@@ -100,6 +97,42 @@
         };
       },
     });
+
+
+  //Object size - thanks to James Coglan on stackoverflow.com for this
+    Object.size = function(obj) {
+    
+      var size = 0, 
+          key;
+ 
+      for (key in obj) { if(obj.hasOwnProperty(key)) {size++} };
+      return size;
+    };
+
+
+  //Populate and return an Object with numbered string values; current support for 2 string types
+    Object.stringPopulate = function(indexMax, stringArray) {
+
+      var obj = {};
+
+      switch(stringArray.length) {
+
+        case 1:
+          for(var i=0; i<indexMax; i++) { obj[(i+1)] = stringArray[0]+(i+1) };
+          break;
+
+        case 2:
+          for(var i=0; i<indexMax; i++) {
+
+            obj[(2*i)+1] = stringArray[0]+(i+1);
+            obj[2*(i+1)] = stringArray[1]+(i+1);
+          };
+          break;
+      };
+
+      return obj;
+    };
+
 
 //END HELPERS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -1,13 +1,15 @@
 ﻿//VALIDATE INITIAL PARAMETERS
-  validateInitialParams = function() {
+validateInitialParams = function() {
 
     var initialInputs = {
 
-          feesField:            "fees-field",
-          timeToExpiryCheckbox: "time-to-expiry-checkbox", dividendYieldCheckbox: "dividend-yield-checkbox", riskFreeRateCheckbox:  "risk-free-rate-checkbox",
-          numLegsRadio1:        "num-legs-radio-1", numLegsRadio2: "num-legs-radio-2",
-          numLegsRadio3:        "num-legs-radio-3", numLegsRadio4: "num-legs-radio-4",
-          continueButton1:      "continue-button-1",
+          feesField: "fees-field",
+
+          timeToExpiryCheckbox: "time-to-expiry-checkbox", dividendYieldCheckbox: "dividend-yield-checkbox", riskFreeRateCheckbox: "risk-free-rate-checkbox",
+
+          numLegsRadios: Object.stringPopulate(4, ["num-legs-radio-"]),
+
+          continueButton1: "continue-button-1",
         },
 
         initialConditions = {
@@ -26,7 +28,7 @@
         elementAvail(initialInputs, false);
 
       //DYNAMICALLY CREATE ELEMENTS NEEDED TO SPECIFY ADDITIONAL PARAMETERS
-        validateFinalParams();
+        createFinalParams();
 
     } else {
 
@@ -39,23 +41,24 @@
           return;
         };
     };
-  };
+};
 
 
-//VALIDATE FINAL PARAMETERS
-  validateFinalParams = function() {
+//CREATE FINAL PARAMETERS
+createFinalParams = function() {
 
     //CREATE A CONTAINER FOR THE FINAL PARAMETERS
       __element({tag: "div", attributes: {id: "final-params-container"}}, "user-params-container");
 
+
       //CREATE A CONTAINER FOR THE TRADE LEGS
-        __element({tag: "div", attributes: {id: "more-params-container"}}, "final-params-container");
+        __element({tag: "div", attributes: {id: "trade-legs-params-container"}}, "final-params-container");
 
 
       //CREATE USER-SPECIFIED NUMBER OF TRADE LEG CONTAINERS, ADD CHILD FORM ELEMENTS
         for(var i=0; i<globalParams.tradeLegs; i++) {
 
-          __element({tag: "div", attributes: {id: "leg-"+(i+1), class: "trade-leg"}}, "more-params-container");
+          __element({tag: "div", attributes: {id: "leg-"+(i+1), class: "trade-leg"}}, "trade-legs-params-container");
          
           //BUY/SELL RADIO
             __element({tag: "form", attributes: {id: "buy-sell-form-"+(i+1), class: "buy-sell-form"}}, "leg-"+(i+1));
@@ -66,8 +69,8 @@
                                          id:    "buy-radio-"+(i+1),
                                          name:  "buy-sell-radio-"+(i+1),
                                          value: "1",
-                                       }
-                        }, "buy-sell-form-"+(i+1));
+                                       }},
+                                       "buy-sell-form-"+(i+1));
 
                 __element({tag: "label", content: "Buy", attributes: {"for": "buy-radio-"+(i+1), class: "radio buy-sell"}}, "buy-sell-form-"+(i+1));
 
@@ -77,28 +80,27 @@
                                          id:    "sell-radio-"+(i+1),
                                          name:  "buy-sell-radio-"+(i+1),
                                          value: "-1",
-                                       }
-                        }, "buy-sell-form-"+(i+1));
+                                       }},
+                                       "buy-sell-form-"+(i+1));
 
                 __element({tag: "label", content: "Sell", attributes: {"for": "sell-radio-"+(i+1), class: "radio buy-sell"}}, "buy-sell-form-"+(i+1));
 
-
-            //ALTERNATE BUY/SELL DEFAULT SELECTION TO SAVE TIME SETTING UP COMMON TRADES - VERTICALS, BUTTERFLIES, ETC.
-              if(i % 2 == 0) { __select("buy-radio-"+(i+1)).setAttribute("checked", "") } else { __select("sell-radio-"+(i+1)).setAttribute("checked", "") };
+            //SOME DEFAULT SETTINGS SO COMMON OPTION SPREADS LIKE 'VERTICALS' TAKE LESS TIME TO SET UP 
+            if(i % 2 != 0) { __select("buy-radio-"+(i+1)).setAttribute("checked", "") } else { __select("sell-radio-"+(i+1)).setAttribute("checked", "") };
 
 
           //NUMBER OF CONTRACTS FIELD
-            __element({tag: "form", content: "No. of contracts :", attributes: {id: "num-contracts-form-"+(i+1), class: "num-contracts-form"}}, "leg-"+(i+1));
+            __element({tag: "form", attributes: {id: "num-contracts-form-"+(i+1), class: "num-contracts-form"}}, "leg-"+(i+1));
 
               __element({tag: "input", attributes: {
-                                         type:   "number",
-                                         id:      "num-contracts-field-"+(i+1),
-                                         class:   "num-contracts-field",
-                                         min:     "1",
-                                         step:    "1",
-                                         value:   "1",
-                                       }
-                        }, "num-contracts-form-"+(i+1));
+                                         type:  "number",
+                                         id:    "num-contracts-field-"+(i+1),
+                                         class: "num-contracts-field",
+                                         min:   "1",
+                                         step:  "1",
+                                         value: "1",
+                                       }},
+                                       "num-contracts-form-"+(i+1));
 
 
           //CALL/PUT RADIO
@@ -110,22 +112,24 @@
                                          id:    "call-radio-"+(i+1),
                                          name:  "call-put-radio-"+(i+1),
                                          value: "1",
-                                       }
-                        }, "call-put-form-"+(i+1));
+                                       }},
+                                       "call-put-form-"+(i+1));
 
                 __element({tag: "label", content: "Call", attributes: {"for": "call-radio-"+(i+1), class: "radio call-put"}}, "call-put-form-"+(i+1));
 
               //PUT
               __element({tag: "input", attributes: {
-                                         type:    "radio",
-                                         id:      "put-radio-"+(i+1),
-                                         name:    "call-put-radio-"+(i+1),
-                                         value:   "-1",
-                                         checked: "checked",
-                                       }
-                        }, "call-put-form-"+(i+1));
+                                         type:  "radio",
+                                         id:    "put-radio-"+(i+1),
+                                         name:  "call-put-radio-"+(i+1),
+                                         value: "-1",
+                                       }},
+                                       "call-put-form-"+(i+1));
 
-                __element({tag: "label", content: "Put", attributes: {"for": "put-radio-"+(i+1), class: "radio call-put"}}, "call-put-form-"+(i+1));   
+                __element({tag: "label", content: "Put", attributes: {"for": "put-radio-"+(i+1), class: "radio call-put"}}, "call-put-form-"+(i+1));
+
+            //SOME MORE DEFAULT SETTINGS TO SAVE TIME DURING TRADE SET-UP 
+            if(i < 2) { __select("call-radio-"+(i+1)).setAttribute("checked", "") } else { __select("put-radio-"+(i+1)).setAttribute("checked", "") };
         };
 
 
@@ -143,32 +147,31 @@
                                      placeholder: "Ex:  432.10",
                                      onblur:      "this.placeholder='Ex:  5432.10'",
                                      onfocus:     "this.placeholder=''"
-                                   }
-                    }, "current-price-form");
+                                   }},
+                                   "current-price-form");
 
 
     //EASE ANIMATIONS
-      elementAnim.ease("out", "initial-params-container", 10, 0.25, 10);
-      elementAnim.ease("in", "final-params-container", 10, 0.25, 22.25);
+      elementAnim.ease("in", "final-params-container", 10, 0.25, 22.5, function() { elementAnim.ease("out", "initial-params-container", 5, 0.1, 9) });
 
 
-    
-    //TO BE PLACED INSIDE THE 'CALCULATE' FUNCTION
+
+    //TO BE PLACED INSIDE THE 'VALIDATE FINAL PARAMS' FUNCTION
 
     var finalInputs = {
 
-          buySellForm1:       "buy-sell-form-1", buySellForm2: "buy-sell-form-2",
-          buySellForm3:       "buy-sell-form-3", buySellForm4: "buy-sell-form-4",
-          numContractsField1: "num-contracts-field-1", numContractsField2: "num-contracts-field-2",
-          numContractsField3: "num-contracts-field-3", numContractsField4: "num-contracts-field-4",
-          callPutForm1:       "call-put-form-1", callPutForm2: "call-put-form-2",
-          callPutForm3:       "call-put-form-3", callPutForm4: "call-put-form-4",
-          currentPriceField:  "current-price-field",
+          buySellRadios: Object.stringPopulate(globalParams.tradeLegs, ["buy-radio-", "sell-radio-"]),
+
+          numContractsFields: Object.stringPopulate(globalParams.tradeLegs, ["num-contracts-field-"]),
+
+          callPutRadios: Object.stringPopulate(globalParams.tradeLegs, ["call-radio-", "put-radio-"]),
+
+          currentPriceField: "current-price-field",
         },
 
         finalConditions = {
 
-          numContractsField:    (function () {
+          numContractsField:    (function() {
 
                                   var numContractsField = {};
 
@@ -233,4 +236,4 @@
       console.log(globalParams, finalInputs, finalConditions);
 
     //END
-  };
+};

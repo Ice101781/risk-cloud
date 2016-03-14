@@ -21,15 +21,15 @@
 }
 
 #user-params-container, #initial-params-container, #fees-field,
-#continue-button-1, #more-params-container, .trade-leg, .radio.buy-sell,
-.num-contracts-field, .radio.call-put, #current-price-field {
+#continue-button-1, #final-params-container, #trade-legs-params-container, .trade-leg,
+.radio.buy-sell, .num-contracts-field, .radio.call-put, #current-price-field {
   overflow: hidden;
   font-family: Century Gothic;
   font-size: 1vw;
 }
 
 #initial-params-container {
-  height: 9.0625vw;
+  height: 9vw;
 }
 
 #initial-params-container, #current-price-form {
@@ -62,6 +62,7 @@ form {
 }
 
 #fees-field, .num-contracts-field, #current-price-field {
+  padding-left: 0.625vw;
   background-color: #ddffdd;
   border: 0.1vw solid #d8d8d8;
 }
@@ -102,7 +103,7 @@ input[name=num-legs-radio] + .radio {
   height: 0;
 }
 
-#more-params-container {
+#trade-legs-params-container {
   padding-left: 1vw;
   padding-top: 1vw;
 }
@@ -132,14 +133,16 @@ input[name=num-legs-radio] + .radio {
   display: inline-block;
   margin: 0;
   padding: 0;
-  padding-left: 3.75vw;
+  padding-left: 7.65vw;
   padding-top: 0.25vw;
 }
 
 .num-contracts-field {
   width: 3vw;
   height: 1.5vw;
-  margin-left: 1vw;
+  margin-left: 0.5vw;
+  margin-right: 0.5vw;
+  padding-left: .65vw;
   text-align: center;
 }
 
