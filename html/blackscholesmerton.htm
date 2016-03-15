@@ -59,6 +59,19 @@
             <button id="continue-button-1" type="button" onclick="validateInitialParams()">Continue</button>
           </form>
         </div>
+
+        <div id="final-params-container">
+          <div id="trade-legs-params-container"></div>
+
+          <form id="current-price-form">
+            <div class="align-helper">Current price of the underlying asset :</div>
+
+            <input type="number" id="current-price-field" min=".01" step=".01" value="100"
+                   placeholder="Ex:  432.10" onblur="this.placeholder='Ex:  5432.10'" onfocus="this.placeholder=''" />
+
+            <button id="calculate-button-1" type="button" onclick="validateFinalParams()">Calculate</button>
+          </form>
+        </div>
       </div>
 
       <script>window.onload = function() { document.getElementById("loadScreen").style.display = "none"; }</script>

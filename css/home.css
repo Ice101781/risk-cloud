@@ -1,15 +1,19 @@
 ﻿#welcome {
-  padding-top: 5vw;
-  padding-bottom: 5vw;
+  margin: 0;
+  padding-top: 4vw;
+  padding-bottom: 4vw;
 }
 
-#welcome > pre {
+#welcome > pre, #more {
   margin: 0;
   padding: 0;
   text-align: center;
   font-family: Corbel;
-  font-size: 2.5vw;
   color: #555555;
+}
+
+#welcome > pre {
+  font-size: 2.5vw;
 }
 
 #risk {
@@ -26,5 +30,14 @@
 
 #icon2 {
   width: 25vw;
+}
+
+#more {
+  padding-top: 10vw;
+  font-size: 1.5vw;
+}
+
+#more-link {
+  color: #000000;
 }
 

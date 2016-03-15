@@ -22,7 +22,7 @@
 
 #user-params-container, #initial-params-container, #fees-field,
 #continue-button-1, #final-params-container, #trade-legs-params-container, .trade-leg,
-.radio.buy-sell, .num-contracts-field, .radio.call-put, #current-price-field {
+.radio.buy-sell, .num-contracts-field, .radio.call-put, #current-price-field, #calculate-button-1 {
   overflow: hidden;
   font-family: Century Gothic;
   font-size: 1vw;
@@ -55,7 +55,7 @@ form {
   margin-right: 1.375vw;
 }
 
-#fees-field, #continue-button-1, #current-price-field {
+#fees-field, #continue-button-1, #current-price-field, #calculate-button-1 {
   width: 7vw;
   height: 1.75vw;
   text-align: center;
@@ -93,7 +93,7 @@ input[name=num-legs-radio] + .radio {
   width: 1.8vw;
 }
 
-#continue-button-1 {
+#continue-button-1, #calculate-button-1 {
   float: right;
   margin: 0;
   padding: 0;
@@ -133,24 +133,27 @@ input[name=num-legs-radio] + .radio {
   display: inline-block;
   margin: 0;
   padding: 0;
-  padding-left: 7.65vw;
-  padding-top: 0.25vw;
+  padding-left: 3vw;
+  padding-top: 0.5vw;
 }
 
 .num-contracts-field {
   width: 3vw;
   height: 1.5vw;
-  margin-left: 0.5vw;
-  margin-right: 0.5vw;
-  padding-left: .65vw;
+  margin-left: 1.875vw;
   text-align: center;
 }
 
 #current-price-form {
   margin-top: 1.5vw;
+  padding-top: 0.875vw;
 }
 
 #current-price-field {
-  margin-left: 0.375vw;
+  margin-left: 0.1875vw;
+}
+
+#calculate-button-1 {
+  margin-right: 0.375vw;
 }
 

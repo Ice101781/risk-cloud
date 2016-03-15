@@ -99,18 +99,68 @@
     });
 
 
+  //HTML input element error messages
+    inputErrorMsg = function(elem, msg) {
+
+      __select(elem).style.borderColor = '#ff0000';
+        alert(msg);
+      __select(elem).style.borderColor = '#d8d8d8';
+      
+      return;
+    };
+
+
+  //HTML form for a radio with two buttons
+    twoWayRadio = function(buttonArray, defSetCondition) {
+      
+      for(var i=0; i<globalParams.tradeLegs; i++) {
+
+        __element({tag: "form", attributes: {
+                                  id:    buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(i+1),
+                                  class: buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form",
+                                }},
+                                "leg-"+(i+1));
+
+        //BUTTONS
+          for(var j=0; j<2; j++) {
+
+              __element({tag: "input", attributes: {
+                                         type:  "radio",
+                                         id:    buttonArray[j][0]+"-"+"radio-"+(i+1),
+                                         name:  buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"radio-"+(i+1),
+                                         value: buttonArray[j][1],
+                                       }},
+                                       buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(i+1));
+
+              __element({tag: "label", content: buttonArray[j][0].charAt(0).toUpperCase()+buttonArray[j][0].slice(1), 
+
+                                       attributes: {
+                                         "for": buttonArray[j][0]+"-"+"radio-"+(i+1), 
+                                         class: "radio "+buttonArray[0][0]+"-"+buttonArray[1][0],
+                                       }},
+                                       buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(i+1));
+          };
+
+        //SOME DEFAULT SETTINGS TO SAVE TIME DURING COMMON TRADE SET-UPS
+          var condIndex = eval(defSetCondition) ? 0 : 1;
+
+          __select(buttonArray[condIndex][0]+"-"+"radio-"+(i+1)).setAttribute("checked", "");
+      };
+    };
+
+
   //Object size - thanks to James Coglan on stackoverflow.com for this
     Object.size = function(obj) {
     
-      var size = 0, 
-          key;
+      var size = 0, key;
  
       for (key in obj) { if(obj.hasOwnProperty(key)) {size++} };
+
       return size;
     };
 
 
-  //Populate and return an Object with numbered string values; current support for 2 string types
+  //Populate and return an Object with numbered strings; current support for arrays with up to 2 string types
     Object.stringPopulate = function(indexMax, stringArray) {
 
       var obj = {};
@@ -132,7 +182,6 @@
 
       return obj;
     };
-
 
 //END HELPERS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -239,6 +288,5 @@
     });
 
 //END HEADER/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 
