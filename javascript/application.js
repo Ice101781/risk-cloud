@@ -99,19 +99,28 @@
     });
 
 
-  //HTML input element error messages
-    inputErrorMsg = function(elem, msg) {
+  //HTML form for a text-number field
+    textNumFields = function(string, content, appendIdentifier) {
 
-      __select(elem).style.borderColor = '#ff0000';
-        alert(msg);
-      __select(elem).style.borderColor = '#d8d8d8';
-      
-      return;
+      for(var i=0; i<globalParams.tradeLegs; i++) {
+            
+        __element({tag: "form", content: content, attributes: {id: string+"-form-"+(i+1), class: string+"-form"}}, appendIdentifier+(i+1));
+
+        __element({tag: "input", attributes: {
+                                   type:  "number",
+                                   id:    string+"-field-"+(i+1),
+                                   class: string+"-field",
+                                   min:   "1",
+                                   step:  "1",
+                                   value: "1",
+                                 }},
+                                 string+"-form-"+(i+1));
+      };
     };
 
 
   //HTML form for a radio with two buttons
-    twoWayRadio = function(buttonArray, defSetCondition) {
+    twoWayRadios = function(buttonArray, defSetCondition, appendIdentifier) {
       
       for(var i=0; i<globalParams.tradeLegs; i++) {
 
@@ -119,7 +128,7 @@
                                   id:    buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(i+1),
                                   class: buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form",
                                 }},
-                                "leg-"+(i+1));
+                                appendIdentifier+(i+1));
 
         //BUTTONS
           for(var j=0; j<2; j++) {
@@ -161,26 +170,56 @@
 
 
   //Populate and return an Object with numbered strings; current support for arrays with up to 2 string types
-    Object.stringPopulate = function(indexMax, stringArray) {
+    stringPopulate = function(indexMax, stringArray) {
 
       var obj = {};
 
       switch(stringArray.length) {
 
         case 1:
-          for(var i=0; i<indexMax; i++) { obj[(i+1)] = stringArray[0]+(i+1) };
+          for(var i=0; i<indexMax; i++) { obj[(i+1)] = stringArray[0]+"-"+(i+1) };
           break;
 
         case 2:
           for(var i=0; i<indexMax; i++) {
 
-            obj[(2*i)+1] = stringArray[0]+(i+1);
-            obj[2*(i+1)] = stringArray[1]+(i+1);
+            obj[(2*i)+1] = stringArray[0]+"-"+(i+1);
+            obj[2*(i+1)] = stringArray[1]+"-"+(i+1);
           };
           break;
       };
 
       return obj;
+    };
+
+
+  //Determine whether text input form conditions are met for a class of elements; return an Object with boolean values
+    classInputCheck = function(indexMax, elem, condArray) {
+
+      var obj = {};
+
+      for(var i=0; i<indexMax; i++) {
+
+        for(var j=0; j<condArray.length; j++) {
+
+          obj[(i+1)] = eval('__select(elem+"-"+(i+1)).value'+condArray[j]) ? true : false;
+
+          if(!obj[(i+1)]) { return obj };
+        };
+      };
+
+      return obj;
+    };
+
+
+  //Some basic error message handling for text form input
+    inputErrorMsg = function(elem, msg) {
+
+      __select(elem).style.borderColor = '#ff0000';
+        alert(msg);
+      __select(elem).style.borderColor = '#d8d8d8';
+      
+      return;
     };
 
 //END HELPERS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -242,7 +281,7 @@
 
     
     //ADD ANY PAGE-SPECIFIC CONTENT
-      if(typeof content === 'function') { content() } else { content = null };
+      if(typeof content === 'function') { content() };
   };
 
 

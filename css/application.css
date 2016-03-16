@@ -48,15 +48,15 @@ html {
 .nav-list-item-link {
   margin: 0;
   padding-left: 2vw;
-  padding-right: 0.375vw;
-  padding-top: 2.7vw;
-  font-size: 1.3vw;
+  padding-right: 0.625vw;
+  padding-top: 2.75vw;
+  font-size: 1.5vw;
   color: #666666;
 }
 
 .nav-list-item-link, .nav-sub-list-item-link {
   display: inline-block;
-  font-family: Century Gothic;
+  font-family: Arial;
   text-decoration: none;
 }
 
@@ -65,10 +65,10 @@ html {
 }
 
 .nav-sub-container {
+  overflow: hidden;
   width: 99vw;
   height: 0;
   position: absolute;
-  overflow: hidden;
   border-top: 0.2vw solid #888888;
 }
 
@@ -97,7 +97,7 @@ html {
   margin: 0;
   padding-top: 0.25vw;
   padding-bottom: 0.25vw;
-  padding-right: 1.5vw;
+  padding-right: 1.75vw;
   font-size: 0.9vw;
   color: #000000;
 }

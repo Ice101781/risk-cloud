@@ -16,7 +16,7 @@
   width: 92vw;
   margin-left: 3.375vw;
   padding-top: 1vw;
-  padding-bottom: 0.9375vw;
+  padding-bottom: 0;
   background-color: #f2f2f2;
 }
 
@@ -101,26 +101,29 @@ input[name=num-legs-radio] + .radio {
 
 #final-params-container {
   height: 0;
+  padding-top: 1vw;
 }
 
 #trade-legs-params-container {
   padding-left: 1vw;
-  padding-top: 1vw;
 }
 
 .trade-leg {
   display: inline-block;
   width: 20vw;
-  height: 16vw;
+  height: 18vw;
   margin-left: 1.25vw;
   margin-right: 1.25vw;
   background-color: #fafafa;
 }
 
+.leg-sub-container {
+  border-bottom: 0.3vw solid #f2f2f2;
+}
+
 .buy-sell-form, .call-put-form {
   margin: 0;
   padding-left: 1.625vw;
-  padding-right: 1vw;
   padding-top: 0.75vw;
   padding-bottom: 0.25vw;
 }
@@ -131,10 +134,11 @@ input[name=num-legs-radio] + .radio {
 
 .num-contracts-form {
   display: inline-block;
+  width: 16.375vw;
   margin: 0;
-  padding: 0;
   padding-left: 3vw;
-  padding-top: 0.5vw;
+  padding-top: 0.75vw;
+  padding-bottom: 0.75vw;
 }
 
 .num-contracts-field {
