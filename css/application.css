@@ -47,16 +47,15 @@ html {
 
 .nav-list-item-link {
   margin: 0;
-  padding-left: 2vw;
-  padding-right: 0.625vw;
+  padding-left: 2.5vw;
   padding-top: 2.75vw;
-  font-size: 1.5vw;
+  font-size: 1.35vw;
   color: #666666;
 }
 
 .nav-list-item-link, .nav-sub-list-item-link {
   display: inline-block;
-  font-family: Arial;
+  font-family: Helvetica;
   text-decoration: none;
 }
 
@@ -77,13 +76,13 @@ html {
 }
 
 #nav-sub-menu-1 {
-  width: 14vw;
-  left: 86vw;
+  width: 11.75vw;
+  left: 82.5vw;
 }
 
 #nav-sub-menu-2 { 
-  width: 7vw;
-  left: 93vw;
+  width: 4.7vw;
+  left: 94.3vw;
 }
 
 .nav-sub-list-item {
@@ -95,9 +94,9 @@ html {
 
 .nav-sub-list-item-link {
   margin: 0;
+  padding-right: 0.5vw;
   padding-top: 0.25vw;
   padding-bottom: 0.25vw;
-  padding-right: 1.75vw;
   font-size: 0.9vw;
   color: #000000;
 }

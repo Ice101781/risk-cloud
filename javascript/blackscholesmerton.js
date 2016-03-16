@@ -58,7 +58,7 @@ createFinalParams = function() {
 
 
   //TRANSITION
-    elementAnim.ease("in", "final-params-container", 5, 0.25, 25, function() {elementAnim.ease("out", "initial-params-container", 2.5, 0.1, 9)});
+    elementAnim.ease("out", "initial-params-container", 3.75, 0.09, 9, function() {elementAnim.ease("in", "final-params-container", 8, 0.25, 24)} );
 };
 
 

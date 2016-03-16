@@ -1,7 +1,7 @@
 ﻿.model-heading {
   margin: 0;
-  padding-top: 2vw;
-  padding-bottom: 1vw;
+  padding-top: 2.5vw;
+  padding-bottom: 1.25vw;
 }
 
 .model-heading > pre {
@@ -15,7 +15,7 @@
 #user-params-container {
   width: 92vw;
   margin-left: 3.375vw;
-  padding-top: 1vw;
+  padding-top: 0.5vw;
   padding-bottom: 0;
   background-color: #f2f2f2;
 }
@@ -101,7 +101,7 @@ input[name=num-legs-radio] + .radio {
 
 #final-params-container {
   height: 0;
-  padding-top: 1vw;
+  padding-top: 0.5vw;
 }
 
 #trade-legs-params-container {
@@ -149,7 +149,7 @@ input[name=num-legs-radio] + .radio {
 }
 
 #current-price-form {
-  margin-top: 1.5vw;
+  margin-top: 1vw;
   padding-top: 0.875vw;
 }
 

@@ -81,13 +81,13 @@
 
         function frame() {
 
-          if(height == maxHeight) {
+          if(maxHeight-height < .001) {
 
             clearInterval(animate);
 
             //ALLOW FOR COMPOUND ANIMATIONS BY CALLING elemAnim.ease() AGAIN AS A CALLBACK
-              if(typeof callback === 'function') { callback() };
-
+            if(typeof callback === 'function') { callback() };
+            
           } else {
 
             height += increment;

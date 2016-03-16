@@ -1,7 +1,7 @@
 ﻿#welcome {
   margin: 0;
-  padding-top: 4vw;
-  padding-bottom: 4vw;
+  padding-top: 3vw;
+  padding-bottom: 3vw;
 }
 
 #welcome > pre, #more {
@@ -33,7 +33,7 @@
 }
 
 #more {
-  padding-top: 10vw;
+  padding-top: 5vw;
   font-size: 1.5vw;
 }
 
