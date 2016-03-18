@@ -21,8 +21,9 @@
 }
 
 #user-params-container, #initial-params-container, #fees-field,
-#continue-button-1, #final-params-container, #trade-legs-params-container, .trade-leg,
-.radio.buy-sell, .num-contracts-field, .radio.call-put, #current-price-field, #calculate-button-1 {
+#continue-button-1, #final-params-container, #trade-legs-params-container, 
+.trade-leg, .leg-sub-container, .radio.buy-sell, .radio.call-put, .num-contracts-field,
+.risk-free-rate-field, .div-yield-field, .expiry-field, #current-price-field, #calculate-button-1 {
   overflow: hidden;
   font-family: Century Gothic;
   font-size: 1vw;
@@ -61,7 +62,7 @@ form {
   text-align: center;
 }
 
-#fees-field, .num-contracts-field, #current-price-field {
+#fees-field, .num-contracts-field, .risk-free-rate-field, .div-yield-field, .expiry-field, #current-price-field {
   padding-left: 0.625vw;
   background-color: #ddffdd;
   border: 0.1vw solid #d8d8d8;
@@ -111,7 +112,7 @@ input[name=num-legs-radio] + .radio {
 .trade-leg {
   display: inline-block;
   width: 20vw;
-  height: 18vw;
+  height: 22vw;
   margin-left: 1.25vw;
   margin-right: 1.25vw;
   background-color: #fafafa;
@@ -132,20 +133,38 @@ input[name=num-legs-radio] + .radio {
   width: 5vw;
 }
 
-.num-contracts-form {
+.num-contracts-form, .risk-free-rate-form, .div-yield-form, .expiry-form {
   display: inline-block;
-  width: 16.375vw;
+  width: 18.75vw;
   margin: 0;
-  padding-left: 3vw;
-  padding-top: 0.75vw;
-  padding-bottom: 0.75vw;
+  padding-left: 1.125vw;
+  padding-top: 0.5vw;
+  padding-bottom: 0.5vw;
+}
+
+.num-contracts-field, .risk-free-rate-field, .div-yield-field, .expiry-field {
+  height: 1.5vw;
+  width: 4vw;
+  margin: 0;
+  padding: 0;
+  padding-left: 0.75vw;
+  text-align: center;
 }
 
 .num-contracts-field {
-  width: 3vw;
-  height: 1.5vw;
-  margin-left: 1.875vw;
-  text-align: center;
+  margin-left: 4.5vw;
+}
+
+.risk-free-rate-field {
+  margin-left: 5.25vw;
+}
+
+.div-yield-field {
+  margin-left: 4.375vw;
+}
+
+.expiry-field {
+  margin-left: 0.875vw;
 }
 
 #current-price-form {

@@ -5,8 +5,11 @@
         contractFees: null,
         tradeLegs:    null,
         legSigns:     {  },
-        numContracts: {  },
         contractType: {  },
+        numContracts: {  },
+        riskFreeRate: {  },
+        divYield:     {  },
+        expiry:       {  },
         currentPrice: null,
       };
 
@@ -44,7 +47,7 @@
     };
 
 
-  //HTML element availability
+  //Disable or enable multpile classes of elements at once
     elementAvail = function(identifiersHash, bool) {
 
       for(elem in identifiersHash) {
@@ -72,7 +75,7 @@
 
       return self; 
     }({
-      
+
       ease: function(type, identifier, execSpeed, increment, maxHeight, callback) {
 
         var elem    = __select(identifier),
@@ -85,22 +88,31 @@
 
             clearInterval(animate);
 
-            //ALLOW FOR COMPOUND ANIMATIONS BY CALLING elemAnim.ease() AGAIN AS A CALLBACK
+            //ALLOW FOR COMPOUND ANIMATIONS USING elemAnim.ease() AGAIN AS A CALLBACK
             if(typeof callback === 'function') { callback() };
-            
+
           } else {
 
             height += increment;
 
-            if(type == "in") { elem.style.height = height + 'vw' } else if(type == "out") { elem.style.height = maxHeight - height + 'vw' };
+            if(type == "in") {elem.style.height = height + 'vw'} else if(type == "out") {elem.style.height = maxHeight - height + 'vw'};
           };
         };
+      },
+
+      //TRANSITION BETWEEN TWO ELEMENT CONTAINERS
+      transition: function(paramsOut, paramsIn) {
+
+        this.ease("out", paramsOut.id, 1, paramsOut.increment, paramsOut.height, function() {
+
+          elementAnim.ease("in", paramsIn.id, 1,  paramsIn.increment,  paramsIn.height);
+        });
       },
     });
 
 
-  //HTML form for a text-number field
-    textNumFields = function(string, content, appendIdentifier) {
+  //Create a class of forms for text-number fields
+    textNumFields = function(string, content, attr, appendIdentifier) {
 
       for(var i=0; i<globalParams.tradeLegs; i++) {
             
@@ -110,16 +122,16 @@
                                    type:  "number",
                                    id:    string+"-field-"+(i+1),
                                    class: string+"-field",
-                                   min:   "1",
-                                   step:  "1",
-                                   value: "1",
+                                   min:   attr.min,
+                                   step:  attr.step,
+                                   value: attr.value,
                                  }},
                                  string+"-form-"+(i+1));
       };
     };
 
 
-  //HTML form for a radio with two buttons
+  //Create a class of forms for radios with two buttons; the default button may be selected based on a boolean condition string
     twoWayRadios = function(buttonArray, defSetCondition, appendIdentifier) {
       
       for(var i=0; i<globalParams.tradeLegs; i++) {
@@ -160,11 +172,9 @@
 
   //Object size - thanks to James Coglan on stackoverflow.com for this
     Object.size = function(obj) {
-    
-      var size = 0, key;
- 
-      for (key in obj) { if(obj.hasOwnProperty(key)) {size++} };
 
+      var size = 0, key;
+      for (key in obj) { if(obj.hasOwnProperty(key)) {size++} };
       return size;
     };
 
@@ -195,6 +205,8 @@
 
   //Determine whether text input form conditions are met for a class of elements; return an Object with boolean values
     classInputCheck = function(indexMax, elem, condArray) {
+
+      condArray.push('!= ""');
 
       var obj = {};
 
@@ -233,12 +245,10 @@
     //CONTAINER
       __element({tag: "div", attributes: {id: "header-main"}}, ".body");
 
-
     //ICON
       __element({tag: "a", attributes: {id: "icon-link", href: "../html/home.htm"}}, "header-main");
         
         __element({tag: "img", attributes: {id: "icon", alt: "Risk Cloud", src: "../images/icon.png"}}, "icon-link");
-
 
     //NAVIGATION
       //MAIN MENU
@@ -255,7 +265,6 @@
               __element({tag: "a", content: headings[num], attributes: {href: "#", class: "nav-list-item-link", onclick: "navDropDown.anim("+num+")"}}, "nav-list-item-"+num);
           };
         })();
-
 
       //SUB-MENUS
         (subMenus = function() {
@@ -278,7 +287,6 @@
               };
           };
         })();
-
     
     //ADD ANY PAGE-SPECIFIC CONTENT
       if(typeof content === 'function') { content() };
