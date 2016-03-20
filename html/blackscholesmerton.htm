@@ -1,80 +1,83 @@
 ﻿<!DOCTYPE html>
-  <html lang="en-US">
+    <html lang="en-US">
 
-    <head>
-      <meta charset="UTF-8" />
-      <link rel="stylesheet" href="../css/application.css" />
-      <script src="../javascript/application.js"></script>
+        <head>
+            <meta charset="UTF-8" />
+            <link rel="stylesheet" href="../css/application.css" />
+            <script src="../javascript/application.js"></script>
 
-      <title>Stock Option Trade Analytics | Black-Scholes-Merton Model | Risk Cloud</title>
-      <link rel="stylesheet" href="../css/blackscholesmerton.css" />
-      <script src="../javascript/blackscholesmerton.js"></script>
-    </head>
+            <title>Stock Option Trade Analytics | Black-Scholes-Merton Model | Risk Cloud</title>
+            <link rel="stylesheet" href="../css/blackscholesmerton.css" />
+            <script src="../javascript/blackscholesmerton.js"></script>
+        </head>
 
-    <body class="body">
-      <div id="loadScreen"></div>
+        <body class="body">
+            <div id="loadScreen"></div>
 
-      <script>createHeader()</script>
+            <script>createHeader()</script>
 
-      <h1 class="model-heading">
-        <pre>THE BLACK-SCHOLES-MERTON MODEL:   European-style options with continuously-payable dividends</pre>
-      </h1>
+            <h1 class="model-heading">
+                <pre>THE BLACK-SCHOLES-MERTON MODEL:   European-style options with continuously-payable dividends</pre>
+            </h1>
 
-      <div id="user-params-container">
-        <div id="initial-params-container">
-          <form>
-            <div class="align-helper">Total commissions and fees per contract :</div>
+            <div id="user-params-container">
+                <div id="initial-params-container">
+                    <form>
+                        <div class="align-helper">Total commissions and fees per contract :</div>
 
-            <input type="number" id="fees-field" min="0" step=".01" value="1.50" />
-          </form>
-  
-          <form>
-            <div class="align-helper">Apply the same values to all trade legs :</div>
+                        <input type="number" id="fees-field" min="0" step=".01" value="1.50" />
+                    </form>
 
-            <input type="checkbox" id="time-to-expiry-checkbox" value="" checked />
-            <label class="checkbox" for="time-to-expiry-checkbox">time to expiry</label>
+                    <form>    
+                        <div class="align-helper">Number of legs in the trade :</div>
 
-            <input type="checkbox" id="dividend-yield-checkbox" value="" checked />
-            <label class="checkbox" for="dividend-yield-checkbox">dividend yield</label>
+                        <input type="radio" id="num-legs-radio-1" name="num-legs-radio" value="1" />
+                        <label class="radio" for="num-legs-radio-1">1</label>
 
-            <input type="checkbox" id="risk-free-rate-checkbox" value="" checked />
-            <label class="checkbox" for="risk-free-rate-checkbox">risk-free rate</label>
-          </form>
+                        <input type="radio" id="num-legs-radio-2" name="num-legs-radio" value="2" />
+                        <label class="radio" for="num-legs-radio-2">2</label>
 
-          <form>    
-            <div class="align-helper">Number of legs in the trade :</div>
+                        <input type="radio" id="num-legs-radio-3" name="num-legs-radio" value="3" />
+                        <label class="radio" for="num-legs-radio-3">3</label>
 
-            <input type="radio" id="num-legs-radio-1" name="num-legs-radio" value="1" />
-            <label class="radio" for="num-legs-radio-1">1</label>
+                        <input type="radio" id="num-legs-radio-4" name="num-legs-radio" value="4" checked />
+                        <label class="radio" for="num-legs-radio-4">4</label>
 
-            <input type="radio" id="num-legs-radio-2" name="num-legs-radio" value="2" />
-            <label class="radio" for="num-legs-radio-2">2</label>
+                        <button id="continue-button-1" type="button" onclick="validateInitialParams()">Continue</button>
+                    </form>
+                </div>
 
-            <input type="radio" id="num-legs-radio-3" name="num-legs-radio" value="3" />
-            <label class="radio" for="num-legs-radio-3">3</label>
+                <div id="final-params-container">
+                    <form id="params-checkbox-form">
+                        <div class="align-helper">Apply the same values to all trade legs :</div>
 
-            <input type="radio" id="num-legs-radio-4" name="num-legs-radio" value="4" checked />
-            <label class="radio" for="num-legs-radio-4">4</label>
+                        <input type="checkbox" id="time-to-expiry-checkbox" value="true"
+                               onclick="elementAnim.visible('leg-sub-container-2', 2.625, 'time-to-expiry-checkbox', 'expiry')" checked/>
+                        <label class="checkbox" for="time-to-expiry-checkbox">time to expiry</label>
 
-            <button id="continue-button-1" type="button" onclick="validateInitialParams()">Continue</button>
-          </form>
-        </div>
+                        <input type="checkbox" id="dividend-yield-checkbox" value="true"
+                               onclick="elementAnim.visible('leg-sub-container-3', 2.625, 'dividend-yield-checkbox', 'div-yield')" checked/>
+                        <label class="checkbox" for="dividend-yield-checkbox">dividend yield</label>
 
-        <div id="final-params-container">
-          <div id="trade-legs-params-container"></div>
+                        <input type="checkbox" id="risk-free-rate-checkbox" value="true"
+                               onclick="elementAnim.visible('leg-sub-container-4', 2.625, 'risk-free-rate-checkbox', 'risk-free-rate')" checked/>
+                        <label class="checkbox" for="risk-free-rate-checkbox">risk-free rate</label>
+                    </form>
 
-          <form id="current-price-form">
-            <div class="align-helper">Current price of the underlying asset :</div>
+                    <div id="trade-legs-params-container"></div>
 
-            <input type="number" id="current-price-field" min=".01" step=".01" value="100"
-                   placeholder="Ex:  432.10" onblur="this.placeholder='Ex:  432.10'" onfocus="this.placeholder=''" />
+                    <form id="current-price-form">
+                        <div class="align-helper">Current price of the underlying asset :</div>
 
-            <button id="calculate-button-1" type="button" onclick="validateFinalParams()">Calculate</button>
-          </form>
-        </div>
-      </div>
+                        <input type="number" id="current-price-field" min=".01" step=".01" value="100" placeholder="Ex:  432.10"
+                               onblur="this.placeholder='Ex:  432.10'" onfocus="this.placeholder=''" />
 
-      <script>window.onload = function() { document.getElementById("loadScreen").style.display = "none"; }</script>
-    </body>
+                        <button id="calculate-button-1" type="button" onclick="validateFinalParams()">Calculate</button>
+                    </form>
+                </div>
+            </div>
 
-  </html>
+            <script>window.onload = function() { document.getElementById("loadScreen").style.display = "none" }</script>
+        </body>
+
+    </html>

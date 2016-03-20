@@ -1,160 +1,171 @@
 ﻿//VALIDATE INITIAL PARAMETERS
 validateInitialParams = function() {
 
-  var 
-  initialInputs = {
+    //string objects containing element id's
+    var feesField = "fees-field",
+        numLegsRadios = idStringsObject(["num-legs-radio"], 4),
+        continueButton1 = "continue-button-1";
 
-    feesField:             "fees-field",
-    timeToExpiryCheckbox:  "time-to-expiry-checkbox",
-    dividendYieldCheckbox: "dividend-yield-checkbox",
-    riskFreeRateCheckbox:  "risk-free-rate-checkbox",
-    numLegsRadios:         stringPopulate(4, ["num-legs-radio"]),
-    continueButton1:       "continue-button-1",
-  },
+    //evaluate text form input conditions
+    var feesFieldCond = (select(feesField).value != "" && select(feesField).value >= 0);
 
-  initialConditions = {
+    //input validation
+    if(feesFieldCond) {
 
-    feesField: (__select(initialInputs.feesField).value != "" && __select(initialInputs.feesField).value >= 0),
-  };
+        //capture initial user-defined parameters
+        CONTRACT_FEES = Math.round(select("fees-field").value*100)/100;
+        TRADE_LEGS = Math.round(select("input[name=num-legs-radio]:checked").value);
 
+        //disable initial input elements
+        elementAvail({feesField, numLegsRadios, continueButton1}, false);
 
-  if(initialConditions.feesField) {
+        //create elements needed to specify final parameters
+        createFinalParams(
+            elementAnim.transition(
+                        {idString: "initial-params-container", increment: 0.125, height: 6.125},
+                        {idString: "final-params-container", increment: 0.2, height: 33}
+        ));
+    } else {
 
-    //CAPTURE INITIAL USER-DEFINED PARAMETERS
-      globalParams.contractFees = Math.round(__select("fees-field").value*100)/100;
-      globalParams.tradeLegs    = Math.round(__select("input[name=num-legs-radio]:checked").value);
-
-    //DISABLE INITIAL INPUT ELEMENTS
-      elementAvail(initialInputs, false);
-
-    //DYNAMICALLY CREATE ELEMENTS NEEDED TO SPECIFY ADDITIONAL PARAMETERS
-      createFinalParams(
-        elementAnim.transition({id: "initial-params-container", increment: 0.12, height: 9}, {id: "final-params-container", increment: 0.2, height: 28})
-      );
-
-  } else {
-
-    inputErrorMsg(initialInputs.feesField, "Please enter 0 or a positive number for the total commissions and fees.");
-  };
-};
+        inputErrorMsg(feesField, "Please enter 0 or a positive number for the total commissions and fees.");
+    }
+}
 
 
 //CREATE FINAL PARAMETERS
 createFinalParams = function(callback) {
 
-  //CREATE USER-SPECIFIED NUMBER OF TRADE LEG CONTAINERS, ADD CHILD FORM ELEMENTS
-    for(var i=0; i<globalParams.tradeLegs; i++) {
+    //create trade leg containers
+    for(var i=0; i<TRADE_LEGS; i++) {
 
-      __element({tag: "div", attributes: {id: "leg-"+(i+1), class: "trade-leg"}}, "trade-legs-params-container");
+        element({tag: "div", attributes: {id: "leg-"+(i+1), class: "trade-leg"}}, "trade-legs-params-container");
 
-      //formatting sub-containers
-        for(var j=0; j<3; j++) {__element({tag: "div", attributes: {id: "leg-sub-container-"+(j+1)+"-"+(i+1), class: "leg-sub-container"}}, "leg-"+(i+1))};
-    };
+        //sub-containers for animations
+        for(var j=0; j<5; j++) {
 
-    //BUY-SELL RADIOS
-      twoWayRadios( [["buy","1"],["sell","-1"]], "(i % 2 == 0)", "leg-sub-container-1-" );
-    //CALL-PUT RADIOS
-      twoWayRadios( [["call","1"],["put","-1"]], "(i < 2)", "leg-sub-container-1-" );
-    //NUMBER OF CONTRACTS FIELDS
-      textNumFields("num-contracts", "no. of contracts :", {min:"1", step:"1", value:"1"}, "leg-sub-container-1-");
+            element({tag: "div", attributes: {id: "leg-sub-container-"+(j+1)+"-"+(i+1), class: "leg-sub-container"}}, "leg-"+(i+1));
 
-    //RISK-FREE RATES
-      textNumFields("risk-free-rate", "risk-free rate % :", {min:"0", step:".01", value:"0.25"}, "leg-sub-container-2-");
-    //DIVIDEND % FIELDS
-      textNumFields("div-yield", "dividend yield % :", {min:"0", step:".01", value:"0"}, "leg-sub-container-2-");
+            //hide certain sub-containers according to default params checkbox settings
+            if(i>0 && j>0 && j<4) { select("leg-sub-container-"+(j+1)+"-"+(i+1)).style.height = 0 }
 
-    //CALENDAR TIME TO EXPIRY
-      textNumFields("expiry", "calendar days to expiry :", {min:"0", step:"1", value:"30"}, "leg-sub-container-3-");
+            //highlight backgrounds in the first trade leg for default params checkbox settings
+            if(i==1 && j>0) { select("leg-sub-container-"+(j+1)+"-1").style.backgroundColor = "#ffdddd" }
+        }
+    }
+
+    //buy-sell radios
+    twoWayRadios( [["buy","1"],["sell","-1"]], "(i % 2 == 0)", "leg-sub-container-1-" );
+    //call-put radios
+    twoWayRadios( [["call","1"],["put","-1"]], "(i < 2)", "leg-sub-container-1-" );
+    //number of contracts fields
+    textNumFields("num-contracts", "no. of contracts :", {min:"1", step:"1", value:"1"}, "leg-sub-container-1-");
+    //strike prices
+    textNumFields("strike-price", "exercise price :", {min:".01", step:".01", value:"100"}, "leg-sub-container-1-");
+
+    //calendar times to expiry
+    textNumFields("expiry", "calendar days to expiry :", {min:"0", step:"1", value:"30"}, "leg-sub-container-2-");
+
+    //dividend % fields
+    textNumFields("div-yield", "dividend yield % :", {min:"0", step:".01", value:"0"}, "leg-sub-container-3-");
+
+    //risk-free rates
+    textNumFields("risk-free-rate", "risk-free rate % :", {min:"0", step:".01", value:"0.25"}, "leg-sub-container-4-");
 
 
-  //TRANSITION CALLBACK
-    if(typeof callback === 'function') { callback() };
-};
+    //transition animation callback
+    if(typeof callback === 'function') { callback() }
+}
 
 
 //VALIDATE FINAL PARAMETERS
 validateFinalParams = function() {
-    
-  var
-  finalInputs = {
+  
+    //id strings
+    var expiryBox = "time-to-expiry-checkbox",
+        divYieldBox = "dividend-yield-checkbox",
+        riskFreeBox = "risk-free-rate-checkbox",
+        buySellRadios = idStringsObject(["buy-radio", "sell-radio"], TRADE_LEGS),
+        callPutRadios = idStringsObject(["call-radio", "put-radio"], TRADE_LEGS),
+        numContractsFields = idStringsObject(["num-contracts-field"], TRADE_LEGS),
+        strikePriceFields = idStringsObject(["strike-price-field"], TRADE_LEGS),
+        expiryFields = idStringsObject(["expiry-field"], TRADE_LEGS),
+        divYieldFields = idStringsObject(["div-yield-field"], TRADE_LEGS),
+        riskFreeFields = idStringsObject(["risk-free-rate-field"], TRADE_LEGS),
+        stockPriceField = "current-price-field";
 
-    buySellRadios:      stringPopulate(globalParams.tradeLegs, ["buy-radio", "sell-radio"]),
-    callPutRadios:      stringPopulate(globalParams.tradeLegs, ["call-radio", "put-radio"]),
-    numContractsFields: stringPopulate(globalParams.tradeLegs, ["num-contracts-field"]),
-    riskFreeRateFields: stringPopulate(globalParams.tradeLegs, ["risk-free-rate-field"]),
-    divYieldFields:     stringPopulate(globalParams.tradeLegs, ["div-yield-field"]),
-    expiryFields:       stringPopulate(globalParams.tradeLegs, ["expiry-field"]),
-    currentPriceField:  "current-price-field",
-  },
+    //evaluate text form input conditions
+    var numContractsFieldsCond = classInputCheck("num-contracts-field", TRADE_LEGS, ['>= 1', '== Math.floor(select(elem+"-"+(i+1)).value)']),
+        strikePriceFieldsCond = classInputCheck("strike-price-field", TRADE_LEGS, ['> 0']),
+        expiryFieldsCond = classInputCheck("expiry-field", TRADE_LEGS, ['>= 0', '<= 1000', '== Math.floor(select(elem+"-"+(i+1)).value)']),
+        divYieldFieldsCond = classInputCheck("div-yield-field", TRADE_LEGS, ['>= 0', '<= 100']),
+        riskFreeFieldsCond = classInputCheck("risk-free-rate-field", TRADE_LEGS, ['>= 0', '<= 25']),
+        stockPriceFieldCond = (select(stockPriceField).value != "" && select(stockPriceField).value > 0);
 
-  finalConditions = {
+    //input validation
+    if(numContractsFieldsCond[Object.size(numContractsFieldsCond)] &&
+       strikePriceFields[Object.size(strikePriceFieldsCond)] &&
+       expiryFieldsCond[Object.size(expiryFieldsCond)] &&
+       divYieldFieldsCond[Object.size(divYieldFieldsCond)] &&
+       riskFreeFieldsCond[Object.size(riskFreeFieldsCond)] &&
+       stockPriceFieldCond) {
 
-    numContractsFields: classInputCheck(globalParams.tradeLegs, "num-contracts-field",  ['>= 1', '== Math.floor(__select(elem+"-"+(i+1)).value)']),
-    riskFreeRateFields: classInputCheck(globalParams.tradeLegs, "risk-free-rate-field", ['>= 0', '<= 25']),
-    divYieldFields:     classInputCheck(globalParams.tradeLegs, "div-yield-field",      ['>= 0', '<= 100']),
-    expiryFields:       classInputCheck(globalParams.tradeLegs, "expiry-field",         ['>= 0', '<= 1000', '== Math.floor(__select(elem+"-"+(i+1)).value)']),
-    currentPriceField:  (__select(finalInputs.currentPriceField).value != "" && __select(finalInputs.currentPriceField).value > 0),
-  };
+        //capture user-defined final parameters
+        for(var i=0; i<TRADE_LEGS; i++) {
 
-  //INPUT VALIDATION
-  if(finalConditions.numContractsFields[Object.size(finalConditions.numContractsFields)] &&
-     finalConditions.riskFreeRateFields[Object.size(finalConditions.riskFreeRateFields)] &&
-     finalConditions.divYieldFields[Object.size(finalConditions.divYieldFields)]         &&
-     finalConditions.expiryFields[Object.size(finalConditions.expiryFields)]             &&
-     finalConditions.currentPriceField
-    ) {
+            LEG_SIGN[(i+1)] = Math.round(select("input[name=buy-sell-radio-"+(i+1)+"]:checked").value);
+            CONTRACT_TYPE[(i+1)] = Math.round(select("input[name=call-put-radio-"+(i+1)+"]:checked").value);
+            NUM_CONTRACTS[(i+1)] = Math.round(select("num-contracts-field-"+(i+1)).value);
+            STRIKE_PRICE[(i+1)] = Math.round(select("strike-price-field-"+(i+1)).value*100)/100;
+            EXPIRY[(i+1)] = Math.round(select("expiry-field-"+(i+1)).value)/365;
+            DIV_YIELD[(i+1)] = Math.round(select("div-yield-field-"+(i+1)).value*100)/10000;
+            RISK_FREE[(i+1)] = Math.round(select("risk-free-rate-field-"+(i+1)).value*100)/10000;
+        }
 
-    //CAPTURE FINAL USER-DEFINED PARAMETERS
-      for(var i=0; i<globalParams.tradeLegs; i++) {
-    
-        globalParams.legSigns[(i+1)]     = Math.round(__select("input[name=buy-sell-radio-"+(i+1)+"]:checked").value);
-        globalParams.contractType[(i+1)] = Math.round(__select("input[name=call-put-radio-"+(i+1)+"]:checked").value);
-        globalParams.numContracts[(i+1)] = Math.round(__select("num-contracts-field-"+(i+1)).value);
-        globalParams.riskFreeRate[(i+1)] = Math.round(__select("risk-free-rate-field-"+(i+1)).value*100)/10000;
-        globalParams.divYield[(i+1)]     = Math.round(__select("div-yield-field-"+(i+1)).value*100)/10000;
-        globalParams.expiry[(i+1)]       = Math.round(__select("expiry-field-"+(i+1)).value)/365;
-      };
-      
-        globalParams.currentPrice        = Math.round(__select("current-price-field").value*100)/100;
+        STOCK_PRICE = Math.round(select("current-price-field").value*100)/100;
 
-      console.log(globalParams, finalConditions);
+        //disable final input elements
+        elementAvail({expiryBox, divYieldBox, riskFreeBox, buySellRadios, callPutRadios, numContractsFields, strikePriceFields,
+                      expiryFields, divYieldFields, riskFreeFields, stockPriceField}, false);
 
-    //DISABLE FINAL INPUT ELEMENTS
-      elementAvail(finalInputs, false);
+        //calculate and display output
+        //some function here...
+        //console.log();
+    } else {
 
-    //CALCULATE AND DISPLAY OUTPUT
-      //some function here...      
-    
-  } else {
+        //some input error message handling
+        switch(false) {
 
-    //SOME INPUT ERROR MESSAGE HANDLING
-    switch(false) {
+            case numContractsFieldsCond[Object.size(numContractsFieldsCond)]:
+                inputErrorMsg("num-contracts-field-"+Object.size(numContractsFieldsCond),
+                              "Please enter a whole number greater than or equal to 1 for the number of contracts in this trade leg.");
+                break;
 
-      case finalConditions.numContractsFields[Object.size(finalConditions.numContractsFields)]:
-        inputErrorMsg("num-contracts-field-"+Object.size(finalConditions.numContractsFields),
-          "Please enter a whole number greater than or equal to 1 for the number of contracts in this trade leg.");
-        break;
+            case strikePriceFieldsCond[Object.size(strikePriceFieldsCond)]:
+                inputErrorMsg("strike-price-field-"+Object.size(strikePriceFieldsCond),
+                              "Please enter a number greater than 0 for the strike price in this trade leg.");
+                break;
 
-      case finalConditions.riskFreeRateFields[Object.size(finalConditions.riskFreeRateFields)]:
-        inputErrorMsg("risk-free-rate-field-"+Object.size(finalConditions.riskFreeRateFields),
-          "Please enter a number greater than or equal to 0, and less than or equal to 25, for the risk-free rate percentage in this trade leg.");
-        break;
+            case expiryFieldsCond[Object.size(expiryFieldsCond)]:
+                inputErrorMsg("expiry-field-"+Object.size(expiryFieldsCond),
+                              "Please enter a whole number greater than or equal to 0, and less than or equal to 1000, for the number "+
+                              "of calendar days to expiry in this trade leg.");
+                break;
 
-      case finalConditions.divYieldFields[Object.size(finalConditions.divYieldFields)]:
-        inputErrorMsg("div-yield-field-"+Object.size(finalConditions.divYieldFields),
-          "Please enter a number greater than or equal to 0, and less than or equal to 100, for the dividend yield percentage in this trade leg.");
-        break;
+            case divYieldFieldsCond[Object.size(divYieldFieldsCond)]:
+                inputErrorMsg("div-yield-field-"+Object.size(divYieldFieldsCond),
+                              "Please enter a number greater than or equal to 0, and less than or equal to 100, for the dividend yield "+
+                              "percentage in this trade leg.");
+                break;
 
-      case finalConditions.expiryFields[Object.size(finalConditions.expiryFields)]:
-        inputErrorMsg("expiry-field-"+Object.size(finalConditions.expiryFields),
-          "Please enter a whole number greater than or equal to 0, and less than or equal to 1000, for the number of calendar days to expiry "+
-          "in this trade leg.");
-        break;
+            case riskFreeFieldsCond[Object.size(riskFreeFieldsCond)]:
+                inputErrorMsg("risk-free-rate-field-"+Object.size(riskFreeFieldsCond),
+                              "Please enter a number greater than or equal to 0, and less than or equal to 25, for the risk-free rate "+
+                              "percentage in this trade leg.");
+                break;
 
-      case finalConditions.currentPriceField:
-        inputErrorMsg(finalInputs.currentPriceField,
-          "Please enter a number greater than 0 for the current price of the underlying asset.");
-        break;
-    };
-  };
-};
+            case stockPriceFieldCond:
+                inputErrorMsg(stockPriceField, "Please enter a number greater than 0 for the current price of the underlying asset.");
+                break;
+        }
+    }
+}

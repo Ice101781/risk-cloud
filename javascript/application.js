@@ -1,17 +1,15 @@
-﻿//USER-PROVIDED GLOBAL PARAMETERS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+﻿//GLOBAL PARAMETERS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  var globalParams = {
-
-        contractFees: null,
-        tradeLegs:    null,
-        legSigns:     {  },
-        contractType: {  },
-        numContracts: {  },
-        riskFreeRate: {  },
-        divYield:     {  },
-        expiry:       {  },
-        currentPrice: null,
-      };
+var FEES = null,
+    NUM_LEGS = null,
+    LEG_SIGN = {},
+    CONTRACT_TYPE = {},
+    NUM_CONTRACTS = {},
+    STRIKE_PRICE = {},
+    EXPIRY = {},
+    DIV_YIELD = {},
+    RISK_FREE = {},
+    STOCK_PRICE = null;
 
 //END GLOBAL PARAMETERS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -19,220 +17,253 @@
 
 //HELPERS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  //HTML element selection
-    __select = function(identifier) {
+//HTML element selection
+select = function(idString) {
 
-      return document.getElementById(identifier) || document.querySelector(identifier);
-    };
-
-
-  //HTML element creation
-    __element = function(params, appendIdentifier) {
-
-      //CREATE A NEW ELEMENT
-        var elem = document.createElement(params.tag);
-
-      //ADD ANY CONTENT
-        if(typeof params.content === 'undefined') { params.content = "" };
-
-        elem.appendChild(document.createTextNode(params.content));
-
-      //SET ANY ATTRIBUTES
-        for(attr in params.attributes) { elem.setAttribute(attr, params.attributes[attr]) };
-
-      //APPEND THE NEW ELEMENT
-        __select(appendIdentifier).appendChild(elem);
-
-      return elem;
-    };
+    return document.getElementById(idString) || document.querySelector(idString);
+}
 
 
-  //Disable or enable multpile classes of elements at once
-    elementAvail = function(identifiersHash, bool) {
+//HTML element creation
+element = function(paramsObject, appendId) {
 
-      for(elem in identifiersHash) {
+    //create a new document element
+    var elem = document.createElement(paramsObject.tag);
 
-        switch( typeof(identifiersHash[elem]) ) {
+    //add content
+    if(typeof paramsObject.content === 'undefined') { paramsObject.content = "" }
 
-          case 'string':
-            __select(identifiersHash[elem]).disabled = !bool;
-            break;
+    elem.appendChild(document.createTextNode(paramsObject.content));
 
-          case 'object':
-            for (subElem in identifiersHash[elem]) { __select(identifiersHash[elem][subElem]).disabled = !bool };
-            break;
-        };
-      };
-    };
+    //add attributes
+    for(attr in paramsObject.attributes) { elem.setAttribute(attr, paramsObject.attributes[attr]) }
+
+    //append the new element to a parent element
+    select(appendId).appendChild(elem);
+
+    return elem;
+}
 
 
-  //HTML element animation
-    elementAnim = function(properties) {
+//Disable or enable multpile classes of elements at once
+elementAvail = function(idObject, bool) {
 
-      var self = function() { return };
+    for(key in idObject) {
 
-      for(property in properties) { self[property] = properties[property] };
+        switch(typeof(idObject[key])) {
 
-      return self; 
-    }({
+            case 'string':
+                select(idObject[key]).disabled = !bool;
+                break;
 
-      ease: function(type, identifier, execSpeed, increment, maxHeight, callback) {
+            case 'object':
+                for (subKey in idObject[key]) { select(idObject[key][subKey]).disabled = !bool }
+                break;
+        }
+    }
+}
 
-        var elem    = __select(identifier),
-            height  = 0,
+
+//HTML element animation
+elementAnim = function(properties) {
+
+    var self = function() { return }
+
+    for(prop in properties) { self[prop] = properties[prop] }
+
+    return self; 
+}({
+
+    ease: function(type, idString, execSpeed, increment, maxHeight, callback) {
+
+        var elem = select(idString),
+            height = 0,
             animate = setInterval(frame, execSpeed);
 
         function frame() {
 
-          if(maxHeight-height < .001) {
+            if(maxHeight-height < .001) {
 
-            clearInterval(animate);
+                clearInterval(animate);
 
-            //ALLOW FOR COMPOUND ANIMATIONS USING elemAnim.ease() AGAIN AS A CALLBACK
-            if(typeof callback === 'function') { callback() };
+                //callback to make compound element animations, etc. possible
+                if(typeof callback === 'function') { callback() }
 
-          } else {
+            } else {
 
-            height += increment;
+                height += increment;
 
-            if(type == "in") {elem.style.height = height + 'vw'} else if(type == "out") {elem.style.height = maxHeight - height + 'vw'};
-          };
-        };
-      },
+                if(type == "in") {elem.style.height = height + 'vw'} else if(type == "out") {elem.style.height = maxHeight - height + 'vw'}
+            }
+        }
+    },
 
-      //TRANSITION BETWEEN TWO ELEMENT CONTAINERS
-      transition: function(paramsOut, paramsIn) {
+    //transition between two element containers
+    transition: function(paramsObject1, paramsObject2) {
 
-        this.ease("out", paramsOut.id, 1, paramsOut.increment, paramsOut.height, function() {
+        this.ease("out", paramsObject1.idString, 1, paramsObject1.increment, paramsObject1.height, function() {
 
-          elementAnim.ease("in", paramsIn.id, 1,  paramsIn.increment,  paramsIn.height);
-        });
-      },
-    });
+             elementAnim.ease("in", paramsObject2.idString, 1,  paramsObject2.increment,  paramsObject2.height) }
+        );
+    },
+
+    //on checkbox button click, toggle visibility of a class of containers, skipping the first;
+    //for input validation purposes, also set values of the containers' fields after the containers have been closed
+    visible: function(container, maxHeight, checkBox, field) {
+
+        var type, color;
+
+        switch(select(checkBox).checked) {
+
+            case true:
+                type = "out";
+                color = "#ffdddd";
+                break;
+
+            case false:
+                type = "in";
+                color = "#fafafa";
+                break;
+        }
+
+        for (var i=1; i<TRADE_LEGS; i++) {
+
+            (function(index) {
+                elementAnim.ease(type, container+'-'+(index+1), 2, .125, maxHeight, function() {
+
+                    if(type == "out") {select(field+'-field-'+(index+1)).value = 0}
+                });
+            })(i);
+        }
+
+        //toggle background color of the first container in the class to provide a visual cue that the remaining container values are locked to the first
+        select(container+'-1').style.backgroundColor = color;
+    }
+})
 
 
-  //Create a class of forms for text-number fields
-    textNumFields = function(string, content, attr, appendIdentifier) {
+//Create a class of forms for text-number fields
+textNumFields = function(idString, content, attr, appendId) {
 
-      for(var i=0; i<globalParams.tradeLegs; i++) {
-            
-        __element({tag: "form", content: content, attributes: {id: string+"-form-"+(i+1), class: string+"-form"}}, appendIdentifier+(i+1));
+    for(var i=0; i<TRADE_LEGS; i++) {
 
-        __element({tag: "input", attributes: {
+        element({tag: "form", content: content, attributes: {id: idString+"-form-"+(i+1), class: idString+"-form"}}, appendId+(i+1));
+
+        element({tag: "input", attributes: {
                                    type:  "number",
-                                   id:    string+"-field-"+(i+1),
-                                   class: string+"-field",
+                                   id:    idString+"-field-"+(i+1),
+                                   class: idString+"-field",
                                    min:   attr.min,
                                    step:  attr.step,
-                                   value: attr.value,
-                                 }},
-                                 string+"-form-"+(i+1));
-      };
-    };
+                                   value: attr.value
+                               }},
+                               idString+"-form-"+(i+1));
+    }
+}
 
 
-  //Create a class of forms for radios with two buttons; the default button may be selected based on a boolean condition string
-    twoWayRadios = function(buttonArray, defSetCondition, appendIdentifier) {
-      
-      for(var i=0; i<globalParams.tradeLegs; i++) {
+//Create a class of forms for radios with two buttons; the default button may be selected based on a string condition
+twoWayRadios = function(buttonArray, conditionString, appendId) {
 
-        __element({tag: "form", attributes: {
+    for(var i=0; i<TRADE_LEGS; i++) {
+
+        element({tag: "form", attributes: {
                                   id:    buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(i+1),
-                                  class: buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form",
-                                }},
-                                appendIdentifier+(i+1));
+                                  class: buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form"
+                              }},
+                              appendId+(i+1));
 
-        //BUTTONS
-          for(var j=0; j<2; j++) {
+        //radio buttons
+        for(var j=0; j<2; j++) {
 
-              __element({tag: "input", attributes: {
-                                         type:  "radio",
-                                         id:    buttonArray[j][0]+"-"+"radio-"+(i+1),
-                                         name:  buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"radio-"+(i+1),
-                                         value: buttonArray[j][1],
-                                       }},
-                                       buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(i+1));
+            element({tag: "input", attributes: {
+                                       type:  "radio",
+                                       id:    buttonArray[j][0]+"-"+"radio-"+(i+1),
+                                       name:  buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"radio-"+(i+1),
+                                       value: buttonArray[j][1]
+                                   }},
+                                   buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(i+1));
 
-              __element({tag: "label", content: buttonArray[j][0].charAt(0).toUpperCase()+buttonArray[j][0].slice(1), 
+            element({tag: "label", content: buttonArray[j][0].charAt(0).toUpperCase()+buttonArray[j][0].slice(1), 
 
-                                       attributes: {
-                                         "for": buttonArray[j][0]+"-"+"radio-"+(i+1), 
-                                         class: "radio "+buttonArray[0][0]+"-"+buttonArray[1][0],
-                                       }},
-                                       buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(i+1));
-          };
+                                   attributes: {
+                                       "for": buttonArray[j][0]+"-"+"radio-"+(i+1), 
+                                       class: "radio "+buttonArray[0][0]+"-"+buttonArray[1][0]
+                                   }},
+                                   buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(i+1));
+        }
 
-        //SOME DEFAULT SETTINGS TO SAVE TIME DURING COMMON TRADE SET-UPS
-          var condIndex = eval(defSetCondition) ? 0 : 1;
+        //some default settings to save time during common trade setups
+        var index = eval(conditionString) ? 0 : 1;
 
-          __select(buttonArray[condIndex][0]+"-"+"radio-"+(i+1)).setAttribute("checked", "");
-      };
-    };
-
-
-  //Object size - thanks to James Coglan on stackoverflow.com for this
-    Object.size = function(obj) {
-
-      var size = 0, key;
-      for (key in obj) { if(obj.hasOwnProperty(key)) {size++} };
-      return size;
-    };
+        select(buttonArray[index][0]+"-"+"radio-"+(i+1)).setAttribute("checked", "");
+    }
+}
 
 
-  //Populate and return an Object with numbered strings; current support for arrays with up to 2 string types
-    stringPopulate = function(indexMax, stringArray) {
+//Object size - thanks to James Coglan on stackoverflow.com for this
+Object.size = function(obj) {
 
-      var obj = {};
+    var size = 0, key;
+    for (key in obj) { if(obj.hasOwnProperty(key)) {size++} }
+    return size;
+}
 
-      switch(stringArray.length) {
+
+//Return an object with with numbered id strings; current support for arrays with up to 2 id string types
+idStringsObject = function(stringArray, indexMax) {
+
+    var obj = {};
+
+    switch(stringArray.length) {
 
         case 1:
-          for(var i=0; i<indexMax; i++) { obj[(i+1)] = stringArray[0]+"-"+(i+1) };
-          break;
+            for(var i=0; i<indexMax; i++) { obj[(i+1)] = stringArray[0]+"-"+(i+1) }
+            break;
 
         case 2:
-          for(var i=0; i<indexMax; i++) {
+            for(var i=0; i<indexMax; i++) {
 
-            obj[(2*i)+1] = stringArray[0]+"-"+(i+1);
-            obj[2*(i+1)] = stringArray[1]+"-"+(i+1);
-          };
-          break;
-      };
+                obj[(2*i)+1] = stringArray[0]+"-"+(i+1);
+                obj[2*(i+1)] = stringArray[1]+"-"+(i+1);
+            }
+            break;
+    }
 
-      return obj;
-    };
+    return obj;
+}
 
 
-  //Determine whether text input form conditions are met for a class of elements; return an Object with boolean values
-    classInputCheck = function(indexMax, elem, condArray) {
+//Determine whether text input form conditions are met for a class of elements; return an object with boolean values
+classInputCheck = function(elem, indexMax, condArray) {
 
-      condArray.push('!= ""');
+    condArray.push('!= ""');
 
-      var obj = {};
+    var obj = {};
 
-      for(var i=0; i<indexMax; i++) {
+    for(var i=0; i<indexMax; i++) {
 
         for(var j=0; j<condArray.length; j++) {
 
-          obj[(i+1)] = eval('__select(elem+"-"+(i+1)).value'+condArray[j]) ? true : false;
+            obj[(i+1)] = eval('select(elem+"-"+(i+1)).value'+condArray[j]) ? true : false;
 
-          if(!obj[(i+1)]) { return obj };
-        };
-      };
+            if(!obj[(i+1)]) { return obj }
+        }
+    }
 
-      return obj;
-    };
+    return obj;
+}
 
 
-  //Some basic error message handling for text form input
-    inputErrorMsg = function(elem, msg) {
+//Some basic error message handling for text form input
+inputErrorMsg = function(elem, msg) {
 
-      __select(elem).style.borderColor = '#ff0000';
-        alert(msg);
-      __select(elem).style.borderColor = '#d8d8d8';
+    select(elem).style.borderColor = '#ff0000';
+    alert(msg);
+    select(elem).style.borderColor = '#d8d8d8';
       
-      return;
-    };
+    return;
+}
 
 //END HELPERS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -240,99 +271,113 @@
 
 //HEADER/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  createHeader = function(content) {
+createHeader = function(content) {
 
-    //CONTAINER
-      __element({tag: "div", attributes: {id: "header-main"}}, ".body");
+    //main header container
+    element({tag: "div", attributes: {id: "header-main"}}, ".body");
 
-    //ICON
-      __element({tag: "a", attributes: {id: "icon-link", href: "../html/home.htm"}}, "header-main");
-        
-        __element({tag: "img", attributes: {id: "icon", alt: "Risk Cloud", src: "../images/icon.png"}}, "icon-link");
+    //icon
+    element({tag: "a", attributes: {id: "icon-link", href: "../html/home.htm"}}, "header-main");
 
-    //NAVIGATION
-      //MAIN MENU
-        (mainMenu = function() {
+    element({tag: "img", attributes: {id: "icon", alt: "Risk Cloud", src: "../images/icon.png"}}, "icon-link");
 
-          var headings = { 1: "models", 2: "info" };
+    //navigation menu
+    //main
+    (mainMenu = function() {
 
-          __element({tag: "ul", attributes: {id: "nav-menu"}}, "header-main");
+        var headings = { 1: "models", 2: "info" };
 
-          for(num in headings) {
+        element({tag: "ul", attributes: {id: "nav-menu"}}, "header-main");
 
-            __element({tag: "li", attributes: {id: "nav-list-item-"+num, class: "nav-list-item"}}, "nav-menu");
+        for(num in headings) {
 
-              __element({tag: "a", content: headings[num], attributes: {href: "#", class: "nav-list-item-link", onclick: "navDropDown.anim("+num+")"}}, "nav-list-item-"+num);
-          };
-        })();
+            element({tag: "li", attributes: {id: "nav-list-item-"+num, class: "nav-list-item"}}, "nav-menu");
 
-      //SUB-MENUS
-        (subMenus = function() {
+            element({tag: "a", content: headings[num], attributes: {
+                                                           href: "#",
+                                                           class: "nav-list-item-link",
+                                                           onclick: "navDropDown.anim("+num+")"
+                                                       }},
+                                                       "nav-list-item-"+num);
+        }
+    })();
 
-          var subHeadings = {  1: { a: {heading: "Black-Scholes-Merton", link: "../html/blackscholesmerton.htm"}, /* b: {heading: "Variance-Gamma",   link: "#"} */ },
+    //sub-menus
+    (subMenus = function() {
 
-                               2: { a: {heading: "about",                link: "#"                             }, b: {heading: "more", link: "#"} }  };
+        var subHeadings = {   
 
-          for(num in subHeadings) {
+            1: { a: {heading: "Black-Scholes-Merton", link: "../html/blackscholesmerton.htm"}, 
+               /*b: {heading: "Variance-Gamma",   link: "#"}*/ },
 
-            __element({tag: "div", attributes: {id: "nav-sub-container-"+num, class: "nav-sub-container", "data-open": "false"}}, ".body");
+            2: { a: {heading: "about", link: "#"},
+                 b: {heading: "more", link: "#"} }
+        };
 
-              __element({tag: "ul", attributes: {id: "nav-sub-menu-"+num, class: "nav-sub-menu"}}, "nav-sub-container-"+num);
+        for(num in subHeadings) {
 
-              for(letter in subHeadings[num]) {
+            element({tag: "div", attributes: {id: "nav-sub-container-"+num, class: "nav-sub-container", "data-open": "false"}}, ".body");
 
-                __element({tag: "li", attributes: {id: "nav-sub-list-item-"+num+letter, class: "nav-sub-list-item"}}, "nav-sub-menu-"+num);
+            element({tag: "ul", attributes: {id: "nav-sub-menu-"+num, class: "nav-sub-menu"}}, "nav-sub-container-"+num);
 
-                  __element({tag: "a", content: subHeadings[num][letter].heading, attributes: {href: subHeadings[num][letter].link, class: "nav-sub-list-item-link"}}, "nav-sub-list-item-"+num+letter);
-              };
-          };
-        })();
+            for(letter in subHeadings[num]) {
+
+                element({tag: "li", attributes: {id: "nav-sub-list-item-"+num+letter, class: "nav-sub-list-item"}}, "nav-sub-menu-"+num);
+
+                element({tag: "a", content: subHeadings[num][letter].heading, attributes: {
+                                                                                  href: subHeadings[num][letter].link, 
+                                                                                  class: "nav-sub-list-item-link"
+                                                                              }},
+                                                                              "nav-sub-list-item-"+num+letter);
+            }
+        }
+    })();
     
-    //ADD ANY PAGE-SPECIFIC CONTENT
-      if(typeof content === 'function') { content() };
-  };
+    //add page-specific content
+    if(typeof content === 'function') { content() }
+  }
 
 
-  //nav menu dropdown animation logic
-    navDropDown = function(properties) {
+//nav menu dropdown animation logic
+navDropDown = function(properties) {
 
-      var self = function() { return };
+    var self = function() { return };
       
-      for(property in properties) { self[property] = properties[property] };
+    for(prop in properties) { self[prop] = properties[prop] }
 
-      return self;   
-    }({
+    return self;   
+}({
 
-      anim: function(index) {
+    anim: function(index) {
 
-        //LOCAL PARAMETERS
-          var otherIndex = (index == "1") ? "2" : "1",
-              execSpeed  = 10,
-              increment  = 0.25,
-              maxHeight  = 4.25;
+        //local parameters
+        var otherIndex = (index == "1") ? "2" : "1",
+            execSpeed  = 10,
+            increment  = 0.25,
+            maxHeight  = 4.25;
 
-        //CLOSE OTHER SUB-MENU IF IT'S OPEN
-          if(__select("nav-sub-container-"+otherIndex).getAttribute("data-open") == "true") {
+        //close the other sub-menu if it's open
+        if(select("nav-sub-container-"+otherIndex).getAttribute("data-open") == "true") {
 
             elementAnim.ease("out", "nav-sub-container-"+otherIndex, execSpeed, increment, maxHeight);
-            __select("nav-sub-container-"+otherIndex).setAttribute("data-open", "false");
-          };
+            select("nav-sub-container-"+otherIndex).setAttribute("data-open", "false");
+        }
 
-        //OPEN OR CLOSE RELEVANT SUB-MENU
-          switch(__select("nav-sub-container-"+index).getAttribute("data-open")) {
+        //open or close the relevant sub-menu
+        switch(select("nav-sub-container-"+index).getAttribute("data-open")) {
 
             case "false":
-              elementAnim.ease("in", "nav-sub-container-"+index, execSpeed, increment, maxHeight);
-              __select("nav-sub-container-"+index).setAttribute("data-open", "true");
-              break;
+                elementAnim.ease("in", "nav-sub-container-"+index, execSpeed, increment, maxHeight);
+                select("nav-sub-container-"+index).setAttribute("data-open", "true");
+                break;
 
             case "true":
-              elementAnim.ease("out", "nav-sub-container-"+index, execSpeed, increment, maxHeight);
-              __select("nav-sub-container-"+index).setAttribute("data-open", "false");
-              break;
-          };
-      },
-    });
+                elementAnim.ease("out", "nav-sub-container-"+index, execSpeed, increment, maxHeight);
+                select("nav-sub-container-"+index).setAttribute("data-open", "false");
+                break;
+        }
+    }
+})
 
 //END HEADER/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

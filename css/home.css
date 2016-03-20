@@ -1,7 +1,7 @@
 ﻿#welcome {
   margin: 0;
-  padding-top: 3vw;
-  padding-bottom: 3vw;
+  padding-top: 6vw;
+  padding-bottom: 5vw;
 }
 
 #welcome > pre, #more {
@@ -13,7 +13,7 @@
 }
 
 #welcome > pre {
-  font-size: 2.5vw;
+  font-size: 2vw;
 }
 
 #risk {
@@ -29,12 +29,12 @@
 }
 
 #icon2 {
-  width: 25vw;
+  width: 20vw;
 }
 
 #more {
-  padding-top: 12vw;
-  font-size: 1.5vw;
+  padding-top: 10vw;
+  font-size: 1.125vw;
 }
 
 #more-link {
