@@ -43,7 +43,7 @@
                         <input type="radio" id="num-legs-radio-4" name="num-legs-radio" value="4" checked />
                         <label class="radio" for="num-legs-radio-4">4</label>
 
-                        <button id="continue-button-1" type="button" onclick="validateInitialParams()">Continue</button>
+                        <button id="continue-button-1" type="button" onclick="initialParams.validate()">Continue</button>
                     </form>
                 </div>
 
@@ -63,7 +63,7 @@
                                onclick="elementAnim.visible('leg-sub-container-4', 2.625, 'risk-free-rate', 'risk-free-rate')" checked/>
                         <label class="checkbox" for="risk-free-rate-checkbox">risk-free rate</label>
 
-                        <button id="return-button-1" type="button" onclick="  ">Return</button>
+                        <button id="return-button-1" type="button" onclick="finalParams.destroy()">Return</button>
                     </form>
 
                     <div id="trade-legs-params-container"></div>
@@ -74,7 +74,7 @@
                         <input type="number" id="current-price-field" min=".01" step=".01" value="100" placeholder="Ex:  432.10"
                                onblur="this.placeholder='Ex:  432.10'" onfocus="this.placeholder=''" />
 
-                        <button id="calculate-button-1" type="button" onclick="validateFinalParams()">Calculate</button>
+                        <button id="calculate-button-1" type="button" onclick="finalParams.validate()">Calculate</button>
                     </form>
                 </div>
             </div>
