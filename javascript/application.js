@@ -1,15 +1,22 @@
 ﻿//GLOBAL PARAMETERS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+var g = {
 
-var FEES = null,
-    NUM_LEGS = null,
-    LEG_SIGN = {},
-    CONTRACT_TYPE = {},
-    NUM_CONTRACTS = {},
-    STRIKE_PRICE = {},
-    EXPIRY = {},
-    DIV_YIELD = {},
-    RISK_FREE = {},
-    STOCK_PRICE = null;
+    CONTRACT_FEES : null,
+    TRADE_LEGS : null,
+    LEG_SIGN : {},
+    CONTRACT_TYPE : {},
+    NUM_CONTRACTS : {},
+    STRIKE_PRICE : {},
+    EXPIRY : {},
+    DIV_YIELD : {},
+    RISK_FREE : {},
+    STOCK_PRICE : null
+};
+
+g.purge = function() {
+
+      
+}
 
 //END GLOBAL PARAMETERS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -74,11 +81,11 @@ elementAnim = function(properties) {
     return self; 
 }({
 
-    ease: function(type, idString, execSpeed, increment, maxHeight, callback) {
+    ease: function(type, idString, increment, maxHeight, callback) {
 
         var elem = select(idString),
             height = 0,
-            animate = setInterval(frame, execSpeed);
+            animate = setInterval(frame, (1000/60));
 
         function frame() {
 
@@ -86,7 +93,7 @@ elementAnim = function(properties) {
 
                 clearInterval(animate);
 
-                //callback to make compound element animations, etc. possible
+                //callback for compound element animations, etc.
                 if(typeof callback === 'function') { callback() }
 
             } else {
@@ -99,21 +106,21 @@ elementAnim = function(properties) {
     },
 
     //transition between two element containers
-    transition: function(paramsObject1, paramsObject2) {
+    transition: function(Object1, Object2) {
 
-        this.ease("out", paramsObject1.idString, 1, paramsObject1.increment, paramsObject1.height, function() {
+        this.ease("out", Object1.idString, Object1.increment, Object1.height, function() {
 
-             elementAnim.ease("in", paramsObject2.idString, 1,  paramsObject2.increment,  paramsObject2.height) }
+             elementAnim.ease("in", Object2.idString, Object2.increment, Object2.height) }
         );
     },
 
-    //on checkbox button click, toggle visibility of a class of containers, skipping the first;
+    //on checkbox element button click, toggle visibility of a class of containers, skipping the first;
     //for input validation purposes, also set values of the containers' fields after the containers have been closed
-    visible: function(container, maxHeight, checkBox, field) {
+    visible: function(container, maxHeight, elem, field) {
 
         var type, color;
 
-        switch(select(checkBox).checked) {
+        switch(select(elem+'-checkbox').checked) {
 
             case true:
                 type = "out";
@@ -126,10 +133,10 @@ elementAnim = function(properties) {
                 break;
         }
 
-        for (var i=1; i<TRADE_LEGS; i++) {
+        for (var i=1; i<g.TRADE_LEGS; i++) {
 
             (function(index) {
-                elementAnim.ease(type, container+'-'+(index+1), 2, .125, maxHeight, function() {
+                elementAnim.ease(type, container+'-'+(index+1), .375, maxHeight, function() {
 
                     if(type == "out") {select(field+'-field-'+(index+1)).value = 0}
                 });
@@ -145,7 +152,7 @@ elementAnim = function(properties) {
 //Create a class of forms for text-number fields
 textNumFields = function(idString, content, attr, appendId) {
 
-    for(var i=0; i<TRADE_LEGS; i++) {
+    for(var i=0; i<g.TRADE_LEGS; i++) {
 
         element({tag: "form", content: content, attributes: {id: idString+"-form-"+(i+1), class: idString+"-form"}}, appendId+(i+1));
 
@@ -165,7 +172,7 @@ textNumFields = function(idString, content, attr, appendId) {
 //Create a class of forms for radios with two buttons; the default button may be selected based on a string condition
 twoWayRadios = function(buttonArray, conditionString, appendId) {
 
-    for(var i=0; i<TRADE_LEGS; i++) {
+    for(var i=0; i<g.TRADE_LEGS; i++) {
 
         element({tag: "form", attributes: {
                                   id:    buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(i+1),
@@ -202,10 +209,12 @@ twoWayRadios = function(buttonArray, conditionString, appendId) {
 
 
 //Object size - thanks to James Coglan on stackoverflow.com for this
-Object.size = function(obj) {
+lastKey = function(obj) {
 
-    var size = 0, key;
+    var size = 0;
+
     for (key in obj) { if(obj.hasOwnProperty(key)) {size++} }
+
     return size;
 }
 
@@ -271,7 +280,7 @@ inputErrorMsg = function(elem, msg) {
 
 //HEADER/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-createHeader = function(content) {
+createHeader = function() {
 
     //main header container
     element({tag: "div", attributes: {id: "header-main"}}, ".body");
@@ -332,10 +341,7 @@ createHeader = function(content) {
             }
         }
     })();
-    
-    //add page-specific content
-    if(typeof content === 'function') { content() }
-  }
+}
 
 
 //nav menu dropdown animation logic
@@ -352,14 +358,13 @@ navDropDown = function(properties) {
 
         //local parameters
         var otherIndex = (index == "1") ? "2" : "1",
-            execSpeed  = 10,
             increment  = 0.25,
             maxHeight  = 4.25;
 
         //close the other sub-menu if it's open
         if(select("nav-sub-container-"+otherIndex).getAttribute("data-open") == "true") {
 
-            elementAnim.ease("out", "nav-sub-container-"+otherIndex, execSpeed, increment, maxHeight);
+            elementAnim.ease("out", "nav-sub-container-"+otherIndex, increment, maxHeight);
             select("nav-sub-container-"+otherIndex).setAttribute("data-open", "false");
         }
 
@@ -367,12 +372,12 @@ navDropDown = function(properties) {
         switch(select("nav-sub-container-"+index).getAttribute("data-open")) {
 
             case "false":
-                elementAnim.ease("in", "nav-sub-container-"+index, execSpeed, increment, maxHeight);
+                elementAnim.ease("in", "nav-sub-container-"+index, increment, maxHeight);
                 select("nav-sub-container-"+index).setAttribute("data-open", "true");
                 break;
 
             case "true":
-                elementAnim.ease("out", "nav-sub-container-"+index, execSpeed, increment, maxHeight);
+                elementAnim.ease("out", "nav-sub-container-"+index, increment, maxHeight);
                 select("nav-sub-container-"+index).setAttribute("data-open", "false");
                 break;
         }

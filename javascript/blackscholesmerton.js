@@ -13,8 +13,8 @@ validateInitialParams = function() {
     if(feesFieldCond) {
 
         //capture initial user-defined parameters
-        CONTRACT_FEES = Math.round(select("fees-field").value*100)/100;
-        TRADE_LEGS = Math.round(select("input[name=num-legs-radio]:checked").value);
+        g.CONTRACT_FEES = (select("fees-field").value/1).toFixed(2)/1;
+        g.TRADE_LEGS = select("input[name=num-legs-radio]:checked").value/1;
 
         //disable initial input elements
         elementAvail({feesField, numLegsRadios, continueButton1}, false);
@@ -22,8 +22,8 @@ validateInitialParams = function() {
         //create elements needed to specify final parameters
         createFinalParams(
             elementAnim.transition(
-                        {idString: "initial-params-container", increment: 0.125, height: 6.125},
-                        {idString: "final-params-container", increment: 0.2, height: 33}
+                        {idString: "initial-params-container", increment: 0.25, height: 6},
+                        {idString: "final-params-container", increment: 0.5, height: 35}
         ));
     } else {
 
@@ -36,7 +36,7 @@ validateInitialParams = function() {
 createFinalParams = function(callback) {
 
     //create trade leg containers
-    for(var i=0; i<TRADE_LEGS; i++) {
+    for(var i=0; i<g.TRADE_LEGS; i++) {
 
         element({tag: "div", attributes: {id: "leg-"+(i+1), class: "trade-leg"}}, "trade-legs-params-container");
 
@@ -84,81 +84,102 @@ validateFinalParams = function() {
     var expiryBox = "time-to-expiry-checkbox",
         divYieldBox = "dividend-yield-checkbox",
         riskFreeBox = "risk-free-rate-checkbox",
-        buySellRadios = idStringsObject(["buy-radio", "sell-radio"], TRADE_LEGS),
-        callPutRadios = idStringsObject(["call-radio", "put-radio"], TRADE_LEGS),
-        numContractsFields = idStringsObject(["num-contracts-field"], TRADE_LEGS),
-        strikePriceFields = idStringsObject(["strike-price-field"], TRADE_LEGS),
-        expiryFields = idStringsObject(["expiry-field"], TRADE_LEGS),
-        divYieldFields = idStringsObject(["div-yield-field"], TRADE_LEGS),
-        riskFreeFields = idStringsObject(["risk-free-rate-field"], TRADE_LEGS),
+        returnButton1 = "return-button-1",
+        buySellRadios = idStringsObject(["buy-radio", "sell-radio"], g.TRADE_LEGS),
+        callPutRadios = idStringsObject(["call-radio", "put-radio"], g.TRADE_LEGS),
+        numContractsFields = idStringsObject(["num-contracts-field"], g.TRADE_LEGS),
+        strikePriceFields = idStringsObject(["strike-price-field"], g.TRADE_LEGS),
+        expiryFields = idStringsObject(["expiry-field"], g.TRADE_LEGS),
+        divYieldFields = idStringsObject(["div-yield-field"], g.TRADE_LEGS),
+        riskFreeFields = idStringsObject(["risk-free-rate-field"], g.TRADE_LEGS),
         stockPriceField = "current-price-field";
 
     //evaluate text form input conditions
-    var numContractsFieldsCond = classInputCheck("num-contracts-field", TRADE_LEGS, ['>= 1', '== Math.floor(select(elem+"-"+(i+1)).value)']),
-        strikePriceFieldsCond = classInputCheck("strike-price-field", TRADE_LEGS, ['> 0']),
-        expiryFieldsCond = classInputCheck("expiry-field", TRADE_LEGS, ['>= 0', '<= 1000', '== Math.floor(select(elem+"-"+(i+1)).value)']),
-        divYieldFieldsCond = classInputCheck("div-yield-field", TRADE_LEGS, ['>= 0', '<= 100']),
-        riskFreeFieldsCond = classInputCheck("risk-free-rate-field", TRADE_LEGS, ['>= 0', '<= 25']),
+    var numContractsFieldsCond = classInputCheck("num-contracts-field", g.TRADE_LEGS, ['>= 1', '== Math.floor(select(elem+"-"+(i+1)).value)']),
+        strikePriceFieldsCond = classInputCheck("strike-price-field", g.TRADE_LEGS, ['> 0']),
+        expiryFieldsCond = classInputCheck("expiry-field", g.TRADE_LEGS, ['>= 0', '<= 1000', '== Math.floor(select(elem+"-"+(i+1)).value)']),
+        divYieldFieldsCond = classInputCheck("div-yield-field", g.TRADE_LEGS, ['>= 0', '<= 100']),
+        riskFreeFieldsCond = classInputCheck("risk-free-rate-field", g.TRADE_LEGS, ['>= 0', '<= 25']),
         stockPriceFieldCond = (select(stockPriceField).value != "" && select(stockPriceField).value > 0);
 
     //input validation
-    if(numContractsFieldsCond[Object.size(numContractsFieldsCond)] &&
-       strikePriceFields[Object.size(strikePriceFieldsCond)] &&
-       expiryFieldsCond[Object.size(expiryFieldsCond)] &&
-       divYieldFieldsCond[Object.size(divYieldFieldsCond)] &&
-       riskFreeFieldsCond[Object.size(riskFreeFieldsCond)] &&
+    if(numContractsFieldsCond[lastKey(numContractsFieldsCond)] &&
+       strikePriceFields[lastKey(strikePriceFieldsCond)] &&
+       expiryFieldsCond[lastKey(expiryFieldsCond)] &&
+       divYieldFieldsCond[lastKey(divYieldFieldsCond)] &&
+       riskFreeFieldsCond[lastKey(riskFreeFieldsCond)] &&
        stockPriceFieldCond) {
 
         //capture user-defined final parameters
-        for(var i=0; i<TRADE_LEGS; i++) {
+        for(var i=0; i<g.TRADE_LEGS; i++) {
 
-            LEG_SIGN[(i+1)] = Math.round(select("input[name=buy-sell-radio-"+(i+1)+"]:checked").value);
-            CONTRACT_TYPE[(i+1)] = Math.round(select("input[name=call-put-radio-"+(i+1)+"]:checked").value);
-            NUM_CONTRACTS[(i+1)] = Math.round(select("num-contracts-field-"+(i+1)).value);
-            STRIKE_PRICE[(i+1)] = Math.round(select("strike-price-field-"+(i+1)).value*100)/100;
-            EXPIRY[(i+1)] = Math.round(select("expiry-field-"+(i+1)).value)/365;
-            DIV_YIELD[(i+1)] = Math.round(select("div-yield-field-"+(i+1)).value*100)/10000;
-            RISK_FREE[(i+1)] = Math.round(select("risk-free-rate-field-"+(i+1)).value*100)/10000;
+            g.LEG_SIGN[(i+1)] = select("input[name=buy-sell-radio-"+(i+1)+"]:checked").value/1;
+            g.CONTRACT_TYPE[(i+1)] = select("input[name=call-put-radio-"+(i+1)+"]:checked").value/1;
+            g.NUM_CONTRACTS[(i+1)] = select("num-contracts-field-"+(i+1)).value/1;
+            g.STRIKE_PRICE[(i+1)] = (select("strike-price-field-"+(i+1)).value/1).toFixed(2)/1;
+
+            if(select("time-to-expiry-checkbox").checked) {
+
+                g.EXPIRY[(i+1)] = (i == 0) ? (select("expiry-field-"+(i+1)).value/365).toFixed(6)/1 : g.EXPIRY[1];
+            } else {
+                g.EXPIRY[(i+1)] = (select("expiry-field-"+(i+1)).value/365).toFixed(6)/1;
+            }
+
+
+            if(select("dividend-yield-checkbox").checked) {
+
+                g.DIV_YIELD[(i+1)] = (i == 0) ? (select("div-yield-field-"+(i+1)).value/100).toFixed(4)/1 : g.DIV_YIELD[1];
+            } else {
+                g.DIV_YIELD[(i+1)] = (select("div-yield-field-"+(i+1)).value/100).toFixed(4)/1;
+            }
+
+
+            if(select("risk-free-rate-checkbox").checked) {
+
+                g.RISK_FREE[(i+1)] = (i == 0) ? (select("risk-free-rate-field-"+(i+1)).value/100).toFixed(4)/1 : g.RISK_FREE[1];
+            } else {
+                g.RISK_FREE[(i+1)] = (select("risk-free-rate-field-"+(i+1)).value/100).toFixed(4)/1;
+            }
         }
 
-        STOCK_PRICE = Math.round(select("current-price-field").value*100)/100;
+        g.STOCK_PRICE = (select("current-price-field").value/1).toFixed(2)/1;
 
         //disable final input elements
-        elementAvail({expiryBox, divYieldBox, riskFreeBox, buySellRadios, callPutRadios, numContractsFields, strikePriceFields,
-                      expiryFields, divYieldFields, riskFreeFields, stockPriceField}, false);
+        elementAvail({expiryBox, divYieldBox, riskFreeBox, returnButton1, buySellRadios, callPutRadios,
+                      numContractsFields, strikePriceFields, expiryFields, divYieldFields, riskFreeFields, stockPriceField},
+                      false);
 
         //calculate and display output
-        //some function here...
-        //console.log();
+            //some function here...
     } else {
 
         //some input error message handling
         switch(false) {
 
-            case numContractsFieldsCond[Object.size(numContractsFieldsCond)]:
-                inputErrorMsg("num-contracts-field-"+Object.size(numContractsFieldsCond),
+            case numContractsFieldsCond[lastKey(numContractsFieldsCond)]:
+                inputErrorMsg("num-contracts-field-"+lastKey(numContractsFieldsCond),
                               "Please enter a whole number greater than or equal to 1 for the number of contracts in this trade leg.");
                 break;
 
-            case strikePriceFieldsCond[Object.size(strikePriceFieldsCond)]:
-                inputErrorMsg("strike-price-field-"+Object.size(strikePriceFieldsCond),
+            case strikePriceFieldsCond[lastKey(strikePriceFieldsCond)]:
+                inputErrorMsg("strike-price-field-"+lastKey(strikePriceFieldsCond),
                               "Please enter a number greater than 0 for the strike price in this trade leg.");
                 break;
 
-            case expiryFieldsCond[Object.size(expiryFieldsCond)]:
-                inputErrorMsg("expiry-field-"+Object.size(expiryFieldsCond),
+            case expiryFieldsCond[lastKey(expiryFieldsCond)]:
+                inputErrorMsg("expiry-field-"+lastKey(expiryFieldsCond),
                               "Please enter a whole number greater than or equal to 0, and less than or equal to 1000, for the number "+
                               "of calendar days to expiry in this trade leg.");
                 break;
 
-            case divYieldFieldsCond[Object.size(divYieldFieldsCond)]:
-                inputErrorMsg("div-yield-field-"+Object.size(divYieldFieldsCond),
+            case divYieldFieldsCond[lastKey(divYieldFieldsCond)]:
+                inputErrorMsg("div-yield-field-"+lastKey(divYieldFieldsCond),
                               "Please enter a number greater than or equal to 0, and less than or equal to 100, for the dividend yield "+
                               "percentage in this trade leg.");
                 break;
 
-            case riskFreeFieldsCond[Object.size(riskFreeFieldsCond)]:
-                inputErrorMsg("risk-free-rate-field-"+Object.size(riskFreeFieldsCond),
+            case riskFreeFieldsCond[lastKey(riskFreeFieldsCond)]:
+                inputErrorMsg("risk-free-rate-field-"+lastKey(riskFreeFieldsCond),
                               "Please enter a number greater than or equal to 0, and less than or equal to 25, for the risk-free rate "+
                               "percentage in this trade leg.");
                 break;
@@ -168,4 +189,6 @@ validateFinalParams = function() {
                 break;
         }
     }
+
+    console.log(g);
 }
