@@ -28,7 +28,7 @@ initialParams = function(properties) {
             //disable initial input elements
             elementAvail({feesField, numLegsRadios, continueButton1}, false);
 
-            //create elements needed to specify final parameters - include animation callbacks
+            //create elements needed to specify final parameters
             elementAnim.slide("out", "initial-params-container", 0.05, 0.3, 6);
             finalParams.create(elementAnim.fade("in", "final-params-container", 0.05));
         } else {
@@ -80,22 +80,26 @@ finalParams = function(properties) {
                 //hide certain sub-containers
                     if(i>0 && j>0 && j<4) {select("leg-sub-container-"+(j+1)+"-"+(i+1)).style.height = 0}
             }
-        }
+            
+            (function(idx) {
 
-        //buy-sell radios
-            twoWayRadios.create([["buy","1"],["sell","-1"]], "(i % 2 == 0)", "leg-sub-container-1-");
-        //call-put radios
-            twoWayRadios.create([["call","1"],["put","-1"]], "(i < 2)", "leg-sub-container-1-");
-        //number of contracts fields
-            textNumFields.create("num-contracts", "no. of contracts :", {min:"1", step:"1", value:"1"}, "leg-sub-container-1-");
-        //strike prices
-            textNumFields.create("strike-price", "exercise price :", {min:".01", step:".01", value:"100"}, "leg-sub-container-1-");
-        //calendar times to expiry
-            textNumFields.create("expiry", "calendar days to expiry :", {min:"0", step:"1", value:"30"}, "leg-sub-container-2-");
-        //dividend % fields
-            textNumFields.create("div-yield", "dividend yield % :", {min:"0", step:".01", value:"0"}, "leg-sub-container-3-");
-        //risk-free rates
-            textNumFields.create("risk-free-rate", "risk-free rate % :", {min:"0", step:".01", value:"0.25"}, "leg-sub-container-4-");
+                //buy-sell radios
+                    twoWayRadios.create([["buy","1"],["sell","-1"]], "(idx % 2 == 0)", "leg-sub-container-1-", idx);
+                //call-put radios
+                    twoWayRadios.create([["call","1"],["put","-1"]], "(idx < 2)", "leg-sub-container-1-", idx);
+                //number of contracts fields
+                    textNumFields.create("num-contracts", "no. of contracts :", {min:"1", step:"1", value:"1"}, "leg-sub-container-1-", idx);
+                //strike prices
+                    textNumFields.create("strike-price", "exercise price :", {min:".01", step:".01", value:"100"}, "leg-sub-container-1-", idx);
+        
+                //calendar times to expiry
+                    textNumFields.create("expiry", "calendar days to expiry :", {min:"0", step:"1", value:"30"}, "leg-sub-container-2-", idx);
+                //dividend % fields
+                    textNumFields.create("div-yield", "dividend yield % :", {min:"0", step:".01", value:"0"}, "leg-sub-container-3-", idx);
+                //risk-free rates
+                    textNumFields.create("risk-free-rate", "risk-free rate % :", {min:"0", step:".01", value:"0.25"}, "leg-sub-container-4-", idx);
+            })(i);
+        }
 
         //transition animation callback
         if(typeof callback === 'function') { callback() }

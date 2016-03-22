@@ -200,22 +200,19 @@ textNumFields = function(properties) {
     return self;  
 }({
 
-    create: function(idString, content, attr, appendId) {
+    create: function(idString, content, attr, appendId, idx) {
     
-        for(var i=0; i<g.TRADE_LEGS; i++) {
+        element({tag: "form", content: content, attributes: {id: idString+"-form-"+(idx+1), class: idString+"-form"}}, appendId+(idx+1));
 
-            element({tag: "form", content: content, attributes: {id: idString+"-form-"+(i+1), class: idString+"-form"}}, appendId+(i+1));
-
-            element({tag: "input", attributes: {
-                                       type:  "number",
-                                       id:    idString+"-field-"+(i+1),
-                                       class: idString+"-field",
-                                       min:   attr.min,
-                                       step:  attr.step,
-                                       value: attr.value
-                                   }},
-                                   idString+"-form-"+(i+1));
-        }
+        element({tag: "input", attributes: {
+                                   type: "number",
+                                   id: idString+"-field-"+(idx+1),
+                                   class: idString+"-field",
+                                   min: attr.min,
+                                   step: attr.step,
+                                   value: attr.value
+                               }},
+                               idString+"-form-"+(idx+1));
     }
 })
 
@@ -230,41 +227,37 @@ twoWayRadios = function(properties) {
     return self;  
 }({
 
-    create: function(buttonArray, conditionString, appendId) {
+    create: function(buttonArray, conditionString, appendId, idx) {
 
-        for(var i=0; i<g.TRADE_LEGS; i++) {
+        element({tag: "form", attributes: {
+                                  id:    buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(idx+1),
+                                  class: buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form"
+                              }},
+                              appendId+(idx+1));
 
-            element({tag: "form", attributes: {
-                                      id:    buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(i+1),
-                                      class: buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form"
-                                  }},
-                                  appendId+(i+1));
+        //radio buttons
+        for(var j=0; j<2; j++) {
 
-            //radio buttons
-            for(var j=0; j<2; j++) {
+            element({tag: "input", attributes: {
+                                       type: "radio",
+                                       id: buttonArray[j][0]+"-"+"radio-"+(idx+1),
+                                       name: buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"radio-"+(idx+1),
+                                       value: buttonArray[j][1]
+                                   }},
+                                   buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(idx+1));
 
-                element({tag: "input", attributes: {
-                                           type:  "radio",
-                                           id:    buttonArray[j][0]+"-"+"radio-"+(i+1),
-                                           name:  buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"radio-"+(i+1),
-                                           value: buttonArray[j][1]
-                                       }},
-                                       buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(i+1));
+            element({tag: "label", content: buttonArray[j][0].charAt(0).toUpperCase()+buttonArray[j][0].slice(1), 
 
-                element({tag: "label", content: buttonArray[j][0].charAt(0).toUpperCase()+buttonArray[j][0].slice(1), 
-
-                                       attributes: {
-                                           "for": buttonArray[j][0]+"-"+"radio-"+(i+1), 
-                                           class: "radio "+buttonArray[0][0]+"-"+buttonArray[1][0]
-                                       }},
-                                       buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(i+1));
-            }
-
-            //some default settings to save time during common trade setups
-            var index = eval(conditionString) ? 0 : 1;
-
-            select(buttonArray[index][0]+"-"+"radio-"+(i+1)).setAttribute("checked", "");
+                                   attributes: {
+                                       "for": buttonArray[j][0]+"-"+"radio-"+(idx+1), 
+                                       class: "radio "+buttonArray[0][0]+"-"+buttonArray[1][0]
+                                   }},
+                                   buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(idx+1));
         }
+
+        //some default settings to save time during common trade setups
+        var index = eval(conditionString) ? 0 : 1;
+        select(buttonArray[index][0]+"-"+"radio-"+(idx+1)).setAttribute("checked", "");
     }
 })
 

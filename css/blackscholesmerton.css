@@ -19,7 +19,7 @@ form {
 .align-helper {
   display: inline-block;
   width: 21vw;
-  text-align: right;
+  text-align: left;
   font-weight: bold;
   color: #555555;
 }
@@ -49,16 +49,21 @@ form {
   font-size: 1vw;
 }
 
-#initial-params-container, #params-checkbox-form, #current-price-form {
-  margin-left: 1vw;
+#initial-params-container {
+  height: 6vw;
+  width: 55vw;
+  margin-left: 18.5vw;
   margin-right: 1vw;
+  margin-top: 2vw;
   background-color: #f0f0f0;
   border-radius: 0.3vw
 }
 
-#initial-params-container {
-  height: 6vw;
-  margin-top: 1vw;
+#params-checkbox-form, #current-price-form {
+  margin-left: 1vw;
+  margin-right: 1vw;
+  background-color: #f0f0f0;
+  border-radius: 0.3vw
 }
 
 #final-params-container {
