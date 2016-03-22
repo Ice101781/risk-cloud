@@ -77,41 +77,85 @@ elementAnim = function(properties) {
     return self; 
 }({
 
+    //element height animation
     ease: function(type, idString, increment, maxHeight, callback) {
 
-        var elem = select(idString),
+        var elem = select(idString).style,
             height = 0,
-            animate = setInterval(frame, (1000/60));
+            timer = setInterval(render, (1000/60));
 
-        function frame() {
+        function render() {
 
-            if(maxHeight-height < 0.1) {
+            if(maxHeight-height < 0.01) {
 
-                clearInterval(animate);
-
-                //callback for compound element animations, etc.
+                clearInterval(timer);
                 if(typeof callback === 'function') { callback() }
 
             } else {
 
                 height += increment;
-
-                if(type == "in") {elem.style.height = height + 'vw'} else if(type == "out") {elem.style.height = maxHeight - height + 'vw'}
+                if(type == "in") {elem.height = height + 'vw'} else if(type == "out") {elem.height = maxHeight - height + 'vw'}
             }
         }
     },
 
-    //transition between two element containers
-    transition: function(Object1, Object2) {
+    //opacity animation
+    fade: function(type, idString, inc, callback) {
 
-        this.ease("out", Object1.idString, Object1.inc, Object1.height, function() {
+        var elem = select(idString).style,
+            opacity = 0,
+            timer = setInterval(render, (1000/60));
 
-             elementAnim.ease("in", Object2.idString, Object2.inc, Object2.height) }
-        );
+        function render() {
+
+            if(1-opacity < 0.001) {
+
+                clearInterval(timer);
+                if(typeof callback === 'function') { callback() }
+
+            } else {
+
+                opacity += inc;
+                if(type == "in") {elem.opacity = opacity} else if(type == "out") {elem.opacity = 1 - opacity}
+            }
+        }
     },
 
-    //on checkbox button click, toggle visibility of a class of containers, skipping the first; for input
-    //validation purposes, also set values of the containers' fields after they've been closed
+    //combine ease and fade animations into one function
+    slide: function(type, idString, fadeInc, easeInc, maxHeight) {
+
+        var elem = select(idString).style,
+            opacity = 0,
+            height = 0,
+            timer = setInterval(render, (1000/60));
+
+        function render() {
+
+            opacity = (1-opacity > 0.001) ? opacity + fadeInc : 1;
+            height =  (maxHeight-height > 0.01) ? height + easeInc : maxHeight;
+
+            if (opacity == 1) {
+
+                clearInterval(timer);  
+            } else {
+
+                switch(type) {
+
+                    case "in":
+                        elem.opacity = opacity; 
+                        elem.height = height + 'vw';
+                        break;
+
+                    case "out":
+                        elem.opacity = 1 - opacity;
+                        elem.height = maxHeight - height + 'vw';
+                        break;
+                }
+            }
+        }
+    },
+
+    //on checkbox button click, toggle visibility of a class of containers, skipping the first;
     visible: function(container, maxHeight, elem, field) {
 
         var type, color;
@@ -125,21 +169,22 @@ elementAnim = function(properties) {
 
             case false:
                 type = "in";
-                color = "#fafafa";
+                color = "#f2f2f2";
                 break;
         }
 
+        //ease in or out, set field value to zero on ease out
         for (var i=1; i<g.TRADE_LEGS; i++) {
 
             (function(index) {
-                elementAnim.ease(type, container+'-'+(index+1), .175, maxHeight, function() {
+                elementAnim.ease(type, container+'-'+(index+1), 0.25, maxHeight, function() {
 
                     if(type == "out") {select(field+'-field-'+(index+1)).value = 0}
                 });
             })(i);
         }
 
-        //toggle background color of the first container in the class to provide a visual cue that the remaining container values are locked to the first
+        //toggle background color of the first container in the class
         select(container+'-1').style.backgroundColor = color;
     }
 })

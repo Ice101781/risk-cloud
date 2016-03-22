@@ -1,7 +1,7 @@
 ﻿.model-heading {
   margin: 0;
+  padding: 0;
   padding-top: 2vw;
-  padding-bottom: 1vw;
 }
 
 .model-heading > pre {
@@ -37,9 +37,8 @@ form {
 #user-params-container {
   width: 92vw;
   margin-left: 3.375vw;
-  padding-top: 0.5vw;
-  padding-bottom: 0;
-  background-color: #f2f2f2;
+  padding: 0;
+  background-color: transparent;
 }
 
 #user-params-container, #initial-params-container, #final-params-container, #trade-legs-params-container,
@@ -51,37 +50,42 @@ form {
 }
 
 #initial-params-container, #params-checkbox-form, #current-price-form {
-  margin-left: 1.25vw;
-  margin-right: 1.25vw;
-  background-color: #fafafa;
+  margin-left: 1vw;
+  margin-right: 1vw;
+  background-color: #f0f0f0;
+  border-radius: 0.3vw
 }
 
 #initial-params-container {
   height: 6vw;
+  margin-top: 1vw;
 }
 
 #final-params-container {
-  height: 0;
-  padding-top: 0.5vw;
+  height: 32.75vw;
+  padding-top: 1vw;
+  opacity: 0;
+  background-color: #fafafa;
+  border-radius: 0.3vw
 }
 
 #trade-legs-params-container {
-  margin-top: 1vw;
+  padding-top: 1vw;
   padding-left: 1vw;
 }
 
 .trade-leg {
   display: inline-block;
   width: 20vw;
-  height: 25vw;
+  height: 24vw;
   margin-left: 1.25vw;
   margin-right: 1.25vw;
 }
 
 .leg-sub-container {
-  background-color: #fafafa;
-  border-top: 0.4vw solid #f2f2f2;
-  border-bottom: 0.4vw solid #f2f2f2;
+  margin-bottom: 0.5vw;
+  background-color: #f0f0f0;
+  border-radius: 0.3vw;
 }
 
 input[type=checkbox], input[type=radio] {
@@ -92,9 +96,9 @@ input[type=checkbox] + .checkbox, input[type=radio] + .radio {
   display: inline-block;
   height: 1vw;
   margin: 0;
-  margin-left: 1.375vw;
-  padding-left: 0.625vw;
-  padding-right: 0.625vw;
+  margin-left: 1.625vw;
+  padding-left: 0.55vw;
+  padding-right: 0.55vw;
   padding-top: 0.25vw;
   padding-bottom: 0.5vw;
   text-align: center;
@@ -117,7 +121,7 @@ input[name=num-legs-radio] + .radio {
 .buy-sell-form, .call-put-form {
   margin: 0;
   padding: 0;
-  padding-left: 1.625vw;
+  padding-left: 1.5vw;
   padding-top: 0.75vw;
   padding-bottom: 0.25vw;
 }
@@ -128,8 +132,8 @@ input[name=num-legs-radio] + .radio {
   margin: 0;
   padding: 0;
   padding-left: 1.125vw;
-  padding-top: 0.5625vw;
-  padding-bottom: 0.5625vw;
+  padding-top: 0.5vw;
+  padding-bottom: 0.5vw;
 }
 
 .num-contracts-form, .strike-price-form {
@@ -137,7 +141,7 @@ input[name=num-legs-radio] + .radio {
 }
 
 #current-price-form {
-  margin-top: 3vw;
+  margin-top: 0.5vw;
 }
 
 #fees-field, #current-price-field, #continue-button-1, #return-button-1, #calculate-button-1 {
@@ -149,13 +153,16 @@ input[name=num-legs-radio] + .radio {
 }
 
 #fees-field, #current-price-field {
-  margin-left: 1.375vw;
   padding-left: 0.625vw;
 }
 
 #fees-field, .num-contracts-field, .strike-price-field, .expiry-field, .div-yield-field, .risk-free-rate-field, #current-price-field {
   background-color: #ddffdd;
   border: 0.1vw solid #d8d8d8;
+}
+
+#fees-field {
+  margin-left: 1.625vw;
 }
 
 .num-contracts-field, .strike-price-field, .expiry-field, .div-yield-field, .risk-free-rate-field {
@@ -185,5 +192,9 @@ input[name=num-legs-radio] + .radio {
 
 .risk-free-rate-field {
   margin-left: 5.25vw;
+}
+
+#current-price-field {
+  margin-left: 1.75vw;
 }
 

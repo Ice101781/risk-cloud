@@ -49,19 +49,19 @@
 
                 <div id="final-params-container">
                     <form id="params-checkbox-form">
-                        <div class="align-helper">Apply the same values to all trade legs :</div>
+                        <div id="params-checkbox-align-helper" class="align-helper">Apply the same values to all trade legs :</div>
 
                         <input type="checkbox" id="time-to-expiry-checkbox" value="true"
-                               onclick="elementAnim.visible('leg-sub-container-2', 2.625, 'time-to-expiry', 'expiry')" checked/>
-                        <label class="checkbox" for="time-to-expiry-checkbox">time to expiry</label>
+                               onclick="elementAnim.visible('leg-sub-container-2', 2.5, 'time-to-expiry', 'expiry')" checked/>
+                        <label id="expiry-checkbox-label" class="checkbox" for="time-to-expiry-checkbox">time to expiry</label>
 
                         <input type="checkbox" id="dividend-yield-checkbox" value="true"
-                               onclick="elementAnim.visible('leg-sub-container-3', 2.625, 'dividend-yield', 'div-yield')" checked/>
-                        <label class="checkbox" for="dividend-yield-checkbox">dividend yield</label>
+                               onclick="elementAnim.visible('leg-sub-container-3', 2.5, 'dividend-yield', 'div-yield')" checked/>
+                        <label id="dividend-checkbox-label" class="checkbox" for="dividend-yield-checkbox">dividend yield</label>
 
                         <input type="checkbox" id="risk-free-rate-checkbox" value="true"
-                               onclick="elementAnim.visible('leg-sub-container-4', 2.625, 'risk-free-rate', 'risk-free-rate')" checked/>
-                        <label class="checkbox" for="risk-free-rate-checkbox">risk-free rate</label>
+                               onclick="elementAnim.visible('leg-sub-container-4', 2.5, 'risk-free-rate', 'risk-free-rate')" checked/>
+                        <label id="risk-free-checkbox-label" class="checkbox" for="risk-free-rate-checkbox">risk-free rate</label>
 
                         <button id="return-button-1" type="button" onclick="finalParams.destroy()">Return</button>
                     </form>

@@ -28,10 +28,9 @@ initialParams = function(properties) {
             //disable initial input elements
             elementAvail({feesField, numLegsRadios, continueButton1}, false);
 
-            //create elements needed to specify final parameters - include transition animation callback
-            finalParams.create(
-                elementAnim.transition({idString: "initial-params-container", inc: 0.5, height: 6}, {idString: "final-params-container", inc: 0.5, height: 36})
-            );
+            //create elements needed to specify final parameters - include animation callbacks
+            elementAnim.slide("out", "initial-params-container", 0.05, 0.3, 6);
+            finalParams.create(elementAnim.fade("in", "final-params-container", 0.05));
         } else {
 
             inputErrorMsg(feesField, "Please enter 0 or a positive number for the total commissions and fees.");
@@ -52,23 +51,34 @@ finalParams = function(properties) {
 
     create: function(callback) {
 
-        if(g.TRADE_LEGS == 1) { elementAvail({1:"time-to-expiry-checkbox", 2:"dividend-yield-checkbox", 3:"risk-free-rate-checkbox"}, false) }
+        //disable params checkbox if only one leg in the trade
+        if(g.TRADE_LEGS == 1) {
+
+            (function() {
+                var checkBox = { ids: {1:"time-to-expiry-checkbox", 2:"dividend-yield-checkbox", 3:"risk-free-rate-checkbox"},
+                                 labels: {1:"expiry-checkbox-label", 2:"dividend-checkbox-label", 3:"risk-free-checkbox-label"} };
+
+                select('params-checkbox-align-helper').style.opacity = 0.65;
+                elementAvail(checkBox.ids, false);
+                for(lbl in checkBox.labels) {select(checkBox.labels[lbl]).style.opacity = 0.65}
+            })(); 
+        }
 
         //create trade leg containers
         for(var i=0; i<g.TRADE_LEGS; i++) {
 
             element({tag: "div", attributes: {id: "leg-"+(i+1), class: "trade-leg"}}, "trade-legs-params-container");
 
-            //sub-containers for animations
+            //sub-containers for ease animations
             for(var j=0; j<5; j++) {
 
                 element({tag: "div", attributes: {id: "leg-sub-container-"+(j+1)+"-"+(i+1), class: "leg-sub-container"}}, "leg-"+(i+1));
 
-                //hide certain sub-containers according to default params checkbox settings
-                if(i>0 && j>0 && j<4) { select("leg-sub-container-"+(j+1)+"-"+(i+1)).style.height = 0 }
-
-                //highlight backgrounds in the first trade leg for default params checkbox settings
-                if(i==1 && j>0) { select("leg-sub-container-"+(j+1)+"-1").style.backgroundColor = "#ffdddd" }
+                //settings related to params checkbox
+                //highlight sub-container backgrounds in the first trade leg on multi-leg trades
+                    if(g.TRADE_LEGS>1 && j>0) {select("leg-sub-container-"+(j+1)+"-1").style.backgroundColor = "#ffdddd"}
+                //hide certain sub-containers
+                    if(i>0 && j>0 && j<4) {select("leg-sub-container-"+(j+1)+"-"+(i+1)).style.height = 0}
             }
         }
 
@@ -80,16 +90,12 @@ finalParams = function(properties) {
             textNumFields.create("num-contracts", "no. of contracts :", {min:"1", step:"1", value:"1"}, "leg-sub-container-1-");
         //strike prices
             textNumFields.create("strike-price", "exercise price :", {min:".01", step:".01", value:"100"}, "leg-sub-container-1-");
-
         //calendar times to expiry
             textNumFields.create("expiry", "calendar days to expiry :", {min:"0", step:"1", value:"30"}, "leg-sub-container-2-");
-
         //dividend % fields
             textNumFields.create("div-yield", "dividend yield % :", {min:"0", step:".01", value:"0"}, "leg-sub-container-3-");
-
         //risk-free rates
             textNumFields.create("risk-free-rate", "risk-free rate % :", {min:"0", step:".01", value:"0.25"}, "leg-sub-container-4-");
-
 
         //transition animation callback
         if(typeof callback === 'function') { callback() }
@@ -97,20 +103,13 @@ finalParams = function(properties) {
 
     destroy: function() {
 
-        elementAnim.ease("out", "final-params-container", 0.5, 36, function() {
-
-            console.log("do work, son");
-
-            elementAnim.ease('in', 'initial-params-container', 0.5, 6);
-        });
+        console.log("do work, son");
     },
 
     validate: function() {
 
         //id strings
-        var expiryBox = "time-to-expiry-checkbox",
-            divYieldBox = "dividend-yield-checkbox",
-            riskFreeBox = "risk-free-rate-checkbox",
+        var checkBox = {1:"time-to-expiry-checkbox", 2:"dividend-yield-checkbox", 3:"risk-free-rate-checkbox"},
             returnButton1 = "return-button-1",
             buySellRadios = idStringsObject(["buy-radio", "sell-radio"], g.TRADE_LEGS),
             callPutRadios = idStringsObject(["call-radio", "put-radio"], g.TRADE_LEGS),
@@ -131,7 +130,7 @@ finalParams = function(properties) {
 
         //input validation
         if(numContractsFieldsCond[lastKey(numContractsFieldsCond)] &&
-           strikePriceFields[lastKey(strikePriceFieldsCond)] &&
+           strikePriceFieldsCond[lastKey(strikePriceFieldsCond)] &&
            expiryFieldsCond[lastKey(expiryFieldsCond)] &&
            divYieldFieldsCond[lastKey(divYieldFieldsCond)] &&
            riskFreeFieldsCond[lastKey(riskFreeFieldsCond)] &&
@@ -172,9 +171,8 @@ finalParams = function(properties) {
             g.STOCK_PRICE = (select("current-price-field").value/1).toFixed(2)/1;
 
             //disable final input elements
-            elementAvail({expiryBox, divYieldBox, riskFreeBox, returnButton1, buySellRadios, callPutRadios,
-                          numContractsFields, strikePriceFields, expiryFields, divYieldFields, riskFreeFields, stockPriceField},
-                        false);
+            elementAvail({checkBox, returnButton1, buySellRadios, callPutRadios, numContractsFields, strikePriceFields, expiryFields, 
+                          divYieldFields, riskFreeFields, stockPriceField}, false);
 
             //calculate and display output
                 //some function here...
