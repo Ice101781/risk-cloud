@@ -1,44 +1,23 @@
 ﻿.model-heading {
   margin: 0;
+  margin-top: 2vw;
+  margin-bottom: 2vw;
   padding: 0;
-  padding-top: 2vw;
 }
 
 .model-heading > pre {
   margin: 0;
+  padding: 0;
   text-align: center;
   font-family: Corbel;
   font-size: 1.5vw;
   color: #555555;
 }
 
-form {
-  padding: 0.625vw;
-}
-
-.align-helper {
-  display: inline-block;
-  width: 21vw;
-  text-align: left;
-  font-weight: bold;
-  color: #555555;
-}
-
-#continue-button-1, #return-button-1, #calculate-button-1 {
-  float: right;
-  margin: 0;
-  padding: 0;
-}
-
-#return-button-1, #calculate-button-1 {
-  margin-right: 0.375vw;
-}
-
 #user-params-container {
   width: 92vw;
   margin-left: 3.375vw;
-  padding: 0;
-  background-color: transparent;
+  background-color: lightyellow;
 }
 
 #user-params-container, #initial-params-container, #final-params-container, #trade-legs-params-container,
@@ -51,10 +30,8 @@ form {
 
 #initial-params-container {
   height: 6vw;
-  width: 55vw;
-  margin-left: 18.5vw;
-  margin-right: 1vw;
-  margin-top: 2vw;
+  width: 41vw;
+  margin-left: 25vw;
   background-color: #f0f0f0;
   border-radius: 0.3vw
 }
@@ -68,6 +45,7 @@ form {
 
 #final-params-container {
   height: 32.75vw;
+  width: 62vw;
   padding-top: 1vw;
   opacity: 0;
   background-color: #fafafa;
@@ -93,6 +71,41 @@ form {
   border-radius: 0.3vw;
 }
 
+form {
+  padding: 0.625vw;
+}
+
+.align-helper {
+  display: inline-block;
+  text-align: left;
+  font-weight: bold;
+  color: #555555;
+  background-color: lightblue;
+}
+
+#fees-align-helper {
+  width: 20.125vw;
+}
+
+#num-legs-align-helper {
+  width: 13.75vw;
+}
+
+#params-checkbox-align-helper {
+  width: 19.5vw;
+}
+
+#current-price-align-helper {
+  width: 18.25vw;
+}
+
+#continue-button-1, #return-button-1, #calculate-button-1 {
+  width: 7vw;
+  height: 1.75vw;
+  float: right;
+  text-align: center;  
+}
+
 input[type=checkbox], input[type=radio] {
   display: none;
 }
@@ -116,7 +129,8 @@ input[type=checkbox]:checked + .checkbox, input[type=radio]:checked + .radio {
 }
 
 input[name=num-legs-radio] + .radio {
-  width: 1.8vw;
+  width: 1.25vw;
+  margin-left: 1.1875vw;
 }
 
 .radio.buy-sell, .radio.call-put {
@@ -149,32 +163,22 @@ input[name=num-legs-radio] + .radio {
   margin-top: 0.5vw;
 }
 
-#fees-field, #current-price-field, #continue-button-1, #return-button-1, #calculate-button-1 {
-  width: 7vw;
-  height: 1.75vw;
-  margin: 0;
-  padding: 0;
-  text-align: center;
-}
-
-#fees-field, #current-price-field {
-  padding-left: 0.625vw;
-}
-
 #fees-field, .num-contracts-field, .strike-price-field, .expiry-field, .div-yield-field, .risk-free-rate-field, #current-price-field {
   background-color: #ddffdd;
   border: 0.1vw solid #d8d8d8;
 }
 
 #fees-field {
-  margin-left: 1.625vw;
+  width: 5.5vw;
+  height: 1.75vw;
+  margin-left: 2.5vw;
+  padding-left: 0.5vw;
+  text-align: center;
 }
 
 .num-contracts-field, .strike-price-field, .expiry-field, .div-yield-field, .risk-free-rate-field {
   height: 1.5vw;
   width: 4vw;
-  margin: 0;
-  padding: 0;
   padding-left: 0.75vw;
   text-align: center;
 }
@@ -200,6 +204,10 @@ input[name=num-legs-radio] + .radio {
 }
 
 #current-price-field {
-  margin-left: 1.75vw;
+  width: 5vw;
+  height: 1.75vw;
+  margin-left: 1vw;
+  padding-left: 0.5vw;
+  text-align: center;
 }
 
