@@ -15,6 +15,7 @@
 }
 
 #user-params-container {
+  height: 40vw;
   width: 92vw;
   margin-left: 3.375vw;
   background-color: lightyellow;
@@ -29,30 +30,27 @@
 }
 
 #initial-params-container {
-  height: 6vw;
-  width: 41vw;
-  margin-left: 25vw;
-  background-color: #f0f0f0;
-  border-radius: 0.3vw
-}
-
-#params-checkbox-form, #current-price-form {
-  margin-left: 1vw;
-  margin-right: 1vw;
-  background-color: #f0f0f0;
-  border-radius: 0.3vw
-}
-
-#final-params-container {
-  height: 32.75vw;
-  width: 62vw;
+  height: 10vw;
+  width: 35vw;
+  margin-left: 28vw;
   padding-top: 1vw;
-  opacity: 0;
   background-color: #fafafa;
   border-radius: 0.3vw
 }
 
+#final-params-container {
+  height: 29.75vw;
+  width: 47.5vw;
+  margin-left: 21.75vw;
+ 
+  opacity: 0;
+  background-color: #fafafa;
+  border-radius: 0.3vw;
+}
+
 #trade-legs-params-container {
+  margin-left: 0.3125vw;
+
   padding-top: 1vw;
   padding-left: 1vw;
 }
@@ -80,19 +78,16 @@ form {
   text-align: left;
   font-weight: bold;
   color: #555555;
-  background-color: lightblue;
-}
-
-#fees-align-helper {
-  width: 20.125vw;
 }
 
 #num-legs-align-helper {
   width: 13.75vw;
+  margin-left: 2.25vw;
 }
 
-#params-checkbox-align-helper {
-  width: 19.5vw;
+#fees-align-helper {
+  width: 20.125vw;
+  margin-left: 3.125vw;
 }
 
 #current-price-align-helper {
@@ -100,17 +95,31 @@ form {
 }
 
 #continue-button-1, #return-button-1, #calculate-button-1 {
+  margin: 0;
+  padding: 0;
   width: 7vw;
   height: 1.75vw;
-  float: right;
-  text-align: center;  
+  text-align: center;
 }
 
-input[type=checkbox], input[type=radio] {
+#continue-button-1 {
+  margin-left: 14vw;
+  margin-top: 1.625vw;
+}
+
+ #return-button-1 {
+  margin-left: 4vw;
+}
+
+#calculate-button-1 {
+  margin-left: 0.5vw;
+}
+
+input[type=radio] {
   display: none;
 }
 
-input[type=checkbox] + .checkbox, input[type=radio] + .radio {
+input[type=radio] + .radio {
   display: inline-block;
   height: 1vw;
   margin: 0;
@@ -124,13 +133,13 @@ input[type=checkbox] + .checkbox, input[type=radio] + .radio {
   color: #333333;
 }
 
-input[type=checkbox]:checked + .checkbox, input[type=radio]:checked + .radio {
-  color: #ff5555;
-}
-
 input[name=num-legs-radio] + .radio {
   width: 1.25vw;
   margin-left: 1.1875vw;
+}
+
+input[type=radio]:checked + .radio {
+  color: #ff5555;
 }
 
 .radio.buy-sell, .radio.call-put {
@@ -160,7 +169,11 @@ input[name=num-legs-radio] + .radio {
 }
 
 #current-price-form {
+  margin-left: 1vw;
+  margin-right: 1vw;
   margin-top: 0.5vw;
+  background-color: #f0f0f0;
+  border-radius: 0.3vw
 }
 
 #fees-field, .num-contracts-field, .strike-price-field, .expiry-field, .div-yield-field, .risk-free-rate-field, #current-price-field {
@@ -168,12 +181,15 @@ input[name=num-legs-radio] + .radio {
   border: 0.1vw solid #d8d8d8;
 }
 
-#fees-field {
-  width: 5.5vw;
+#fees-field, #current-price-field {
+  width: 5vw;
   height: 1.75vw;
-  margin-left: 2.5vw;
   padding-left: 0.5vw;
   text-align: center;
+}
+
+#fees-field {
+  margin-left: 1.25vw;
 }
 
 .num-contracts-field, .strike-price-field, .expiry-field, .div-yield-field, .risk-free-rate-field {
@@ -191,7 +207,7 @@ input[name=num-legs-radio] + .radio {
   margin-left: 1.875vw;
 }
 
-.expiry-field {
+.expiry-field, #current-price-field {
   margin-left: 0.875vw;
 }
 
@@ -201,13 +217,5 @@ input[name=num-legs-radio] + .radio {
 
 .risk-free-rate-field {
   margin-left: 5.25vw;
-}
-
-#current-price-field {
-  width: 5vw;
-  height: 1.75vw;
-  margin-left: 1vw;
-  padding-left: 0.5vw;
-  text-align: center;
 }
 

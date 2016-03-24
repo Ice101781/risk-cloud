@@ -22,12 +22,6 @@
 
             <div id="user-params-container">
                 <div id="initial-params-container">
-                    <form>
-                        <div id="fees-align-helper" class="align-helper">Total commissions and fees per contract :</div>
-
-                        <input type="number" id="fees-field" min="0" step=".01" value="1.50" />
-                    </form>
-
                     <form>    
                         <div id="num-legs-align-helper" class="align-helper">Number of legs in the trade :</div>
 
@@ -42,30 +36,18 @@
 
                         <input type="radio" id="num-legs-radio-4" name="num-legs-radio" value="4" checked />
                         <label class="radio" for="num-legs-radio-4">4</label>
-
-                        <button id="continue-button-1" type="button" onclick="initialParams.validate()">Continue</button>
                     </form>
+
+                    <form>
+                        <div id="fees-align-helper" class="align-helper">Total commissions and fees per contract :</div>
+
+                        <input type="number" id="fees-field" min="0" step=".01" value="1.50" />
+                    </form>
+
+                    <button id="continue-button-1" type="button" onclick="initialParams.validate()">Continue</button>
                 </div>
 
                 <div id="final-params-container">
-                    <form id="params-checkbox-form">
-                        <div id="params-checkbox-align-helper" class="align-helper">Apply the same values to all trade legs :</div>
-
-                        <input type="checkbox" id="time-to-expiry-checkbox" value="true"
-                               onclick="elementAnim.visible('leg-sub-container-2', 2.5, 'time-to-expiry', 'expiry')" checked/>
-                        <label id="expiry-checkbox-label" class="checkbox" for="time-to-expiry-checkbox">time to expiry</label>
-
-                        <input type="checkbox" id="dividend-yield-checkbox" value="true"
-                               onclick="elementAnim.visible('leg-sub-container-3', 2.5, 'dividend-yield', 'div-yield')" checked/>
-                        <label id="dividend-checkbox-label" class="checkbox" for="dividend-yield-checkbox">dividend yield</label>
-
-                        <input type="checkbox" id="risk-free-rate-checkbox" value="true"
-                               onclick="elementAnim.visible('leg-sub-container-4', 2.5, 'risk-free-rate', 'risk-free-rate')" checked/>
-                        <label id="risk-free-checkbox-label" class="checkbox" for="risk-free-rate-checkbox">risk-free rate</label>
-
-                        <button id="return-button-1" type="button" onclick="finalParams.destroy()">Return</button>
-                    </form>
-
                     <div id="trade-legs-params-container"></div>
 
                     <form id="current-price-form">
@@ -73,6 +55,7 @@
 
                         <input type="number" id="current-price-field" min=".01" step=".01" value="100.25" />
 
+                        <button id="return-button-1" type="button" onclick="finalParams.destroy()">Return</button>
                         <button id="calculate-button-1" type="button" onclick="finalParams.validate()">Calculate</button>
                     </form>
                 </div>

@@ -2,8 +2,8 @@
 
 var g = {
 
-    CONTRACT_FEES : null,
     TRADE_LEGS : null,
+    CONTRACT_FEES : null,
     LEG_SIGN : {},
     CONTRACT_TYPE : {},
     NUM_CONTRACTS : {},
@@ -86,7 +86,7 @@ elementAnim = function(properties) {
 
         function render() {
 
-            if(maxHeight-height < 0.01) {
+            if(maxHeight-height < 0.001) {
 
                 clearInterval(timer);
                 if(typeof callback === 'function') { callback() }
@@ -132,10 +132,11 @@ elementAnim = function(properties) {
         function render() {
 
             opacity = (1-opacity > 0.001) ? opacity + fadeInc : 1;
-            height =  (maxHeight-height > 0.01) ? height + easeInc : maxHeight;
+            height =  (maxHeight-height > 0.001) ? height + easeInc : maxHeight;
 
-            if (opacity == 1) {
-
+            if (opacity == 1 && height == maxHeight) {
+ 
+                elem.display = 'none';
                 clearInterval(timer);  
             } else {
 
@@ -153,39 +154,6 @@ elementAnim = function(properties) {
                 }
             }
         }
-    },
-
-    //on checkbox button click, toggle visibility of a class of containers, skipping the first;
-    visible: function(container, maxHeight, elem, field) {
-
-        var type, color;
-
-        switch(select(elem+'-checkbox').checked) {
-
-            case true:
-                type = "out";
-                color = "#ffdddd";
-                break;
-
-            case false:
-                type = "in";
-                color = "#f2f2f2";
-                break;
-        }
-
-        //ease in or out, set field value to zero on ease out
-        for (var i=1; i<g.TRADE_LEGS; i++) {
-
-            (function(index) {
-                elementAnim.ease(type, container+'-'+(index+1), 0.25, maxHeight, function() {
-
-                    if(type == "out") {select(field+'-field-'+(index+1)).value = 0}
-                });
-            })(i);
-        }
-
-        //toggle background color of the first container in the class
-        select(container+'-1').style.backgroundColor = color;
     }
 })
 
@@ -213,6 +181,41 @@ textNumFields = function(properties) {
                                    value: attr.value
                                }},
                                idString+"-form-"+(idx+1));
+    },
+
+    //on first container click, toggle visibility of remaining field containers
+    visible: function(container, maxHeight, field) {
+
+        var type, color;
+
+        switch(select(container+'-1').getAttribute("data-clicked")) {
+
+            case "true":
+                type = "out";
+                color = '#cbdafb';
+                select(container+'-1').setAttribute("data-clicked", "false");
+                break;
+
+            case "false":
+                type = "in";
+                color = '#f0f0f0';
+                select(container+'-1').setAttribute("data-clicked", "true");
+                break;
+        }
+
+        //ease in or out, set field value to zero on ease out
+        for (var i=1; i<g.TRADE_LEGS; i++) {
+
+            (function(index) {
+                elementAnim.ease(type, container+'-'+(index+1), 0.25, maxHeight, function() {
+
+                    if(type == "out") {select(field+'-field-'+(index+1)).value = 0}
+                });
+            })(i);
+        }
+
+        //toggle background color of the first container in the class
+        select(container+'-1').style.backgroundColor = color;
     }
 })
 
@@ -227,37 +230,37 @@ twoWayRadios = function(properties) {
     return self;  
 }({
 
-    create: function(buttonArray, conditionString, appendId, idx) {
+    create: function(buttonArray, conditionString, appendId, index) {
 
         element({tag: "form", attributes: {
-                                  id:    buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(idx+1),
+                                  id:    buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(index+1),
                                   class: buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form"
                               }},
-                              appendId+(idx+1));
+                              appendId+(index+1));
 
         //radio buttons
         for(var j=0; j<2; j++) {
 
             element({tag: "input", attributes: {
                                        type: "radio",
-                                       id: buttonArray[j][0]+"-"+"radio-"+(idx+1),
-                                       name: buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"radio-"+(idx+1),
+                                       id: buttonArray[j][0]+"-"+"radio-"+(index+1),
+                                       name: buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"radio-"+(index+1),
                                        value: buttonArray[j][1]
                                    }},
-                                   buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(idx+1));
+                                   buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(index+1));
 
             element({tag: "label", content: buttonArray[j][0].charAt(0).toUpperCase()+buttonArray[j][0].slice(1), 
 
                                    attributes: {
-                                       "for": buttonArray[j][0]+"-"+"radio-"+(idx+1), 
+                                       "for": buttonArray[j][0]+"-"+"radio-"+(index+1), 
                                        class: "radio "+buttonArray[0][0]+"-"+buttonArray[1][0]
                                    }},
-                                   buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(idx+1));
+                                   buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(index+1));
         }
 
         //some default settings to save time during common trade setups
-        var index = eval(conditionString) ? 0 : 1;
-        select(buttonArray[index][0]+"-"+"radio-"+(idx+1)).setAttribute("checked", "");
+        var binary = eval(conditionString) ? 0 : 1;
+        select(buttonArray[binary][0]+"-"+"radio-"+(index+1)).setAttribute("checked", "");
     }
 })
 

@@ -11,25 +11,25 @@ initialParams = function(properties) {
     validate: function() {
 
         //string objects containing element id's
-        var feesField = "fees-field",
-            numLegsRadios = idStringsObject(["num-legs-radio"], 4),
-            continueButton1 = "continue-button-1";
+        var numLegsRadio = idStringsObject(["num-legs-radio"], 4),
+            feesField = "fees-field",
+            continueButton1 = "continue-button-1",
 
-        //evaluate text form input conditions
-        var feesFieldCond = (select(feesField).value != "" && select(feesField).value >= 0);
+            //evaluate text form input conditions
+            feesFieldCond = (select(feesField).value != "" && select(feesField).value >= 0);
 
         //input validation
         if(feesFieldCond) {
 
             //capture initial user-defined parameters
-            g.CONTRACT_FEES = (select("fees-field").value/1).toFixed(2)/1;
             g.TRADE_LEGS = select("input[name=num-legs-radio]:checked").value/1;
+            g.CONTRACT_FEES = (select("fees-field").value/1).toFixed(2)/1;
 
             //disable initial input elements
-            elementAvail({feesField, numLegsRadios, continueButton1}, false);
+            elementAvail({numLegsRadio, feesField, continueButton1}, false);
 
             //create elements needed to specify final parameters
-            elementAnim.slide("out", "initial-params-container", 0.05, 0.3, 6);
+            elementAnim.slide("out", "initial-params-container", 0.05, 0.5, 10);
             finalParams.create(elementAnim.fade("in", "final-params-container", 0.05));
         } else {
 
@@ -51,54 +51,65 @@ finalParams = function(properties) {
 
     create: function(callback) {
 
-        //disable params checkbox if only one leg in the trade
-        if(g.TRADE_LEGS == 1) {
-
-            (function() {
-                var checkBox = { ids: {1:"time-to-expiry-checkbox", 2:"dividend-yield-checkbox", 3:"risk-free-rate-checkbox"},
-                                 labels: {1:"expiry-checkbox-label", 2:"dividend-checkbox-label", 3:"risk-free-checkbox-label"} };
-
-                select('params-checkbox-align-helper').style.opacity = 0.65;
-                elementAvail(checkBox.ids, false);
-                for(lbl in checkBox.labels) {select(checkBox.labels[lbl]).style.opacity = 0.65}
-            })(); 
-        }
-
         //create trade leg containers
         for(var i=0; i<g.TRADE_LEGS; i++) {
 
             element({tag: "div", attributes: {id: "leg-"+(i+1), class: "trade-leg"}}, "trade-legs-params-container");
 
-            //sub-containers for ease animations
+            //sub-containers and logic needed to allow users to apply some of the same parameters to all trade legs on multi-leg trades
             for(var j=0; j<5; j++) {
 
                 element({tag: "div", attributes: {id: "leg-sub-container-"+(j+1)+"-"+(i+1), class: "leg-sub-container"}}, "leg-"+(i+1));
 
-                //settings related to params checkbox
-                //highlight sub-container backgrounds in the first trade leg on multi-leg trades
-                    if(g.TRADE_LEGS>1 && j>0) {select("leg-sub-container-"+(j+1)+"-1").style.backgroundColor = "#ffdddd"}
-                //hide certain sub-containers
-                    if(i>0 && j>0 && j<4) {select("leg-sub-container-"+(j+1)+"-"+(i+1)).style.height = 0}
+                if(j>0) {
+
+                    if(j<4) {
+
+                        //designate sub-containers in the first trade leg as unclicked
+                        select("leg-sub-container-"+(j+1)+"-1").setAttribute("data-clicked", "false");
+
+                        //hide corresponding sub-containers in the other trade legs
+                        if(i>0) {select("leg-sub-container-"+(j+1)+"-"+(i+1)).style.height = 0}
+                    }
+
+                    //highlight sub-container backgrounds in the first trade leg on multi-leg trades
+                    if(g.TRADE_LEGS>1) {select("leg-sub-container-"+(j+1)+"-1").style.backgroundColor = '#cbdafb'}
+                }
             }
-            
-            (function(idx) {
+
+            //children for each trade leg container
+            (function(index) {
 
                 //buy-sell radios
-                    twoWayRadios.create([["buy","1"],["sell","-1"]], "(idx % 2 == 0)", "leg-sub-container-1-", idx);
+                twoWayRadios.create([["buy","1"],["sell","-1"]], "(index % 2 == 0)", "leg-sub-container-1-", index);
                 //call-put radios
-                    twoWayRadios.create([["call","1"],["put","-1"]], "(idx < 2)", "leg-sub-container-1-", idx);
+                twoWayRadios.create([["call","1"],["put","-1"]], "(index < 2)", "leg-sub-container-1-", index);
                 //number of contracts fields
-                    textNumFields.create("num-contracts", "no. of contracts :", {min:"1", step:"1", value:"1"}, "leg-sub-container-1-", idx);
+                textNumFields.create("num-contracts", "no. of contracts :", {min:"1", step:"1", value:"1"}, "leg-sub-container-1-", index);
                 //strike prices
-                    textNumFields.create("strike-price", "exercise price :", {min:".01", step:".01", value:"100"}, "leg-sub-container-1-", idx);
+                textNumFields.create("strike-price", "exercise price :", {min:".01", step:".01", value:"100"}, "leg-sub-container-1-", index);
         
                 //calendar times to expiry
-                    textNumFields.create("expiry", "calendar days to expiry :", {min:"0", step:"1", value:"30"}, "leg-sub-container-2-", idx);
+                textNumFields.create("expiry", "calendar days to expiry :", {min:"0", step:"1", value:"30"}, "leg-sub-container-2-", index);
                 //dividend % fields
-                    textNumFields.create("div-yield", "dividend yield % :", {min:"0", step:".01", value:"0"}, "leg-sub-container-3-", idx);
+                textNumFields.create("div-yield", "dividend yield % :", {min:"0", step:".01", value:"0"}, "leg-sub-container-3-", index);
                 //risk-free rates
-                    textNumFields.create("risk-free-rate", "risk-free rate % :", {min:"0", step:".01", value:"0.25"}, "leg-sub-container-4-", idx);
+                textNumFields.create("risk-free-rate", "risk-free rate % :", {min:"0", step:".01", value:"0.25"}, "leg-sub-container-4-", index);
             })(i);
+        }
+
+        //some more logic needed to apply certain trade parameters to all legs on multi-leg trades
+        if(g.TRADE_LEGS>1) { 
+
+            //on click, toggle visibility of some sub-containers 
+            select("leg-sub-container-2-1").addEventListener("click", function() {textNumFields.visible("leg-sub-container-2", 2.5, 'expiry')});
+            select("leg-sub-container-3-1").addEventListener("click", function() {textNumFields.visible("leg-sub-container-3", 2.5, 'div-yield')});
+            select("leg-sub-container-4-1").addEventListener("click", function() {textNumFields.visible("leg-sub-container-4", 2.5, 'risk-free-rate')});
+
+            //prevent a field element click from triggering a sub-container event
+            select("expiry-field-1").addEventListener("click", function(e) {e.stopPropagation()});
+            select("div-yield-field-1").addEventListener("click", function(e) {e.stopPropagation()});
+            select("risk-free-rate-field-1").addEventListener("click", function(e) {e.stopPropagation()});
         }
 
         //transition animation callback
@@ -113,8 +124,7 @@ finalParams = function(properties) {
     validate: function() {
 
         //id strings
-        var checkBox = {1:"time-to-expiry-checkbox", 2:"dividend-yield-checkbox", 3:"risk-free-rate-checkbox"},
-            returnButton1 = "return-button-1",
+        var returnButton1 = "return-button-1",
             buySellRadios = idStringsObject(["buy-radio", "sell-radio"], g.TRADE_LEGS),
             callPutRadios = idStringsObject(["call-radio", "put-radio"], g.TRADE_LEGS),
             numContractsFields = idStringsObject(["num-contracts-field"], g.TRADE_LEGS),
@@ -122,10 +132,10 @@ finalParams = function(properties) {
             expiryFields = idStringsObject(["expiry-field"], g.TRADE_LEGS),
             divYieldFields = idStringsObject(["div-yield-field"], g.TRADE_LEGS),
             riskFreeFields = idStringsObject(["risk-free-rate-field"], g.TRADE_LEGS),
-            stockPriceField = "current-price-field";
+            stockPriceField = "current-price-field",
 
-        //evaluate text form input conditions
-        var numContractsFieldsCond = classInputCheck("num-contracts-field", g.TRADE_LEGS, ['>= 1', '== Math.floor(select(elem+"-"+(i+1)).value)']),
+            //evaluate text form input conditions
+            numContractsFieldsCond = classInputCheck("num-contracts-field", g.TRADE_LEGS, ['>= 1', '== Math.floor(select(elem+"-"+(i+1)).value)']),
             strikePriceFieldsCond = classInputCheck("strike-price-field", g.TRADE_LEGS, ['> 0']),
             expiryFieldsCond = classInputCheck("expiry-field", g.TRADE_LEGS, ['>= 0', '<= 1000', '== Math.floor(select(elem+"-"+(i+1)).value)']),
             divYieldFieldsCond = classInputCheck("div-yield-field", g.TRADE_LEGS, ['>= 0', '<= 100']),
@@ -133,12 +143,9 @@ finalParams = function(properties) {
             stockPriceFieldCond = (select(stockPriceField).value != "" && select(stockPriceField).value > 0);
 
         //input validation
-        if(numContractsFieldsCond[lastKey(numContractsFieldsCond)] &&
-           strikePriceFieldsCond[lastKey(strikePriceFieldsCond)] &&
-           expiryFieldsCond[lastKey(expiryFieldsCond)] &&
-           divYieldFieldsCond[lastKey(divYieldFieldsCond)] &&
-           riskFreeFieldsCond[lastKey(riskFreeFieldsCond)] &&
-           stockPriceFieldCond) {
+        if(numContractsFieldsCond[lastKey(numContractsFieldsCond)] && strikePriceFieldsCond[lastKey(strikePriceFieldsCond)] &&
+           expiryFieldsCond[lastKey(expiryFieldsCond)] && divYieldFieldsCond[lastKey(divYieldFieldsCond)] &&
+           riskFreeFieldsCond[lastKey(riskFreeFieldsCond)] && stockPriceFieldCond) {
 
             //capture user-defined final parameters
             for(var i=0; i<g.TRADE_LEGS; i++) {
@@ -148,7 +155,7 @@ finalParams = function(properties) {
                 g.NUM_CONTRACTS[(i+1)] = select("num-contracts-field-"+(i+1)).value/1;
                 g.STRIKE_PRICE[(i+1)] = (select("strike-price-field-"+(i+1)).value/1).toFixed(2)/1;
 
-                if(select("time-to-expiry-checkbox").checked) {
+                if(select('leg-sub-container-2-1').getAttribute("data-clicked") == "true") {
 
                     g.EXPIRY[(i+1)] = (i == 0) ? (select("expiry-field-"+(i+1)).value/365).toFixed(6)/1 : g.EXPIRY[1];
                 } else {
@@ -156,7 +163,7 @@ finalParams = function(properties) {
                 }
 
 
-                if(select("dividend-yield-checkbox").checked) {
+                if(select('leg-sub-container-3-1').getAttribute("data-clicked") == "true") {
 
                     g.DIV_YIELD[(i+1)] = (i == 0) ? (select("div-yield-field-"+(i+1)).value/100).toFixed(4)/1 : g.DIV_YIELD[1];
                 } else {
@@ -164,7 +171,7 @@ finalParams = function(properties) {
                 }
 
 
-                if(select("risk-free-rate-checkbox").checked) {
+                if(select('leg-sub-container-4-1').getAttribute("data-clicked") == "true") {
 
                     g.RISK_FREE[(i+1)] = (i == 0) ? (select("risk-free-rate-field-"+(i+1)).value/100).toFixed(4)/1 : g.RISK_FREE[1];
                 } else {
@@ -175,8 +182,8 @@ finalParams = function(properties) {
             g.STOCK_PRICE = (select("current-price-field").value/1).toFixed(2)/1;
 
             //disable final input elements
-            elementAvail({checkBox, returnButton1, buySellRadios, callPutRadios, numContractsFields, strikePriceFields, expiryFields, 
-                          divYieldFields, riskFreeFields, stockPriceField}, false);
+            elementAvail({returnButton1, buySellRadios, callPutRadios, numContractsFields, strikePriceFields, expiryFields, divYieldFields,
+                          riskFreeFields, stockPriceField}, false);
 
             //calculate and display output
                 //some function here...
