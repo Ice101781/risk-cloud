@@ -21,16 +21,16 @@ initialParams = function(properties) {
         //input validation
         if(feesFieldCond) {
 
+            //disable initial input elements
+            elementAvail({numLegsRadio, feesField, continueButton1}, false);
+
             //capture initial user-defined parameters
             g.TRADE_LEGS = select("input[name=num-legs-radio]:checked").value/1;
             g.CONTRACT_FEES = (select("fees-field").value/1).toFixed(2)/1;
 
-            //disable initial input elements
-            elementAvail({numLegsRadio, feesField, continueButton1}, false);
-
-            //create elements needed to specify final parameters
-            elementAnim.slide("out", "initial-params-container", 0.05, 0.5, 10);
-            finalParams.create(elementAnim.fade("in", "final-params-container", 0.05));
+            //remove initial params and create elements needed to specify final params
+            elementAnim.slide("out", "initial-params-container", 0.04, 0.5, 12.5);
+            finalParams.create(elementAnim.fade("in", "final-params-container", 0.02));
         } else {
 
             inputErrorMsg(feesField, "Please enter 0 or a positive number for the total commissions and fees.");
@@ -102,9 +102,9 @@ finalParams = function(properties) {
         if(g.TRADE_LEGS>1) { 
 
             //on click, toggle visibility of some sub-containers 
-            select("leg-sub-container-2-1").addEventListener("click", function() {textNumFields.visible("leg-sub-container-2", 2.5, 'expiry')});
-            select("leg-sub-container-3-1").addEventListener("click", function() {textNumFields.visible("leg-sub-container-3", 2.5, 'div-yield')});
-            select("leg-sub-container-4-1").addEventListener("click", function() {textNumFields.visible("leg-sub-container-4", 2.5, 'risk-free-rate')});
+            select("leg-sub-container-2-1").addEventListener("click", expVis = function() {textNumFields.visible("leg-sub-container-2", 2.5, 'expiry')});
+            select("leg-sub-container-3-1").addEventListener("click", divVis = function() {textNumFields.visible("leg-sub-container-3", 2.5, 'div-yield')});
+            select("leg-sub-container-4-1").addEventListener("click", rfrVis = function() {textNumFields.visible("leg-sub-container-4", 2.5, 'risk-free-rate')});
 
             //prevent a field element click from triggering a sub-container event
             select("expiry-field-1").addEventListener("click", function(e) {e.stopPropagation()});
@@ -124,8 +124,7 @@ finalParams = function(properties) {
     validate: function() {
 
         //id strings
-        var returnButton1 = "return-button-1",
-            buySellRadios = idStringsObject(["buy-radio", "sell-radio"], g.TRADE_LEGS),
+        var buySellRadios = idStringsObject(["buy-radio", "sell-radio"], g.TRADE_LEGS),
             callPutRadios = idStringsObject(["call-radio", "put-radio"], g.TRADE_LEGS),
             numContractsFields = idStringsObject(["num-contracts-field"], g.TRADE_LEGS),
             strikePriceFields = idStringsObject(["strike-price-field"], g.TRADE_LEGS),
@@ -133,6 +132,8 @@ finalParams = function(properties) {
             divYieldFields = idStringsObject(["div-yield-field"], g.TRADE_LEGS),
             riskFreeFields = idStringsObject(["risk-free-rate-field"], g.TRADE_LEGS),
             stockPriceField = "current-price-field",
+            returnButton1 = "return-button-1",
+            calculateButton1 = "calculate-button-1",
 
             //evaluate text form input conditions
             numContractsFieldsCond = classInputCheck("num-contracts-field", g.TRADE_LEGS, ['>= 1', '== Math.floor(select(elem+"-"+(i+1)).value)']),
@@ -142,10 +143,26 @@ finalParams = function(properties) {
             riskFreeFieldsCond = classInputCheck("risk-free-rate-field", g.TRADE_LEGS, ['>= 0', '<= 25']),
             stockPriceFieldCond = (select(stockPriceField).value != "" && select(stockPriceField).value > 0);
 
+
         //input validation
         if(numContractsFieldsCond[lastKey(numContractsFieldsCond)] && strikePriceFieldsCond[lastKey(strikePriceFieldsCond)] &&
+           
            expiryFieldsCond[lastKey(expiryFieldsCond)] && divYieldFieldsCond[lastKey(divYieldFieldsCond)] &&
+           
            riskFreeFieldsCond[lastKey(riskFreeFieldsCond)] && stockPriceFieldCond) {
+
+
+            //remove event listeners from sub-containers in the first trade leg
+            if(g.TRADE_LEGS>1) {
+
+                select("leg-sub-container-2-1").removeEventListener("click", expVis);
+                select("leg-sub-container-3-1").removeEventListener("click", divVis);
+                select("leg-sub-container-4-1").removeEventListener("click", rfrVis);
+            }
+
+            //disable final input elements
+            elementAvail({buySellRadios, callPutRadios, numContractsFields, strikePriceFields, expiryFields, 
+                          divYieldFields, riskFreeFields, stockPriceField, returnButton1, calculateButton1}, false);
 
             //capture user-defined final parameters
             for(var i=0; i<g.TRADE_LEGS; i++) {
@@ -181,9 +198,6 @@ finalParams = function(properties) {
 
             g.STOCK_PRICE = (select("current-price-field").value/1).toFixed(2)/1;
 
-            //disable final input elements
-            elementAvail({returnButton1, buySellRadios, callPutRadios, numContractsFields, strikePriceFields, expiryFields, divYieldFields,
-                          riskFreeFields, stockPriceField}, false);
 
             //calculate and display output
                 //some function here...

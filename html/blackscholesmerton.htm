@@ -22,27 +22,29 @@
 
             <div id="user-params-container">
                 <div id="initial-params-container">
-                    <form>    
-                        <div id="num-legs-align-helper" class="align-helper">Number of legs in the trade :</div>
+                    <div id="initial-params-sub-container">
+                        <form>    
+                            <div id="num-legs-align-helper" class="align-helper">Number of legs in the trade :</div>
 
-                        <input type="radio" id="num-legs-radio-1" name="num-legs-radio" value="1" />
-                        <label class="radio" for="num-legs-radio-1">1</label>
+                            <input type="radio" id="num-legs-radio-1" name="num-legs-radio" value="1" />
+                            <label class="radio" for="num-legs-radio-1">1</label>
 
-                        <input type="radio" id="num-legs-radio-2" name="num-legs-radio" value="2" />
-                        <label class="radio" for="num-legs-radio-2">2</label>
+                            <input type="radio" id="num-legs-radio-2" name="num-legs-radio" value="2" />
+                            <label class="radio" for="num-legs-radio-2">2</label>
 
-                        <input type="radio" id="num-legs-radio-3" name="num-legs-radio" value="3" />
-                        <label class="radio" for="num-legs-radio-3">3</label>
+                            <input type="radio" id="num-legs-radio-3" name="num-legs-radio" value="3" />
+                            <label class="radio" for="num-legs-radio-3">3</label>
 
-                        <input type="radio" id="num-legs-radio-4" name="num-legs-radio" value="4" checked />
-                        <label class="radio" for="num-legs-radio-4">4</label>
-                    </form>
+                            <input type="radio" id="num-legs-radio-4" name="num-legs-radio" value="4" checked />
+                            <label class="radio" for="num-legs-radio-4">4</label>
+                        </form>
 
-                    <form>
-                        <div id="fees-align-helper" class="align-helper">Total commissions and fees per contract :</div>
+                        <form>
+                            <div id="fees-align-helper" class="align-helper">Total commissions and fees per contract :</div>
 
-                        <input type="number" id="fees-field" min="0" step=".01" value="1.50" />
-                    </form>
+                            <input type="number" id="fees-field" min="0" step=".01" value="1.50" />
+                        </form>
+                    </div>
 
                     <button id="continue-button-1" type="button" onclick="initialParams.validate()">Continue</button>
                 </div>

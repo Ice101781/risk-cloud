@@ -82,11 +82,13 @@ elementAnim = function(properties) {
 
         var elem = select(idString).style,
             height = 0,
-            timer = setInterval(render, (1000/60));
+            timer = setInterval(render, (1000/50));
 
         function render() {
 
-            if(maxHeight-height < 0.001) {
+            height = (maxHeight-height > 0) ? height + increment : maxHeight;
+
+            if(height == maxHeight) {
 
                 clearInterval(timer);
                 if(typeof callback === 'function') { callback() }
@@ -104,11 +106,13 @@ elementAnim = function(properties) {
 
         var elem = select(idString).style,
             opacity = 0,
-            timer = setInterval(render, (1000/60));
+            timer = setInterval(render, (1000/50));
 
         function render() {
 
-            if(1-opacity < 0.001) {
+            opacity = (1-opacity > 0) ? opacity + inc : 1;
+
+            if(opacity == 1) {
 
                 clearInterval(timer);
                 if(typeof callback === 'function') { callback() }
@@ -127,17 +131,16 @@ elementAnim = function(properties) {
         var elem = select(idString).style,
             opacity = 0,
             height = 0,
-            timer = setInterval(render, (1000/60));
+            timer = setInterval(render, (1000/50));
 
         function render() {
 
-            opacity = (1-opacity > 0.001) ? opacity + fadeInc : 1;
-            height =  (maxHeight-height > 0.001) ? height + easeInc : maxHeight;
+            opacity = (1-opacity > 0) ? opacity + fadeInc : 1;
+            height = (maxHeight-height > 0) ? height + easeInc : maxHeight;
 
             if (opacity == 1 && height == maxHeight) {
- 
-                elem.display = 'none';
-                clearInterval(timer);  
+
+                clearInterval(timer);
             } else {
 
                 switch(type) {
@@ -416,7 +419,7 @@ navDropDown = function(properties) {
         //local parameters
         var otherIndex = (index == "1") ? "2" : "1",
             inc = 0.25,
-            maxHeight  = 4.25;
+            maxHeight  = 4.5;
 
         //close the other sub-menu if it's open
         if(select("nav-sub-container-"+otherIndex).getAttribute("data-open") == "true") {

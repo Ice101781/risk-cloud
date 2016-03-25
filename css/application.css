@@ -67,8 +67,8 @@ html {
 
 .nav-sub-container {
   overflow: hidden;
-  width: 99vw;
   height: 0;
+  width: 99vw;
   position: absolute;
   border-top: 0.2vw solid #555555;
 }
@@ -100,6 +100,6 @@ html {
   padding-top: 0.25vw;
   padding-bottom: 0.25vw;
   font-size: 0.9vw;
-  color: #555555;
+  color: black;
 }
 
