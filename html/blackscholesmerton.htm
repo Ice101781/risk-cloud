@@ -52,14 +52,17 @@
                 <div id="final-params-container">
                     <div id="trade-legs-params-container"></div>
 
-                    <form id="current-price-form">
-                        <div id="current-price-align-helper" class="align-helper">Current price of the underlying asset :</div>
-
-                        <input type="number" id="current-price-field" min=".01" step=".01" value="100.25" />
-
+                    <div id="current-price-container">
                         <button id="return-button-1" type="button" onclick="finalParams.destroy()">Return</button>
+                        
+                        <form id="current-price-form">
+                            <div id="current-price-align-helper" class="align-helper">Current price of the underlying asset :</div>
+
+                            <input type="number" id="current-price-field" min=".01" step=".01" value="100.25" />
+                        </form>
+
                         <button id="calculate-button-1" type="button" onclick="finalParams.validate()">Calculate</button>
-                    </form>
+                    </div>
                 </div>
             </div>
 

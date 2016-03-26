@@ -98,9 +98,38 @@ finalParams = function(properties) {
             })(i);
         }
 
-        //some more logic needed to apply certain trade parameters to all legs on multi-leg trades
-        if(g.TRADE_LEGS>1) { 
+        if(g.TRADE_LEGS>1) {
 
+            //adaptive widths for certain elements
+            (function() {
+
+                var parent = select("final-params-container").style,
+                    child1 = select("trade-legs-params-container").style;
+                    child2 = select("return-button-1").style;
+
+                switch(g.TRADE_LEGS) {
+
+                    case 2:
+                        child1.marginLeft = 0.3125 + 'vw';
+                        break;
+
+                    case 3:
+                        parent.width = 71.5 + 'vw';
+                        parent.marginLeft = 10.25 + 'vw';
+                        child1.marginLeft = 0.9375 + 'vw';
+                        child2.marginLeft = 14.25 + 'vw';
+                        break;
+
+                    case 4:
+                        parent.width = 92 + 'vw';
+                        parent.marginLeft = 0 + 'vw';
+                        child1.marginLeft = 0 + 'vw';
+                        child2.marginLeft = 24.5 + 'vw';
+                        break;
+                }
+            })();
+
+            //some more logic needed to apply certain trade parameters to all legs on multi-leg trades
             //on click, toggle visibility of some sub-containers 
             select("leg-sub-container-2-1").addEventListener("click", expVis = function() {textNumFields.visible("leg-sub-container-2", 2.5, 'expiry')});
             select("leg-sub-container-3-1").addEventListener("click", divVis = function() {textNumFields.visible("leg-sub-container-3", 2.5, 'div-yield')});
