@@ -21,16 +21,17 @@ initialParams = function(properties) {
         //input validation
         if(feesFieldCond) {
 
-            //disable initial input elements
-            elementAvail({numLegsRadio, feesField, continueButton1}, false);
-
             //capture initial user-defined parameters
             g.TRADE_LEGS = select("input[name=num-legs-radio]:checked").value/1;
             g.CONTRACT_FEES = (select("fees-field").value/1).toFixed(2)/1;
 
-            //remove initial params and create elements needed to specify final params
+            //remove initial params and create elements needed to specify final params; transitions
             elementAnim.slide("out", "initial-params-container", 0.04, 0.5, 12.5);
             finalParams.create(elementAnim.fade("in", "final-params-container", 0.02));
+
+            //testing and debug
+            console.log("final params validation", g);
+
         } else {
 
             inputErrorMsg(feesField, "Please enter 0 or a positive number for the total commissions and fees.");
@@ -61,19 +62,21 @@ finalParams = function(properties) {
 
                 element({tag: "div", attributes: {id: "leg-sub-container-"+(j+1)+"-"+(i+1), class: "leg-sub-container"}}, "leg-"+(i+1));
 
-                if(j>0) {
+                if(j>0 && j<4) {
+                        
+                    switch(i>0) {
 
-                    if(j<4) {
+                        case true:
+                            select("leg-sub-container-"+(j+1)+"-"+(i+1)).style.height = 0;
+                            break;
 
-                        //designate sub-containers in the first trade leg as unclicked
-                        select("leg-sub-container-"+(j+1)+"-1").setAttribute("data-clicked", "false");
-
-                        //hide corresponding sub-containers in the other trade legs
-                        if(i>0) {select("leg-sub-container-"+(j+1)+"-"+(i+1)).style.height = 0}
+                        case false:                                
+                            if(g.TRADE_LEGS>1) {
+                                select("leg-sub-container-"+(j+1)+"-1").setAttribute("data-clicked", "false");
+                                select("leg-sub-container-"+(j+1)+"-1").style.backgroundColor = '#cbdafb';
+                            }
+                            break;
                     }
-
-                    //highlight sub-container backgrounds in the first trade leg on multi-leg trades
-                    if(g.TRADE_LEGS>1) {select("leg-sub-container-"+(j+1)+"-1").style.backgroundColor = '#cbdafb'}
                 }
             }
 
@@ -95,45 +98,62 @@ finalParams = function(properties) {
                 textNumFields.create("div-yield", "dividend yield % :", {min:"0", step:".01", value:"0"}, "leg-sub-container-3-", index);
                 //risk-free rates
                 textNumFields.create("risk-free-rate", "risk-free rate % :", {min:"0", step:".01", value:"0.25"}, "leg-sub-container-4-", index);
+                //option prices
+                textNumFields.create("option-price", "option price :", {min:".01", step:".01", value:"1.25"}, "leg-sub-container-5-", index);
             })(i);
         }
 
+        //adaptive sizing, positioning for certain elements
+        (function() {
+
+            var parent = select("final-params-container").style,
+                child1 = select("trade-legs-params-container").style;
+                child2 = select("return-button-1").style;
+
+            switch(g.TRADE_LEGS) {
+
+                case 1:
+                    parent.width = 47 + 'vw';
+                    parent.marginLeft = 22.5 + 'vw';
+                    child1.marginLeft = 11.25 + 'vw';
+                    child2.marginLeft = 1.925 + 'vw';
+                    break;
+
+                case 2:
+                    parent.width = 47 + 'vw';
+                    parent.marginLeft = 22.5 + 'vw';
+                    child1.marginLeft = 0 + 'vw';
+                    child2.marginLeft = 1.925 + 'vw';
+                    break;
+
+                case 3:
+                    parent.width = 70 + 'vw';
+                    parent.marginLeft = 11 + 'vw';
+                    child1.marginLeft = 0.3 + 'vw';
+                    child2.marginLeft = 13.7 + 'vw';
+                    break;
+
+                case 4:
+                    parent.width = 92 + 'vw';
+                    parent.marginLeft = 0 + 'vw';
+                    child1.marginLeft = 0 + 'vw';
+                    child2.marginLeft = 24.5 + 'vw';
+                    break;
+            }
+        })();
+
+        //some more logic needed to apply certain trade parameters to all legs on multi-leg trades
         if(g.TRADE_LEGS>1) {
 
-            //adaptive widths for certain elements
-            (function() {
-
-                var parent = select("final-params-container").style,
-                    child1 = select("trade-legs-params-container").style;
-                    child2 = select("return-button-1").style;
-
-                switch(g.TRADE_LEGS) {
-
-                    case 2:
-                        child1.marginLeft = 0.3125 + 'vw';
-                        break;
-
-                    case 3:
-                        parent.width = 71.5 + 'vw';
-                        parent.marginLeft = 10.25 + 'vw';
-                        child1.marginLeft = 0.9375 + 'vw';
-                        child2.marginLeft = 14.25 + 'vw';
-                        break;
-
-                    case 4:
-                        parent.width = 92 + 'vw';
-                        parent.marginLeft = 0 + 'vw';
-                        child1.marginLeft = 0 + 'vw';
-                        child2.marginLeft = 24.5 + 'vw';
-                        break;
-                }
-            })();
-
-            //some more logic needed to apply certain trade parameters to all legs on multi-leg trades
             //on click, toggle visibility of some sub-containers 
-            select("leg-sub-container-2-1").addEventListener("click", expVis = function() {textNumFields.visible("leg-sub-container-2", 2.5, 'expiry')});
-            select("leg-sub-container-3-1").addEventListener("click", divVis = function() {textNumFields.visible("leg-sub-container-3", 2.5, 'div-yield')});
-            select("leg-sub-container-4-1").addEventListener("click", rfrVis = function() {textNumFields.visible("leg-sub-container-4", 2.5, 'risk-free-rate')});
+            select("leg-sub-container-2-1").addEventListener("click",
+                                            expVis = function() {textNumFields.visible("leg-sub-container-2", 2.5, 'expiry')});
+
+            select("leg-sub-container-3-1").addEventListener("click",
+                                            divVis = function() {textNumFields.visible("leg-sub-container-3", 2.5, 'div-yield')});
+
+            select("leg-sub-container-4-1").addEventListener("click",
+                                            rfrVis = function() {textNumFields.visible("leg-sub-container-4", 2.5, 'risk-free-rate')});
 
             //prevent a field element click from triggering a sub-container event
             select("expiry-field-1").addEventListener("click", function(e) {e.stopPropagation()});
@@ -147,7 +167,19 @@ finalParams = function(properties) {
 
     destroy: function() {
 
-        console.log("do work, son");
+        //clear params
+        g.reset();
+
+        //destroy trade legs; transitions
+        elementAnim.fade("out", "final-params-container", 0.02, function() {
+
+            removeChildren('trade-legs-params-container');
+        });
+
+        elementAnim.slide("in", "initial-params-container", 0.04, 0.5, 12.5);
+
+        //testing and debug
+        console.log("final params validation", g);
     },
 
     validate: function() {
@@ -160,6 +192,7 @@ finalParams = function(properties) {
             expiryFields = idStringsObject(["expiry-field"], g.TRADE_LEGS),
             divYieldFields = idStringsObject(["div-yield-field"], g.TRADE_LEGS),
             riskFreeFields = idStringsObject(["risk-free-rate-field"], g.TRADE_LEGS),
+            optionPriceFields = idStringsObject(["option-price-field"], g.TRADE_LEGS),
             stockPriceField = "current-price-field",
             returnButton1 = "return-button-1",
             calculateButton1 = "calculate-button-1",
@@ -170,16 +203,18 @@ finalParams = function(properties) {
             expiryFieldsCond = classInputCheck("expiry-field", g.TRADE_LEGS, ['>= 0', '<= 1000', '== Math.floor(select(elem+"-"+(i+1)).value)']),
             divYieldFieldsCond = classInputCheck("div-yield-field", g.TRADE_LEGS, ['>= 0', '<= 100']),
             riskFreeFieldsCond = classInputCheck("risk-free-rate-field", g.TRADE_LEGS, ['>= 0', '<= 25']),
+            optionPriceFieldsCond = classInputCheck("option-price-field", g.TRADE_LEGS, ['> 0']),
             stockPriceFieldCond = (select(stockPriceField).value != "" && select(stockPriceField).value > 0);
 
 
         //input validation
-        if(numContractsFieldsCond[lastKey(numContractsFieldsCond)] && strikePriceFieldsCond[lastKey(strikePriceFieldsCond)] &&
-           
-           expiryFieldsCond[lastKey(expiryFieldsCond)] && divYieldFieldsCond[lastKey(divYieldFieldsCond)] &&
-           
-           riskFreeFieldsCond[lastKey(riskFreeFieldsCond)] && stockPriceFieldCond) {
-
+        if(numContractsFieldsCond[lastKey(numContractsFieldsCond)] &&
+           strikePriceFieldsCond[lastKey(strikePriceFieldsCond)] &&
+           expiryFieldsCond[lastKey(expiryFieldsCond)] &&
+           divYieldFieldsCond[lastKey(divYieldFieldsCond)] &&
+           riskFreeFieldsCond[lastKey(riskFreeFieldsCond)] &&
+           optionPriceFieldsCond[lastKey(optionPriceFieldsCond)] &&
+           stockPriceFieldCond) {
 
             //remove event listeners from sub-containers in the first trade leg
             if(g.TRADE_LEGS>1) {
@@ -190,8 +225,7 @@ finalParams = function(properties) {
             }
 
             //disable final input elements
-            elementAvail({buySellRadios, callPutRadios, numContractsFields, strikePriceFields, expiryFields, 
-                          divYieldFields, riskFreeFields, stockPriceField, returnButton1, calculateButton1}, false);
+            elementAvail({/**/}, false);
 
             //capture user-defined final parameters
             for(var i=0; i<g.TRADE_LEGS; i++) {
@@ -201,7 +235,7 @@ finalParams = function(properties) {
                 g.NUM_CONTRACTS[(i+1)] = select("num-contracts-field-"+(i+1)).value/1;
                 g.STRIKE_PRICE[(i+1)] = (select("strike-price-field-"+(i+1)).value/1).toFixed(2)/1;
 
-                if(select('leg-sub-container-2-1').getAttribute("data-clicked") == "true") {
+                if(select('leg-sub-container-2-1').getAttribute("data-clicked") == "false") {
 
                     g.EXPIRY[(i+1)] = (i == 0) ? (select("expiry-field-"+(i+1)).value/365).toFixed(6)/1 : g.EXPIRY[1];
                 } else {
@@ -209,7 +243,7 @@ finalParams = function(properties) {
                 }
 
 
-                if(select('leg-sub-container-3-1').getAttribute("data-clicked") == "true") {
+                if(select('leg-sub-container-3-1').getAttribute("data-clicked") == "false") {
 
                     g.DIV_YIELD[(i+1)] = (i == 0) ? (select("div-yield-field-"+(i+1)).value/100).toFixed(4)/1 : g.DIV_YIELD[1];
                 } else {
@@ -217,19 +251,24 @@ finalParams = function(properties) {
                 }
 
 
-                if(select('leg-sub-container-4-1').getAttribute("data-clicked") == "true") {
+                if(select('leg-sub-container-4-1').getAttribute("data-clicked") == "false") {
 
                     g.RISK_FREE[(i+1)] = (i == 0) ? (select("risk-free-rate-field-"+(i+1)).value/100).toFixed(4)/1 : g.RISK_FREE[1];
                 } else {
                     g.RISK_FREE[(i+1)] = (select("risk-free-rate-field-"+(i+1)).value/100).toFixed(4)/1;
                 }
+
+                g.OPTION_PRICE[(i+1)] = (select("option-price-field-"+(i+1)).value/1).toFixed(2)/1;
             }
 
             g.STOCK_PRICE = (select("current-price-field").value/1).toFixed(2)/1;
 
+            //testing and debug
+            console.log("final params validation", g);
 
             //calculate and display output
                 //some function here...
+
         } else {
 
             //some input error message handling
@@ -261,6 +300,11 @@ finalParams = function(properties) {
                     inputErrorMsg("risk-free-rate-field-"+lastKey(riskFreeFieldsCond),
                                   "Please enter a number greater than or equal to 0, and less than or equal to 25, for the risk-free rate "+
                                   "percentage in this trade leg.");
+                    break;
+
+                case optionPriceFieldsCond[lastKey(optionPriceFieldsCond)]:
+                    inputErrorMsg("option-price-field-"+lastKey(optionPriceFieldsCond),
+                                  "Please enter a number greater than 0 for the option price in this trade leg.");
                     break;
 
                 case stockPriceFieldCond:

@@ -11,7 +11,28 @@ var g = {
     EXPIRY : {},
     DIV_YIELD : {},
     RISK_FREE : {},
-    STOCK_PRICE : null
+    OPTION_PRICE : {},
+    STOCK_PRICE : null,
+
+    reset: function() {
+
+        for(elem in this) {
+
+            switch(typeof this[elem]) {
+
+                case 'object':
+                    this[elem] = {};
+                    break;
+
+                case 'number':
+                    this[elem] = null;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
 };
 
 //END GLOBAL PARAMETERS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -64,6 +85,15 @@ elementAvail = function(idObject, bool) {
                 break;
         }
     }
+}
+
+
+//Remove all children from an element - thanks to Gabriel McAdams on stackoverflow.com for this
+removeChildren = function(idString) {
+
+    var elem = select(idString);
+
+    while(elem.firstChild) { elem.removeChild(elem.firstChild) }
 }
 
 
@@ -141,6 +171,7 @@ elementAnim = function(properties) {
             if (opacity == 1 && height == maxHeight) {
 
                 clearInterval(timer);
+
             } else {
 
                 switch(type) {
@@ -262,8 +293,8 @@ twoWayRadios = function(properties) {
         }
 
         //some default settings to save time during common trade setups
-        var binary = eval(conditionString) ? 0 : 1;
-        select(buttonArray[binary][0]+"-"+"radio-"+(index+1)).setAttribute("checked", "");
+        var bin = eval(conditionString) ? 0 : 1;
+        select(buttonArray[bin][0]+"-"+"radio-"+(index+1)).setAttribute("checked", "");
     }
 })
 
@@ -340,72 +371,8 @@ inputErrorMsg = function(elem, msg) {
 
 //HEADER/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-createHeader = function() {
-
-    //main header container
-    element({tag: "div", attributes: {id: "header-main"}}, ".body");
-
-    //icon
-    element({tag: "a", attributes: {id: "icon-link", href: "../html/home.htm"}}, "header-main");
-
-    element({tag: "img", attributes: {id: "icon", alt: "Risk Cloud", src: "../images/icon.png"}}, "icon-link");
-
-    //navigation menu
-    //main
-    (mainMenu = function() {
-
-        var headings = { 1: "models", 2: "info" };
-
-        element({tag: "ul", attributes: {id: "nav-menu"}}, "header-main");
-
-        for(num in headings) {
-
-            element({tag: "li", attributes: {id: "nav-list-item-"+num, class: "nav-list-item"}}, "nav-menu");
-
-            element({tag: "a", content: headings[num], attributes: {
-                                                           href: "#",
-                                                           class: "nav-list-item-link",
-                                                           onclick: "navDropDown.anim("+num+")"
-                                                       }},
-                                                       "nav-list-item-"+num);
-        }
-    })();
-
-    //sub-menus
-    (subMenus = function() {
-
-        var subHeadings = {   
-
-            1: { a: {heading: "Black-Scholes-Merton", link: "../html/blackscholesmerton.htm"}, 
-               /*b: {heading: "Variance-Gamma",   link: "#"}*/ },
-
-            2: { a: {heading: "about", link: "#"},
-                 b: {heading: "more", link: "#"} }
-        };
-
-        for(num in subHeadings) {
-
-            element({tag: "div", attributes: {id: "nav-sub-container-"+num, class: "nav-sub-container", "data-open": "false"}}, ".body");
-
-            element({tag: "ul", attributes: {id: "nav-sub-menu-"+num, class: "nav-sub-menu"}}, "nav-sub-container-"+num);
-
-            for(letter in subHeadings[num]) {
-
-                element({tag: "li", attributes: {id: "nav-sub-list-item-"+num+letter, class: "nav-sub-list-item"}}, "nav-sub-menu-"+num);
-
-                element({tag: "a", content: subHeadings[num][letter].heading, attributes: {
-                                                                                  href: subHeadings[num][letter].link, 
-                                                                                  class: "nav-sub-list-item-link"
-                                                                              }},
-                                                                              "nav-sub-list-item-"+num+letter);
-            }
-        }
-    })();
-}
-
-
-//nav menu dropdown animation logic
-navDropDown = function(properties) {
+//nav menu
+nav = function(properties) {
 
     var self = function() { return };
       
@@ -413,6 +380,72 @@ navDropDown = function(properties) {
 
     return self;   
 }({
+
+    create: function() {
+
+        //main header container
+        element({tag: "div", attributes: {id: "header-main"}}, ".body");
+
+        //icon
+        element({tag: "a", attributes: {id: "icon-link", href: "../html/home.htm"}}, "header-main");
+
+        element({tag: "img", attributes: {id: "icon", alt: "Risk Cloud", src: "../images/icon.png"}}, "icon-link");
+
+        //navigation menu
+        //main
+        (mainMenu = function() {
+
+            var headings = { 1: "models", 2: "info" };
+
+            element({tag: "ul", attributes: {id: "nav-menu"}}, "header-main");
+
+            for(num in headings) {
+
+                element({tag: "li", attributes: {id: "nav-list-item-"+num, class: "nav-list-item"}}, "nav-menu");
+
+                element({tag: "a", content: headings[num], attributes: {
+                                                               href: "#",
+                                                               class: "nav-list-item-link",
+                                                               onclick: "nav.anim("+num+")"
+                                                           }},
+                                                           "nav-list-item-"+num);
+            }
+        })();
+
+        //sub-menus
+        (subMenus = function() {
+
+            var subHeadings = {   
+
+                1: { a: {heading: "Black-Scholes-Merton", link: "../html/blackscholesmerton.htm"}, 
+                   /*b: {heading: "Variance-Gamma",   link: "#"}*/ },
+
+                2: { a: {heading: "about", link: "#"},
+                     b: {heading: "more", link: "#"} }
+            };
+
+            for(num in subHeadings) {
+
+                element({tag: "div", attributes: {id: "nav-sub-container-"+num, class: "nav-sub-container", "data-open": "false"}}, ".body");
+
+                element({tag: "ul", attributes: {id: "nav-sub-menu-"+num, class: "nav-sub-menu"}}, "nav-sub-container-"+num);
+
+                for(letter in subHeadings[num]) {
+
+                    element({tag: "li", attributes: {id: "nav-sub-list-item-"+num+letter, class: "nav-sub-list-item"}}, "nav-sub-menu-"+num);
+
+                    element({tag: "a", content: subHeadings[num][letter].heading, attributes: {
+                                                                                      href: subHeadings[num][letter].link, 
+                                                                                      class: "nav-sub-list-item-link"
+                                                                                  }},
+                                                                                  "nav-sub-list-item-"+num+letter);
+                }
+            }
+        })();
+
+        //testing and debug
+        console.log("new HTML page creation", g);
+    },
 
     anim: function(index) {
 

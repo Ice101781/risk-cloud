@@ -15,7 +15,7 @@
 }
 
 #user-params-container {
-  height: 31.5vw;
+  height: 31vw;
   width: 92vw;
   margin-left: 3.375vw;
   /*background-color: lightyellow;*/
@@ -24,7 +24,7 @@
 #user-params-container, #initial-params-container, #initial-params-sub-container, #final-params-container, #trade-legs-params-container,
 .trade-leg, .leg-sub-container, #current-price-container, #continue-button-1, #return-button-1, #calculate-button-1, .radio.buy-sell,
 .radio.call-put, #fees-field, .num-contracts-field, .strike-price-field, .expiry-field, .div-yield-field, .risk-free-rate-field,
-#current-price-field {
+.option-price-field, #current-price-field {
   overflow: hidden;
   font-family: Century Gothic;
   font-size: 1vw;
@@ -46,8 +46,7 @@
 }
 
 #final-params-container {
-  height: 31.5vw;
-  width: 47.5vw;
+  height: 31vw;
   margin-left: 21.75vw;
   background-color: #fafafa;
   border-radius: 0.3vw;
@@ -55,9 +54,8 @@
 }
 
 #trade-legs-params-container {
-  margin-left: 11.25vw;
   padding-left: 1vw;
-  padding-top: 1vw;
+  padding-top: 1.5vw;
 }
 
 .trade-leg {
@@ -113,10 +111,6 @@ form {
   margin-top: 1.5vw;
 }
 
- #return-button-1 {
-  margin-left: 2.125vw;
-}
-
 #calculate-button-1 {
   margin-left: 1.4375vw;
 }
@@ -161,7 +155,7 @@ input[type=radio]:checked + .radio {
   padding-bottom: 0.25vw;
 }
 
-.num-contracts-form, .strike-price-form, .expiry-form, .div-yield-form, .risk-free-rate-form {
+.num-contracts-form, .strike-price-form, .expiry-form, .div-yield-form, .risk-free-rate-form, .option-price-form {
   display: inline-block;
   width: 18.75vw;
   margin: 0;
@@ -178,14 +172,9 @@ input[type=radio]:checked + .radio {
 #current-price-form {
   display: inline-block;
   margin-left: 1.5vw;
-  margin-top: 2.25vw;
+  margin-top: 1.25vw;
   border-radius: 0.3vw;
   background-color: #f0f0f0;
-}
-
-#fees-field, .num-contracts-field, .strike-price-field, .expiry-field, .div-yield-field, .risk-free-rate-field, #current-price-field {
-  background-color: #ddffdd;
-  border: 0.1vw solid #d8d8d8;
 }
 
 #fees-field, #current-price-field {
@@ -195,15 +184,21 @@ input[type=radio]:checked + .radio {
   text-align: center;
 }
 
-#fees-field {
-  margin-left: 2.875vw;
+#fees-field, .num-contracts-field, .strike-price-field, .expiry-field, .div-yield-field, .risk-free-rate-field,
+.option-price-field, #current-price-field {
+  background-color: #ddffdd;
+  border: 0.1vw solid #d8d8d8;
 }
 
-.num-contracts-field, .strike-price-field, .expiry-field, .div-yield-field, .risk-free-rate-field {
+.num-contracts-field, .strike-price-field, .expiry-field, .div-yield-field, .risk-free-rate-field, .option-price-field {
   height: 1.5vw;
   width: 4vw;
   padding-left: 0.75vw;
   text-align: center;
+}
+
+#fees-field {
+  margin-left: 2.875vw;
 }
 
 .num-contracts-field {
@@ -224,6 +219,10 @@ input[type=radio]:checked + .radio {
 
 .risk-free-rate-field {
   margin-left: 5.25vw;
+}
+
+.option-price-field {
+  margin-left: 6.3125vw;
 }
 
 #current-price-field {
