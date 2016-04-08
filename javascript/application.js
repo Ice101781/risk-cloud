@@ -365,6 +365,33 @@ inputErrorMsg = function(elem, msg) {
     return;
 }
 
+
+//Compute integrals numerically using Simpson's rule
+integrate = function(leftBound, rightBound, numSubIntervals, expression) {
+
+    var a = leftBound,
+        b = rightBound,
+        n = numSubIntervals,
+        f = expression;
+
+    if(n % 2 == 0) {
+
+        var sum1 = 0,
+            sum2 = 0,
+            halfN = n/2;
+
+        for(var i=1; i<halfN; i++) { sum1 += f((((halfN-i)*a)+(i*b))/halfN) }
+
+        for(var i=1; i<halfN+1; i++) { sum2 += f((((((n+1)/2)-i)*a)+((i-(1/2))*b))/halfN) }
+
+        return ((b-a)/(3*n))*(f(a)+(2*sum1)+(4*sum2)+f(b));
+
+    } else {
+
+        return "The number of sub-intervals, 'n', must be even.";
+    }
+}
+
 //END HELPERS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 

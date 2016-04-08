@@ -266,6 +266,9 @@ finalParams = function(properties) {
             //testing and debug
             console.log("final params validation", g);
 
+            //testing the 'integrate' function
+            //console.log(integrate(1, 3, 4, function(x) { return Math.pow(x,2) }));
+
             //calculate and display output
                 //some function here...
 
