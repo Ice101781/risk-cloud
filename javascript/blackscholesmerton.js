@@ -14,6 +14,43 @@ cNorm = function(bound) {
 }
 
 
+//The Black-Scholes-Merton model for valuing multi-leg European-style options which pay a continuous dividend yield
+bsmTrade = function(properties) {
+
+    var self = function() { return };
+
+    for(prop in properties) { self[prop] = properties[prop] }
+
+    return self;
+}({
+
+    price: function(day, volObject) {
+
+        var //fee = g.CONTRACT_FEES/100,
+            t = (day/365).toFixed(6)/1,
+            S = g.STOCK_PRICE,
+            sum = 0;
+
+        for (var i=0; i<g.TRADE_LEGS; i++) {
+
+            var sign = g.LEG_SIGN[i+1],
+                type = g.CONTRACT_TYPE[i+1],
+                n = g.NUM_CONTRACTS[i+1],
+                K = g.STRIKE_PRICE[i+1],
+                T = g.EXPIRY[i+1],
+                D = g.DIV_YIELD[i+1],
+                r = g.RISK_FREE[i+1],
+                vol = volObject[i+1];
+
+            sum += sign*type*((S*cNorm(type*((Math.log(S/K)+((r-D+(Math.pow(vol,2)/2))*(T-t)))/(vol*Math.sqrt(T-t))))*Math.pow(Math.E,-D*(T-t)))
+                             -(K*cNorm(type*((Math.log(S/K)+((r-D-(Math.pow(vol,2)/2))*(T-t)))/(vol*Math.sqrt(T-t))))*Math.pow(Math.E,-r*(T-t))));
+        }
+
+        return sum;
+    }
+})
+
+
 //INITIAL PARAMETERS
 initialParams = function(properties) {
 
@@ -190,6 +227,7 @@ finalParams = function(properties) {
         elementAnim.fade("out", "final-params-container", 0.02, function() {
 
             removeChildren('trade-legs-params-container');
+            select("current-price-field").value = 100.25;
         });
 
         elementAnim.slide("in", "initial-params-container", 0.04, 0.5, 12.5);
@@ -312,10 +350,10 @@ finalParams = function(properties) {
         }
 
         //testing and debug
-        console.log("final params validation", g);
+        //console.log("final params validation", g);
 
         //more testing
-        //console.log();
+        //console.log(bsmTrade.price(0, {1: . , 2: . }));
 
         //calculate and display output
         //some function here...
