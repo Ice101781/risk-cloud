@@ -64,23 +64,24 @@ bsm = function(properties) {
             this.price += sign*type*((S*cNorm(type*d1)*Math.pow(Math.E,-D*(T-t)))-(K*cNorm(type*d2)*Math.pow(Math.E,-r*(T-t))));
 
             //option greeks
-            this.delta += (sign*type*Math.pow(Math.E,-D*(T-t))*cNorm(type*d1))*100;
+            this.delta += sign*type*Math.pow(Math.E,-D*(T-t))*cNorm(type*d1);
 
-            this.gamma += (sign*((Math.pow(Math.E,-D*(T-t))*Norm(d1))/(S*vol*Math.sqrt(T-t))))*100;
+            this.gamma += sign*(Math.pow(Math.E,-D*(T-t))*Norm(d1))/(S*vol*Math.sqrt(T-t));
 
-            //to do, this.theta +=
+            this.theta += sign*((S*Math.pow(Math.E,-D*(T-t))*(D*type*cNorm(type*d1)))
+                               -(K*Math.pow(Math.E,-r*(T-t))*((r*type*cNorm(type*d2))+((vol*Norm(d2))/(2*Math.sqrt(T-t))))))/365;
 
-            this.vega += sign*S*Math.pow(Math.E,-D*(T-t))*Norm(d1)*Math.sqrt(T-t);
+            this.vega += sign*(S*Math.pow(Math.E,-D*(T-t))*Norm(d1)*Math.sqrt(T-t))/100;
 
-            //to do, this.rho +=
+            this.rho += sign*(type*K*(T-t)*Math.pow(Math.E,-r*(T-t))*cNorm(type*d2))/100;
         }
 
         this.price = this.price.toFixed(2)/1;
-        this.delta = this.delta.toFixed(4)/1;
-        this.gamma = this.gamma.toFixed(4)/1;
-        this.theta = this.theta.toFixed(4)/1;
-        this.vega = this.vega.toFixed(4)/1;
-        this.rho = this.rho.toFixed(4)/1;
+        this.delta = this.delta.toFixed(5)/1;
+        this.gamma = this.gamma.toFixed(5)/1;
+        this.theta = this.theta.toFixed(5)/1;
+        this.vega = this.vega.toFixed(5)/1;
+        this.rho = this.rho.toFixed(5)/1;
     }
 })
 
@@ -387,7 +388,7 @@ finalParams = function(properties) {
         //console.log("final params validation", g);
 
         //more testing
-        //console.log(bsm.trade(0, {1: . , 2: . }), bsm.price, bsm.delta, bsm.gamma, bsm.theta, bsm.vega, bsm.rho);
+        console.log(bsm.trade(0, {1: .0969 /*, 2: .*/}), bsm.price, bsm.delta, bsm.gamma, bsm.theta, bsm.vega, bsm.rho);
 
         //calculate and display output
         //some function here...
