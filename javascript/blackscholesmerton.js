@@ -1,21 +1,28 @@
-﻿//Cumulative Standard Normal Distribution function
+﻿//PDF of the Standard Normal Distribution function
+Norm = function(x) {
+
+    return (1/Math.sqrt(2*Math.PI))*Math.pow(Math.E, (-1/2)*Math.pow(x,2));
+}
+
+
+//Cumulative Standard Normal Distribution function
 cNorm = function(bound) {
 
     switch(bound<0) {
 
         case true:
-            return ((1/2)-(1/(Math.sqrt(2*Math.PI)))*integrate(bound, 0, 10, function(x) { return Math.pow(Math.E, (-1/2)*Math.pow(x,2)) })).toFixed(5)/1;
+            return ((1/2)-integrate(bound, 0, 10, Norm)).toFixed(5)/1;
             break;
 
         case false:
-            return ((1/2)+(1/(Math.sqrt(2*Math.PI)))*integrate(0, bound, 10, function(x) { return Math.pow(Math.E, (-1/2)*Math.pow(x,2)) })).toFixed(5)/1;
+            return ((1/2)+integrate(0, bound, 10, Norm)).toFixed(5)/1;
             break;
     }
 }
 
 
 //The Black-Scholes-Merton model for valuing multi-leg European-style options which pay a continuous dividend yield
-bsmTrade = function(properties) {
+bsm = function(properties) {
 
     var self = function() { return };
 
@@ -24,29 +31,56 @@ bsmTrade = function(properties) {
     return self;
 }({
 
-    price: function(day, volObject) {
+    price: 0,
+    delta: 0,
+    gamma: 0,
+    theta: 0,
+    vega: 0,
+    rho: 0,
 
-        var //fee = g.CONTRACT_FEES/100,
-            t = (day/365).toFixed(6)/1,
+    trade: function(day, volObject) {
+
+        //local vars
+        var t = (day/365).toFixed(6)/1,
             S = g.STOCK_PRICE,
-            sum = 0;
+            //fee = g.CONTRACT_FEES/100,
 
-        for (var i=0; i<g.TRADE_LEGS; i++) {
+            sign, type, n, K, T, D, r, vol, d1, d2;
 
-            var sign = g.LEG_SIGN[i+1],
-                type = g.CONTRACT_TYPE[i+1],
-                n = g.NUM_CONTRACTS[i+1],
-                K = g.STRIKE_PRICE[i+1],
-                T = g.EXPIRY[i+1],
-                D = g.DIV_YIELD[i+1],
-                r = g.RISK_FREE[i+1],
-                vol = volObject[i+1];
+        for(var i=0; i<g.TRADE_LEGS; i++) {
 
-            sum += sign*type*((S*cNorm(type*((Math.log(S/K)+((r-D+(Math.pow(vol,2)/2))*(T-t)))/(vol*Math.sqrt(T-t))))*Math.pow(Math.E,-D*(T-t)))
-                             -(K*cNorm(type*((Math.log(S/K)+((r-D-(Math.pow(vol,2)/2))*(T-t)))/(vol*Math.sqrt(T-t))))*Math.pow(Math.E,-r*(T-t))));
+            sign = g.LEG_SIGN[i+1];
+            type = g.CONTRACT_TYPE[i+1];
+            n = g.NUM_CONTRACTS[i+1];
+            K = g.STRIKE_PRICE[i+1];
+            T = g.EXPIRY[i+1];
+            D = g.DIV_YIELD[i+1];
+            r = g.RISK_FREE[i+1];
+            vol = volObject[i+1];
+            d1 = ((Math.log(S/K)+((r-D+(Math.pow(vol,2)/2))*(T-t)))/(vol*Math.sqrt(T-t)));
+            d2 = d1-(vol*Math.sqrt(T-t));
+
+            //option price
+            this.price += sign*type*((S*cNorm(type*d1)*Math.pow(Math.E,-D*(T-t)))-(K*cNorm(type*d2)*Math.pow(Math.E,-r*(T-t))));
+
+            //option greeks
+            this.delta += (sign*type*Math.pow(Math.E,-D*(T-t))*cNorm(type*d1))*100;
+
+            this.gamma += (sign*((Math.pow(Math.E,-D*(T-t))*Norm(d1))/(S*vol*Math.sqrt(T-t))))*100;
+
+            //to do, this.theta +=
+
+            this.vega += sign*S*Math.pow(Math.E,-D*(T-t))*Norm(d1)*Math.sqrt(T-t);
+
+            //to do, this.rho +=
         }
 
-        return sum;
+        this.price = this.price.toFixed(2)/1;
+        this.delta = this.delta.toFixed(4)/1;
+        this.gamma = this.gamma.toFixed(4)/1;
+        this.theta = this.theta.toFixed(4)/1;
+        this.vega = this.vega.toFixed(4)/1;
+        this.rho = this.rho.toFixed(4)/1;
     }
 })
 
@@ -353,7 +387,7 @@ finalParams = function(properties) {
         //console.log("final params validation", g);
 
         //more testing
-        //console.log(bsmTrade.price(0, {1: . , 2: . }));
+        //console.log(bsm.trade(0, {1: . , 2: . }), bsm.price, bsm.delta, bsm.gamma, bsm.theta, bsm.vega, bsm.rho);
 
         //calculate and display output
         //some function here...
