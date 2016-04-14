@@ -15,7 +15,7 @@
 }
 
 #user-params-container {
-  height: 31vw;
+  height: 31.5vw;
   width: 92vw;
   margin-left: 3.375vw;
   /*background-color: lightyellow;*/
@@ -34,21 +34,21 @@
   height: 12.5vw;
   width: 35vw;
   margin-left: 28vw;
-  background-color: #fafafa;
+  background-color: #f1f1f1;
   border-radius: 0.3vw;
 }
 
 #initial-params-sub-container {
   width: 32vw;
-  margin-top: 1.625vw;
+  margin-top: 1.5vw;
   margin-left: 1.5vw;
-  background-color: #f0f0f0;
+  padding-bottom: 0.125vw;
+  background-color: #fafafa;
 }
 
 #final-params-container {
-  height: 31vw;
-  margin-left: 21.75vw;
-  background-color: #fafafa;
+  height: 31.5vw;
+  background-color: #f1f1f1;
   border-radius: 0.3vw;
   opacity: 0;
 }
@@ -60,7 +60,7 @@
 
 .trade-leg {
   display: inline-block;
-  height: 24vw;
+  height: 24.5vw;
   width: 20vw;
   margin-left: 1.25vw;
   margin-right: 1.25vw;
@@ -68,7 +68,7 @@
 
 .leg-sub-container {
   margin-bottom: 0.5vw;
-  background-color: #f0f0f0;
+  background-color: #fafafa;
   border-radius: 0.3vw;
 }
 
@@ -173,8 +173,8 @@ input[type=radio]:checked + .radio {
   display: inline-block;
   margin-left: 1.5vw;
   margin-top: 1.25vw;
+  background-color: #fafafa;
   border-radius: 0.3vw;
-  background-color: #f0f0f0;
 }
 
 #fees-field, #current-price-field {

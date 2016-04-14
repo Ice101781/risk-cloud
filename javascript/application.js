@@ -12,27 +12,7 @@ var g = {
     DIV_YIELD : {},
     RISK_FREE : {},
     OPTION_PRICE : {},
-    STOCK_PRICE : null,
-
-    reset: function() {
-
-        for(elem in this) {
-
-            switch(typeof this[elem]) {
-
-                case 'object':
-                    this[elem] = {};
-                    break;
-
-                case 'number':
-                    this[elem] = null;
-                    break;
-
-                default:
-                    break;
-            }
-        }
-    }
+    STOCK_PRICE : null
 };
 
 //END GLOBAL PARAMETERS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -232,7 +212,7 @@ textNumFields = function(properties) {
 
             case "false":
                 type = "in";
-                color = '#f0f0f0';
+                color = '#fafafa';
                 select(container+'-1').setAttribute("data-clicked", "true");
                 break;
         }
@@ -241,6 +221,7 @@ textNumFields = function(properties) {
         for (var i=1; i<g.TRADE_LEGS; i++) {
 
             (function(index) {
+
                 elementAnim.ease(type, container+'-'+(index+1), 0.25, maxHeight, function() {
 
                     if(type == "out") {select(field+'-field-'+(index+1)).value = 0}
@@ -297,6 +278,28 @@ twoWayRadios = function(properties) {
         select(buttonArray[bin][0]+"-"+"radio-"+(index+1)).setAttribute("checked", "");
     }
 })
+
+
+//Reset pre-defined parameter values in an object
+reset = function(obj) {
+
+    for(elem in obj) {
+
+        switch(typeof obj[elem]) {
+
+            case 'object':
+                obj[elem] = {};
+                break;
+
+            case 'number':
+                obj[elem] = null;
+                break;
+
+            default:
+                break;
+        }
+    }
+}
 
 
 //Object size - thanks to James Coglan on stackoverflow.com for this

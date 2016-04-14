@@ -21,6 +21,43 @@ cNorm = function(bound) {
 }
 
 
+//The Newton-Raphson method for extracting implied volatility from a market option price
+newtRaph = function() {
+
+    var S = g.STOCK_PRICE,
+        volObj = {};
+
+    for(var i=0; i<g.TRADE_LEGS; i++) {
+
+        var type = g.CONTRACT_TYPE[i+1],
+            n = g.NUM_CONTRACTS[i+1],
+            K = g.STRIKE_PRICE[i+1],
+            T = g.EXPIRY[i+1],
+            D = g.DIV_YIELD[i+1],
+            r = g.RISK_FREE[i+1],
+            optPrice = g.OPTION_PRICE[i+1],
+            bsmPrice = 0,
+            volEst = 0.2;
+
+        while(Math.abs(optPrice-bsmPrice) > 0.01) {
+
+            var d1 = (Math.log(S/K)+((r-D+(Math.pow(volEst,2)/2))*T))/(volEst*Math.sqrt(T)),
+                d2 = d1-(volEst*Math.sqrt(T)),
+
+                bsmPrice = type*((S*cNorm(type*d1)*Math.pow(Math.E,-D*T))-(K*cNorm(type*d2)*Math.pow(Math.E,-r*T))),
+                bsmVega = S*Math.pow(Math.E,-D*T)*Norm(d1)*Math.sqrt(T);
+
+            volEst += (optPrice-bsmPrice)/bsmVega;
+        }
+
+        //rounding
+        volObj[i+1] = volEst.toFixed(5)/1;
+    }
+
+    return volObj;
+}
+
+
 //The Black-Scholes-Merton model for valuing multi-leg European-style options which pay a continuous dividend yield
 bsm = function(properties) {
 
@@ -32,56 +69,49 @@ bsm = function(properties) {
 }({
 
     price: 0,
-    delta: 0,
-    gamma: 0,
-    theta: 0,
-    vega: 0,
-    rho: 0,
+    
+    greeks: {},
 
-    trade: function(day, volObject) {
+    trade: function(day, volObj) {
 
         //local vars
         var t = (day/365).toFixed(6)/1,
-            S = g.STOCK_PRICE,
-            //fee = g.CONTRACT_FEES/100,
-
-            sign, type, n, K, T, D, r, vol, d1, d2;
+            S = g.STOCK_PRICE;
 
         for(var i=0; i<g.TRADE_LEGS; i++) {
 
-            sign = g.LEG_SIGN[i+1];
-            type = g.CONTRACT_TYPE[i+1];
-            n = g.NUM_CONTRACTS[i+1];
-            K = g.STRIKE_PRICE[i+1];
-            T = g.EXPIRY[i+1];
-            D = g.DIV_YIELD[i+1];
-            r = g.RISK_FREE[i+1];
-            vol = volObject[i+1];
-            d1 = ((Math.log(S/K)+((r-D+(Math.pow(vol,2)/2))*(T-t)))/(vol*Math.sqrt(T-t)));
-            d2 = d1-(vol*Math.sqrt(T-t));
+            var sign = g.LEG_SIGN[i+1],
+                type = g.CONTRACT_TYPE[i+1],
+                n = g.NUM_CONTRACTS[i+1],
+                K = g.STRIKE_PRICE[i+1],
+                T = g.EXPIRY[i+1],
+                D = g.DIV_YIELD[i+1],
+                r = g.RISK_FREE[i+1],
+                vol = volObj[i+1],
+                d1 = (Math.log(S/K)+((r-D+(Math.pow(vol,2)/2))*(T-t)))/(vol*Math.sqrt(T-t)),
+                d2 = d1-(vol*Math.sqrt(T-t));
 
             //option price
             this.price += sign*type*((S*cNorm(type*d1)*Math.pow(Math.E,-D*(T-t)))-(K*cNorm(type*d2)*Math.pow(Math.E,-r*(T-t))));
 
             //option greeks
-            this.delta += sign*type*Math.pow(Math.E,-D*(T-t))*cNorm(type*d1);
+            this.greeks = lastKey(this.greeks) !== 0 ? this.greeks : {delta: 0, gamma: 0, theta: 0, vega: 0, rho: 0};
 
-            this.gamma += sign*(Math.pow(Math.E,-D*(T-t))*Norm(d1))/(S*vol*Math.sqrt(T-t));
+                this.greeks.delta += sign*type*Math.pow(Math.E,-D*(T-t))*cNorm(type*d1);
 
-            this.theta += sign*((S*Math.pow(Math.E,-D*(T-t))*(D*type*cNorm(type*d1)))
-                               -(K*Math.pow(Math.E,-r*(T-t))*((r*type*cNorm(type*d2))+((vol*Norm(d2))/(2*Math.sqrt(T-t))))))/365;
+                this.greeks.gamma += sign*(Math.pow(Math.E,-D*(T-t))*Norm(d1))/(S*vol*Math.sqrt(T-t));
 
-            this.vega += sign*(S*Math.pow(Math.E,-D*(T-t))*Norm(d1)*Math.sqrt(T-t))/100;
+                this.greeks.theta += sign*((S*Math.pow(Math.E,-D*(T-t))*(D*type*cNorm(type*d1)))
+                                          -(K*Math.pow(Math.E,-r*(T-t))*((r*type*cNorm(type*d2))+((vol*Norm(d2))/(2*Math.sqrt(T-t))))))/365;
 
-            this.rho += sign*(type*K*(T-t)*Math.pow(Math.E,-r*(T-t))*cNorm(type*d2))/100;
+                this.greeks.vega += sign*(S*Math.pow(Math.E,-D*(T-t))*Norm(d1)*Math.sqrt(T-t))/100;
+
+                this.greeks.rho += sign*(type*K*(T-t)*Math.pow(Math.E,-r*(T-t))*cNorm(type*d2))/100;
         }
 
+        //rounding
         this.price = this.price.toFixed(2)/1;
-        this.delta = this.delta.toFixed(5)/1;
-        this.gamma = this.gamma.toFixed(5)/1;
-        this.theta = this.theta.toFixed(5)/1;
-        this.vega = this.vega.toFixed(5)/1;
-        this.rho = this.rho.toFixed(5)/1;
+        for(greek in this.greeks) { this.greeks[greek] = this.greeks[greek].toFixed(4)/1 }
     }
 })
 
@@ -217,8 +247,8 @@ finalParams = function(properties) {
                 case 3:
                     parent.width = 70 + 'vw';
                     parent.marginLeft = 11 + 'vw';
-                    child1.marginLeft = 0.3 + 'vw';
-                    child2.marginLeft = 13.7 + 'vw';
+                    child1.marginLeft = 0.2625 + 'vw';
+                    child2.marginLeft = 13.5 + 'vw';
                     break;
 
                 case 4:
@@ -256,7 +286,8 @@ finalParams = function(properties) {
     destroy: function() {
 
         //clear params
-        g.reset();
+        reset(g);
+        reset(bsm);
 
         //destroy trade legs; transitions
         elementAnim.fade("out", "final-params-container", 0.02, function() {
@@ -388,7 +419,7 @@ finalParams = function(properties) {
         //console.log("final params validation", g);
 
         //more testing
-        console.log(bsm.trade(0, {1: .0969 /*, 2: .*/}), bsm.price, bsm.delta, bsm.gamma, bsm.theta, bsm.vega, bsm.rho);
+        console.log(bsm.trade(0, newtRaph()), bsm.price, bsm.greeks.delta, bsm.greeks.gamma, bsm.greeks.theta, bsm.greeks.vega, bsm.greeks.rho);
 
         //calculate and display output
         //some function here...
