@@ -4,6 +4,7 @@ var g = {
 
     TRADE_LEGS : null,
     CONTRACT_FEES : null,
+    STOCK_PRICE : null,
     LEG_SIGN : {},
     CONTRACT_TYPE : {},
     NUM_CONTRACTS : {},
@@ -12,7 +13,7 @@ var g = {
     DIV_YIELD : {},
     RISK_FREE : {},
     OPTION_PRICE : {},
-    STOCK_PRICE : null
+    IMPLIED_VOL : {}
 };
 
 //END GLOBAL PARAMETERS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -287,12 +288,12 @@ reset = function(obj) {
 
         switch(typeof obj[elem]) {
 
-            case 'object':
-                obj[elem] = {};
-                break;
-
             case 'number':
                 obj[elem] = null;
+                break;
+
+            case 'object':
+                obj[elem] = {};
                 break;
 
             default:

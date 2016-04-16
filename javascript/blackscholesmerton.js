@@ -11,21 +11,18 @@ cNorm = function(bound) {
     switch(bound<0) {
 
         case true:
-            return ((1/2)-integrate(bound, 0, 10, Norm)).toFixed(5)/1;
+            return +((1/2)-integrate(bound, 0, 10, Norm)).toFixed(5);
             break;
 
         case false:
-            return ((1/2)+integrate(0, bound, 10, Norm)).toFixed(5)/1;
+            return +((1/2)+integrate(0, bound, 10, Norm)).toFixed(5);
             break;
     }
 }
 
 
-//The Newton-Raphson method for extracting implied volatility from a market option price
-newtRaph = function() {
-
-    var S = g.STOCK_PRICE,
-        volObj = {};
+//The Newton-Raphson method for extracting implied volatility from market option prices
+newtRaph = function(S) {
 
     for(var i=0; i<g.TRADE_LEGS; i++) {
 
@@ -39,27 +36,25 @@ newtRaph = function() {
             bsmPrice = 0,
             volEst = 0.2;
 
-        while(Math.abs(optPrice-bsmPrice) > 0.01) {
+        while(Math.abs(optPrice-bsmPrice)>0.01) {
 
             var d1 = (Math.log(S/K)+((r-D+(Math.pow(volEst,2)/2))*T))/(volEst*Math.sqrt(T)),
                 d2 = d1-(volEst*Math.sqrt(T)),
-
-                bsmPrice = type*((S*cNorm(type*d1)*Math.pow(Math.E,-D*T))-(K*cNorm(type*d2)*Math.pow(Math.E,-r*T))),
                 bsmVega = S*Math.pow(Math.E,-D*T)*Norm(d1)*Math.sqrt(T);
+
+            bsmPrice = type*((S*cNorm(type*d1)*Math.pow(Math.E,-D*T))-(K*cNorm(type*d2)*Math.pow(Math.E,-r*T)));
 
             volEst += (optPrice-bsmPrice)/bsmVega;
         }
 
-        //rounding
-        volObj[i+1] = volEst.toFixed(5)/1;
+        //round and store implied vol
+        g.IMPLIED_VOL[i+1] = +volEst.toFixed(6);
     }
-
-    return volObj;
 }
 
 
 //The Black-Scholes-Merton model for valuing multi-leg European-style options which pay a continuous dividend yield
-bsm = function(properties) {
+BSM = function(properties) {
 
     var self = function() { return };
 
@@ -72,46 +67,53 @@ bsm = function(properties) {
     
     greeks: {},
 
-    trade: function(day, volObj) {
+    calc: function(day) {
 
         //local vars
-        var t = (day/365).toFixed(6)/1,
+        var t = +(day/365).toFixed(6),
             S = g.STOCK_PRICE;
+
+        //Calculate implied volatilities
+        newtRaph(S);
 
         for(var i=0; i<g.TRADE_LEGS; i++) {
 
-            var sign = g.LEG_SIGN[i+1],
+            var signN = g.LEG_SIGN[i+1]*g.NUM_CONTRACTS[i+1],
                 type = g.CONTRACT_TYPE[i+1],
-                n = g.NUM_CONTRACTS[i+1],
                 K = g.STRIKE_PRICE[i+1],
                 T = g.EXPIRY[i+1],
                 D = g.DIV_YIELD[i+1],
                 r = g.RISK_FREE[i+1],
-                vol = volObj[i+1],
+                vol = g.IMPLIED_VOL[i+1],
                 d1 = (Math.log(S/K)+((r-D+(Math.pow(vol,2)/2))*(T-t)))/(vol*Math.sqrt(T-t)),
                 d2 = d1-(vol*Math.sqrt(T-t));
 
             //option price
-            this.price += sign*type*((S*cNorm(type*d1)*Math.pow(Math.E,-D*(T-t)))-(K*cNorm(type*d2)*Math.pow(Math.E,-r*(T-t))));
+            this.price += signN*type*((S*cNorm(type*d1)*Math.pow(Math.E,-D*(T-t)))-(K*cNorm(type*d2)*Math.pow(Math.E,-r*(T-t))));
 
             //option greeks
             this.greeks = lastKey(this.greeks) !== 0 ? this.greeks : {delta: 0, gamma: 0, theta: 0, vega: 0, rho: 0};
 
-                this.greeks.delta += sign*type*Math.pow(Math.E,-D*(T-t))*cNorm(type*d1);
+                this.greeks.delta += signN*type*Math.pow(Math.E,-D*(T-t))*cNorm(type*d1);
 
-                this.greeks.gamma += sign*(Math.pow(Math.E,-D*(T-t))*Norm(d1))/(S*vol*Math.sqrt(T-t));
+                this.greeks.gamma += signN*(Math.pow(Math.E,-D*(T-t))*Norm(d1))/(S*vol*Math.sqrt(T-t));
 
-                this.greeks.theta += sign*((S*Math.pow(Math.E,-D*(T-t))*(D*type*cNorm(type*d1)))
-                                          -(K*Math.pow(Math.E,-r*(T-t))*((r*type*cNorm(type*d2))+((vol*Norm(d2))/(2*Math.sqrt(T-t))))))/365;
+                this.greeks.theta += signN*((S*Math.pow(Math.E,-D*(T-t))*(D*type*cNorm(type*d1)))
+                                           -(K*Math.pow(Math.E,-r*(T-t))*((r*type*cNorm(type*d2))+((vol*Norm(d2))/(2*Math.sqrt(T-t))))))/365;
 
-                this.greeks.vega += sign*(S*Math.pow(Math.E,-D*(T-t))*Norm(d1)*Math.sqrt(T-t))/100;
+                this.greeks.vega += signN*(S*Math.pow(Math.E,-D*(T-t))*Norm(d1)*Math.sqrt(T-t))/100;
 
-                this.greeks.rho += sign*(type*K*(T-t)*Math.pow(Math.E,-r*(T-t))*cNorm(type*d2))/100;
+                this.greeks.rho += signN*(type*K*(T-t)*Math.pow(Math.E,-r*(T-t))*cNorm(type*d2))/100;
         }
 
         //rounding
-        this.price = this.price.toFixed(2)/1;
-        for(greek in this.greeks) { this.greeks[greek] = this.greeks[greek].toFixed(4)/1 }
+        this.price = +this.price.toFixed(2);
+        for(greek in this.greeks) {this.greeks[greek] = +this.greeks[greek].toFixed(6)}
+    },
+
+    data: function() {
+
+        
     }
 })
 
@@ -287,7 +289,7 @@ finalParams = function(properties) {
 
         //clear params
         reset(g);
-        reset(bsm);
+        reset(BSM);
 
         //destroy trade legs; transitions
         elementAnim.fade("out", "final-params-container", 0.02, function() {
@@ -320,12 +322,12 @@ finalParams = function(properties) {
             //evaluate text form input conditions
             numContractsFieldsCond = classInputCheck("num-contracts-field", g.TRADE_LEGS, ['>= 1', '== Math.floor(select(elem+"-"+(i+1)).value)']),
             strikePriceFieldsCond = classInputCheck("strike-price-field", g.TRADE_LEGS, ['> 0']),
-            expiryFieldsCond = classInputCheck("expiry-field", g.TRADE_LEGS, ['>= 0', '<= 1000', '== Math.floor(select(elem+"-"+(i+1)).value)']),
+            expiryFieldsCond = classInputCheck("expiry-field", g.TRADE_LEGS, ['>= 0', '<= 730', '== Math.floor(select(elem+"-"+(i+1)).value)']),
             divYieldFieldsCond = classInputCheck("div-yield-field", g.TRADE_LEGS, ['>= 0', '<= 100']),
             riskFreeFieldsCond = classInputCheck("risk-free-rate-field", g.TRADE_LEGS, ['>= 0', '<= 25']),
             optionPriceFieldsCond = classInputCheck("option-price-field", g.TRADE_LEGS, ['> 0']),
             stockPriceFieldCond = (select(stockPriceField).value != "" && select(stockPriceField).value > 0);
-        
+
 
         //input validation and error message handling
         switch(false) {
@@ -342,7 +344,7 @@ finalParams = function(properties) {
 
             case expiryFieldsCond[lastKey(expiryFieldsCond)]:
                 inputErrorMsg("expiry-field-"+lastKey(expiryFieldsCond),
-                              "Please enter a whole number greater than or equal to 0, and less than or equal to 1000, for the number "+
+                              "Please enter a whole number greater than or equal to 0, and less than or equal to 730, for the number "+
                               "of calendar days to expiry in this trade leg.");
                 break;
 
@@ -385,41 +387,43 @@ finalParams = function(properties) {
                     g.LEG_SIGN[(i+1)] = select("input[name=buy-sell-radio-"+(i+1)+"]:checked").value/1;
                     g.CONTRACT_TYPE[(i+1)] = select("input[name=call-put-radio-"+(i+1)+"]:checked").value/1;
                     g.NUM_CONTRACTS[(i+1)] = select("num-contracts-field-"+(i+1)).value/1;
-                    g.STRIKE_PRICE[(i+1)] = (select("strike-price-field-"+(i+1)).value/1).toFixed(2)/1;
-                    g.OPTION_PRICE[(i+1)] = (select("option-price-field-"+(i+1)).value/1).toFixed(2)/1;
+                    g.STRIKE_PRICE[(i+1)] = +(select("strike-price-field-"+(i+1)).value/1).toFixed(2);
+                    g.OPTION_PRICE[(i+1)] = +(select("option-price-field-"+(i+1)).value/1).toFixed(3);
 
                     if(select('leg-sub-container-2-1').getAttribute("data-clicked") == "false") {
 
-                        g.EXPIRY[(i+1)] = (i == 0) ? (select("expiry-field-"+(i+1)).value/365).toFixed(6)/1 : g.EXPIRY[1];
+                        g.EXPIRY[(i+1)] = (i == 0) ? +(select("expiry-field-"+(i+1)).value/365).toFixed(6) : g.EXPIRY[1];
                     } else {
-                        g.EXPIRY[(i+1)] = (select("expiry-field-"+(i+1)).value/365).toFixed(6)/1;
+                        g.EXPIRY[(i+1)] = +(select("expiry-field-"+(i+1)).value/365).toFixed(6);
                     }
 
 
                     if(select('leg-sub-container-3-1').getAttribute("data-clicked") == "false") {
 
-                        g.DIV_YIELD[(i+1)] = (i == 0) ? (select("div-yield-field-"+(i+1)).value/100).toFixed(4)/1 : g.DIV_YIELD[1];
+                        g.DIV_YIELD[(i+1)] = (i == 0) ? +(select("div-yield-field-"+(i+1)).value/100).toFixed(4) : g.DIV_YIELD[1];
                     } else {
-                        g.DIV_YIELD[(i+1)] = (select("div-yield-field-"+(i+1)).value/100).toFixed(4)/1;
+                        g.DIV_YIELD[(i+1)] = +(select("div-yield-field-"+(i+1)).value/100).toFixed(4);
                     }
 
 
                     if(select('leg-sub-container-4-1').getAttribute("data-clicked") == "false") {
 
-                        g.RISK_FREE[(i+1)] = (i == 0) ? (select("risk-free-rate-field-"+(i+1)).value/100).toFixed(4)/1 : g.RISK_FREE[1];
+                        g.RISK_FREE[(i+1)] = (i == 0) ? +(select("risk-free-rate-field-"+(i+1)).value/100).toFixed(4) : g.RISK_FREE[1];
                     } else {
-                        g.RISK_FREE[(i+1)] = (select("risk-free-rate-field-"+(i+1)).value/100).toFixed(4)/1;
+                        g.RISK_FREE[(i+1)] = +(select("risk-free-rate-field-"+(i+1)).value/100).toFixed(4);
                     }
                 }
 
-                g.STOCK_PRICE = (select("current-price-field").value/1).toFixed(2)/1;
+                g.STOCK_PRICE = +(select("current-price-field").value/1).toFixed(2);
         }
 
         //testing and debug
         //console.log("final params validation", g);
 
         //more testing
-        console.log(bsm.trade(0, newtRaph()), bsm.price, bsm.greeks.delta, bsm.greeks.gamma, bsm.greeks.theta, bsm.greeks.vega, bsm.greeks.rho);
+        console.log(BSM.calc(0),
+                    BSM.price, g.IMPLIED_VOL,
+                    BSM.greeks.delta, BSM.greeks.gamma, BSM.greeks.theta, BSM.greeks.vega, BSM.greeks.rho);
 
         //calculate and display output
         //some function here...
