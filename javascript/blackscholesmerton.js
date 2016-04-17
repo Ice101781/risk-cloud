@@ -29,7 +29,7 @@ newtRaph = function(S) {
         var type = g.CONTRACT_TYPE[i+1],
             n = g.NUM_CONTRACTS[i+1],
             K = g.STRIKE_PRICE[i+1],
-            T = g.EXPIRY[i+1],
+            T = +(g.EXPIRY[i+1]/365).toFixed(6),
             D = g.DIV_YIELD[i+1],
             r = g.RISK_FREE[i+1],
             optPrice = g.OPTION_PRICE[i+1],
@@ -81,7 +81,7 @@ BSM = function(properties) {
             var signN = g.LEG_SIGN[i+1]*g.NUM_CONTRACTS[i+1],
                 type = g.CONTRACT_TYPE[i+1],
                 K = g.STRIKE_PRICE[i+1],
-                T = g.EXPIRY[i+1],
+                T = +(g.EXPIRY[i+1]/365).toFixed(6),
                 D = g.DIV_YIELD[i+1],
                 r = g.RISK_FREE[i+1],
                 vol = g.IMPLIED_VOL[i+1],
@@ -113,7 +113,10 @@ BSM = function(properties) {
 
     data: function() {
 
-        
+        var expMin = objExtrema('min', g.EXPIRY),
+            volMax = +(3*objExtrema('max', g.IMPLIED_VOL)*Math.sqrt(expMin/365)).toFixed(6);
+
+        console.log(expMin,volMax);
     }
 })
 
@@ -392,9 +395,9 @@ finalParams = function(properties) {
 
                     if(select('leg-sub-container-2-1').getAttribute("data-clicked") == "false") {
 
-                        g.EXPIRY[(i+1)] = (i == 0) ? +(select("expiry-field-"+(i+1)).value/365).toFixed(6) : g.EXPIRY[1];
+                        g.EXPIRY[(i+1)] = (i == 0) ? +select("expiry-field-"+(i+1)).value : g.EXPIRY[1];
                     } else {
-                        g.EXPIRY[(i+1)] = +(select("expiry-field-"+(i+1)).value/365).toFixed(6);
+                        g.EXPIRY[(i+1)] = +select("expiry-field-"+(i+1)).value;
                     }
 
 
@@ -424,6 +427,8 @@ finalParams = function(properties) {
         console.log(BSM.calc(0),
                     BSM.price, g.IMPLIED_VOL,
                     BSM.greeks.delta, BSM.greeks.gamma, BSM.greeks.theta, BSM.greeks.vega, BSM.greeks.rho);
+
+        BSM.data();
 
         //calculate and display output
         //some function here...

@@ -314,6 +314,22 @@ lastKey = function(obj) {
 }
 
 
+//Object min and max - thanks to levi on stackoverflow.com for this
+objExtrema = function(extremum, obj) {
+
+    switch(extremum) {
+
+        case 'min':
+            return min = Object.keys(obj).reduce(function(m,n) {return obj[n] < m ? obj[n] : m}, Infinity);
+            break;
+
+        case 'max':
+            return max = Object.keys(obj).reduce(function(m,n) {return obj[n] > m ? obj[n] : m}, -Infinity);
+            break;
+    }
+}
+
+
 //Return an object with with numbered id strings; current support for arrays with up to 2 id string types
 idStringsObject = function(stringArray, indexMax) {
 
