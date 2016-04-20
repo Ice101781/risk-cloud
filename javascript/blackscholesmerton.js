@@ -67,13 +67,12 @@ BSM = function(properties) {
     
     greeks: {},
 
-    calc: function(day) {
+    calc: function(t,S) {
 
-        //local vars
-        var t = +(day/365).toFixed(6),
-            S = g.STOCK_PRICE;
+        //convert number of days to a rounded fractional year
+        var t = +(t/365).toFixed(6);
 
-        //Calculate implied volatilities
+        //calculate implied volatilities
         newtRaph(S);
 
         for(var i=0; i<g.TRADE_LEGS; i++) {
@@ -109,14 +108,26 @@ BSM = function(properties) {
         //rounding
         this.price = +this.price.toFixed(2);
         for(greek in this.greeks) {this.greeks[greek] = +this.greeks[greek].toFixed(6)}
+
+        //testing
+        console.log(BSM.price, g.IMPLIED_VOL, BSM.greeks.delta, BSM.greeks.gamma, BSM.greeks.theta, BSM.greeks.vega, BSM.greeks.rho);
     },
 
     data: function() {
 
         var expMin = objExtrema('min', g.EXPIRY),
-            volMax = +(3*objExtrema('max', g.IMPLIED_VOL)*Math.sqrt(expMin/365)).toFixed(6);
+            volMax = +(objExtrema('max', g.IMPLIED_VOL)*Math.sqrt(expMin/365)).toFixed(6),
+            res = 500,
+            sRange = [];
 
-        console.log(expMin,volMax);
+        //populate an array containing stock prices in a range of +-(3*volMax), and delete any duplicate prices - DOES NOT GUARANTEE EQUIDISTANT PRICES
+        for(var i=0; i<res; i++) { sRange.push(+(g.STOCK_PRICE*(1-3*volMax*(1-(2*i/res)))).toFixed(2)) }
+        sRange = uniqArr(sRange);
+
+        //
+
+        //testing
+        console.log(sRange[Math.floor(sRange.length/2)], sRange.length, sRange);
     }
 })
 
@@ -325,7 +336,7 @@ finalParams = function(properties) {
             //evaluate text form input conditions
             numContractsFieldsCond = classInputCheck("num-contracts-field", g.TRADE_LEGS, ['>= 1', '== Math.floor(select(elem+"-"+(i+1)).value)']),
             strikePriceFieldsCond = classInputCheck("strike-price-field", g.TRADE_LEGS, ['> 0']),
-            expiryFieldsCond = classInputCheck("expiry-field", g.TRADE_LEGS, ['>= 0', '<= 730', '== Math.floor(select(elem+"-"+(i+1)).value)']),
+            expiryFieldsCond = classInputCheck("expiry-field", g.TRADE_LEGS, ['>= 0', '<= 183', '== Math.floor(select(elem+"-"+(i+1)).value)']),
             divYieldFieldsCond = classInputCheck("div-yield-field", g.TRADE_LEGS, ['>= 0', '<= 100']),
             riskFreeFieldsCond = classInputCheck("risk-free-rate-field", g.TRADE_LEGS, ['>= 0', '<= 25']),
             optionPriceFieldsCond = classInputCheck("option-price-field", g.TRADE_LEGS, ['> 0']),
@@ -347,7 +358,7 @@ finalParams = function(properties) {
 
             case expiryFieldsCond[lastKey(expiryFieldsCond)]:
                 inputErrorMsg("expiry-field-"+lastKey(expiryFieldsCond),
-                              "Please enter a whole number greater than or equal to 0, and less than or equal to 730, for the number "+
+                              "Please enter a whole number greater than or equal to 0, and less than or equal to 183, for the number "+
                               "of calendar days to expiry in this trade leg.");
                 break;
 
@@ -424,10 +435,7 @@ finalParams = function(properties) {
         //console.log("final params validation", g);
 
         //more testing
-        console.log(BSM.calc(0),
-                    BSM.price, g.IMPLIED_VOL,
-                    BSM.greeks.delta, BSM.greeks.gamma, BSM.greeks.theta, BSM.greeks.vega, BSM.greeks.rho);
-
+        BSM.calc(0, g.STOCK_PRICE);
         BSM.data();
 
         //calculate and display output

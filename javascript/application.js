@@ -303,7 +303,7 @@ reset = function(obj) {
 }
 
 
-//Object size - thanks to James Coglan on stackoverflow.com for this
+//Object size - thanks to 'James Coglan' on stackoverflow.com for this
 lastKey = function(obj) {
 
     var size = 0;
@@ -314,7 +314,7 @@ lastKey = function(obj) {
 }
 
 
-//Object min and max - thanks to levi on stackoverflow.com for this
+//Object min and max - thanks to 'levi' on stackoverflow.com for this
 objExtrema = function(extremum, obj) {
 
     switch(extremum) {
@@ -327,6 +327,15 @@ objExtrema = function(extremum, obj) {
             return max = Object.keys(obj).reduce(function(m,n) {return obj[n] > m ? obj[n] : m}, -Infinity);
             break;
     }
+}
+
+
+//Remove duplicate elements from an array - thanks to 'georg' on stackoverflow.com for this 
+uniqArr = function(array) {
+
+    array = array.filter(function(element, index) { return array.indexOf(element) == index });
+
+    return array;
 }
 
 
