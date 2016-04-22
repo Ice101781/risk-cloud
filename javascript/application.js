@@ -2,9 +2,10 @@
 
 var g = {
 
-    TRADE_LEGS : null,
-    CONTRACT_FEES : null,
-    STOCK_PRICE : null,
+    TRADE_LEGS : 0,
+    CONTRACT_FEES : 0,
+    STOCK_PRICE : 0,
+
     LEG_SIGN : {},
     CONTRACT_TYPE : {},
     NUM_CONTRACTS : {},
@@ -12,8 +13,17 @@ var g = {
     EXPIRY : {},
     DIV_YIELD : {},
     RISK_FREE : {},
+
     OPTION_PRICE : {},
-    IMPLIED_VOL : {}
+    IMPLIED_VOL : {},
+    STOCK_RANGE : {},
+
+    PROFITLOSS_DATA : {},
+    DELTA_DATA : {},
+    GAMMA_DATA : {},
+    THETA_DATA : {},
+    VEGA_DATA : {},
+    RHO_DATA : {}
 };
 
 //END GLOBAL PARAMETERS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -289,7 +299,7 @@ reset = function(obj) {
         switch(typeof obj[elem]) {
 
             case 'number':
-                obj[elem] = null;
+                obj[elem] = 0;
                 break;
 
             case 'object':
@@ -498,9 +508,6 @@ nav = function(properties) {
                 }
             }
         })();
-
-        //testing and debug
-        console.log("new HTML page creation", g);
     },
 
     anim: function(index) {

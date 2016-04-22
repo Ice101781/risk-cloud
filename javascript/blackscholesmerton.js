@@ -67,13 +67,10 @@ BSM = function(properties) {
     
     greeks: {},
 
-    calc: function(t,S) {
+    calc: function(t, S) {
 
         //convert number of days to a rounded fractional year
         var t = +(t/365).toFixed(6);
-
-        //calculate implied volatilities
-        newtRaph(S);
 
         for(var i=0; i<g.TRADE_LEGS; i++) {
 
@@ -106,28 +103,62 @@ BSM = function(properties) {
         }
 
         //rounding
-        this.price = +this.price.toFixed(2);
-        for(greek in this.greeks) {this.greeks[greek] = +this.greeks[greek].toFixed(6)}
-
-        //testing
-        console.log(BSM.price, g.IMPLIED_VOL, BSM.greeks.delta, BSM.greeks.gamma, BSM.greeks.theta, BSM.greeks.vega, BSM.greeks.rho);
+        this.price = Math.round(this.price*10000)/10000;
+        for(greek in this.greeks) { this.greeks[greek] = Math.round(this.greeks[greek]*1000000)/1000000 }
     },
 
     data: function() {
 
+        //calculate implied volatilities
+        newtRaph(g.STOCK_PRICE);
+
+        //adjust the maximum annualized volatility in the trade with respect to the shortest expiry; create an empty array for the range of stock prices
         var expMin = objExtrema('min', g.EXPIRY),
             volMax = +(objExtrema('max', g.IMPLIED_VOL)*Math.sqrt(expMin/365)).toFixed(6),
-            res = 500,
-            sRange = [];
+            sRange = [],
+            num = 500;
 
-        //populate an array containing stock prices in a range of +-(3*volMax), and delete any duplicate prices - DOES NOT GUARANTEE EQUIDISTANT PRICES
-        for(var i=0; i<res; i++) { sRange.push(+(g.STOCK_PRICE*(1-3*volMax*(1-(2*i/res)))).toFixed(2)) }
+        //populate an array containing stock prices in a range of +-(3*volMax), then delete any duplicate prices - DOES NOT GUARANTEE EQUIDISTANT PRICES
+        for(i=0; i<num; i++) { sRange.push(+(g.STOCK_PRICE*(1-(3*volMax)*(1-(2*i/num)))).toFixed(2)) }
         sRange = uniqArr(sRange);
 
-        //
+        //calculate the trade value on the first day of the trade
+        this.calc(0, g.STOCK_PRICE);
+        var origPrice = this.price;
+
+        //create objects for price and greeks data and populate over time and stock price
+        for(j=0; j<expMin; j++) {
+
+            g.PROFITLOSS_DATA[j] = {};
+            g.DELTA_DATA[j] = {};
+            g.GAMMA_DATA[j] = {};
+            g.THETA_DATA[j] = {};
+            g.VEGA_DATA[j] = {};
+            g.RHO_DATA[j] = {};
+
+            for(k=0; k<num; k++) {
+
+                //reset and calculate current values
+                reset(this);
+                this.calc(j, sRange[k]);
+
+                //store current values
+                g.PROFITLOSS_DATA[j][k] = Math.round((this.price-origPrice)*10000)/100;// <--- NEED TO ADD FEES HERE
+                g.DELTA_DATA[j][k] = Math.round(this.greeks.delta*10000)/100;
+                g.GAMMA_DATA[j][k] = Math.round(this.greeks.gamma*10000)/100;
+                g.THETA_DATA[j][k] = Math.round(this.greeks.theta*10000)/100;
+                g.VEGA_DATA[j][k] = Math.round(this.greeks.vega*10000)/100;
+                g.RHO_DATA[j][k] = Math.round(this.greeks.rho*10000)/100;
+
+                //on the last day, export the expected range of stock prices over the life of the trade
+                if(j == expMin-1) { g.STOCK_RANGE[k] = sRange[k] }
+            }
+        }
+
+        reset(this);
 
         //testing
-        console.log(sRange[Math.floor(sRange.length/2)], sRange.length, sRange);
+        //console.log();
     }
 })
 
@@ -167,9 +198,6 @@ initialParams = function(properties) {
                 //remove initial params and create elements needed to specify final params; transitions
                 elementAnim.slide("out", "initial-params-container", 0.04, 0.5, 12.5);
                 finalParams.create(elementAnim.fade("in", "final-params-container", 0.02));
-
-                //testing and debug
-                console.log("final params validation", g);
         }
     }
 })
@@ -313,9 +341,6 @@ finalParams = function(properties) {
         });
 
         elementAnim.slide("in", "initial-params-container", 0.04, 0.5, 12.5);
-
-        //testing and debug
-        console.log("final params validation", g);
     },
 
     validate: function() {
@@ -432,10 +457,6 @@ finalParams = function(properties) {
         }
 
         //testing and debug
-        //console.log("final params validation", g);
-
-        //more testing
-        BSM.calc(0, g.STOCK_PRICE);
         BSM.data();
 
         //calculate and display output
