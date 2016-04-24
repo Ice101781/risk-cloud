@@ -1,11 +1,11 @@
-﻿//GLOBAL PARAMETERS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+﻿//GLOBAL OBJECT//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var g = {
 
+    //user-defined parameters
     TRADE_LEGS : 0,
     CONTRACT_FEES : 0,
     STOCK_PRICE : 0,
-
     LEG_SIGN : {},
     CONTRACT_TYPE : {},
     NUM_CONTRACTS : {},
@@ -13,11 +13,11 @@ var g = {
     EXPIRY : {},
     DIV_YIELD : {},
     RISK_FREE : {},
-
     OPTION_PRICE : {},
+
+    //application output
     IMPLIED_VOL : {},
     STOCK_RANGE : {},
-
     PROFITLOSS_DATA : {},
     DELTA_DATA : {},
     GAMMA_DATA : {},
@@ -26,11 +26,176 @@ var g = {
     RHO_DATA : {}
 };
 
-//END GLOBAL PARAMETERS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//END GLOBAL OBJECT//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+//HEADER/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//nav menu
+nav = function(properties) {
+
+    var self = function() { return };
+      
+    for(prop in properties) { self[prop] = properties[prop] }
+
+    return self;   
+}({
+
+    create: function() {
+
+        //main header container
+        element({tag: "div", attributes: {id: "header-main"}}, ".body");
+
+        //icon
+        element({tag: "a", attributes: {id: "icon-link", href: "../html/home.html"}}, "header-main");
+
+        element({tag: "img", attributes: {id: "icon", alt: "Risk Cloud", src: "../images/icon.png"}}, "icon-link");
+
+        //navigation menu
+        //main
+        (mainMenu = function() {
+
+            var headings = { 1: "models", 2: "info" };
+
+            element({tag: "ul", attributes: {id: "nav-menu"}}, "header-main");
+
+            for(num in headings) {
+
+                element({tag: "li", attributes: {id: "nav-list-item-"+num, class: "nav-list-item"}}, "nav-menu");
+
+                element({tag: "a", content: headings[num], attributes: {
+                                                               href: "#",
+                                                               class: "nav-list-item-link",
+                                                               onclick: "nav.anim("+num+")"
+                                                           }},
+                                                           "nav-list-item-"+num);
+            }
+        })();
+
+        //sub-menus
+        (subMenus = function() {
+
+            var subHeadings = {   
+
+                1: { a: {heading: "Black-Scholes-Merton", link: "../html/BSMpage.html"}, 
+                   /*b: {heading: "Variance-Gamma",   link: "#"}*/ },
+
+                2: { a: {heading: "about", link: "#"},
+                     b: {heading: "more", link: "#"} }
+            };
+
+            for(num in subHeadings) {
+
+                element({tag: "div", attributes: {id: "nav-sub-container-"+num, class: "nav-sub-container", "data-open": "false"}}, ".body");
+
+                element({tag: "ul", attributes: {id: "nav-sub-menu-"+num, class: "nav-sub-menu"}}, "nav-sub-container-"+num);
+
+                for(letter in subHeadings[num]) {
+
+                    element({tag: "li", attributes: {id: "nav-sub-list-item-"+num+letter, class: "nav-sub-list-item"}}, "nav-sub-menu-"+num);
+
+                    element({tag: "a", content: subHeadings[num][letter].heading, attributes: {
+                                                                                      href: subHeadings[num][letter].link, 
+                                                                                      class: "nav-sub-list-item-link"
+                                                                                  }},
+                                                                                  "nav-sub-list-item-"+num+letter);
+                }
+            }
+        })();
+    },
+
+    anim: function(index) {
+
+        //local parameters
+        var otherIndex = (index == "1") ? "2" : "1",
+            inc = 0.25,
+            maxHeight  = 4.5;
+
+        //close the other sub-menu if it's open
+        if(select("nav-sub-container-"+otherIndex).getAttribute("data-open") == "true") {
+
+            elementAnim.ease("out", "nav-sub-container-"+otherIndex, inc, maxHeight);
+            select("nav-sub-container-"+otherIndex).setAttribute("data-open", "false");
+        }
+
+        //open or close the relevant sub-menu
+        switch(select("nav-sub-container-"+index).getAttribute("data-open")) {
+
+            case "false":
+                elementAnim.ease("in", "nav-sub-container-"+index, inc, maxHeight);
+                select("nav-sub-container-"+index).setAttribute("data-open", "true");
+                break;
+
+            case "true":
+                elementAnim.ease("out", "nav-sub-container-"+index, inc, maxHeight);
+                select("nav-sub-container-"+index).setAttribute("data-open", "false");
+                break;
+        }
+    }
+})
+
+//END HEADER/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 //HELPERS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Reset pre-defined parameter values in an object
+reset = function(obj) {
+
+    for(elem in obj) {
+
+        switch(typeof obj[elem]) {
+
+            case 'number':
+                obj[elem] = 0;
+                break;
+
+            case 'object':
+                obj[elem] = {};
+                break;
+
+            default:
+                break;
+        }
+    }
+}
+
+
+//Object size - thanks to 'James Coglan' on stackoverflow.com for this
+lastKey = function(obj) {
+
+    var size = 0;
+
+    for(key in obj) { if(obj.hasOwnProperty(key)) {size++} }
+
+    return size;
+}
+
+
+//Object min and max - thanks to 'levi' on stackoverflow.com for this
+objExtrema = function(extremum, obj) {
+
+    switch(extremum) {
+
+        case 'min':
+            return min = Object.keys(obj).reduce(function(m,n) {return obj[n] < m ? obj[n] : m}, Infinity);
+            break;
+
+        case 'max':
+            return max = Object.keys(obj).reduce(function(m,n) {return obj[n] > m ? obj[n] : m}, -Infinity);
+            break;
+    }
+}
+
+
+//Remove duplicate elements from an array - thanks to 'georg' on stackoverflow.com for this 
+uniqArr = function(array) {
+
+    array = array.filter(function(element, index) { return array.indexOf(element) == index });
+
+    return array;
+}
+
 
 //HTML element selection
 select = function(idString) {
@@ -60,6 +225,15 @@ element = function(paramsObject, appendId) {
 }
 
 
+//Remove all children from an element - thanks to Gabriel McAdams on stackoverflow.com for this
+removeChildren = function(idString) {
+
+    var elem = select(idString);
+
+    while(elem.firstChild) { elem.removeChild(elem.firstChild) }
+}
+
+
 //Disable or enable multpile classes of elements at once
 elementAvail = function(idObject, bool) {
 
@@ -72,19 +246,10 @@ elementAvail = function(idObject, bool) {
                 break;
 
             case 'object':
-                for (subKey in idObject[key]) { select(idObject[key][subKey]).disabled = !bool }
+                for(subKey in idObject[key]) { select(idObject[key][subKey]).disabled = !bool }
                 break;
         }
     }
-}
-
-
-//Remove all children from an element - thanks to Gabriel McAdams on stackoverflow.com for this
-removeChildren = function(idString) {
-
-    var elem = select(idString);
-
-    while(elem.firstChild) { elem.removeChild(elem.firstChild) }
 }
 
 
@@ -144,51 +309,61 @@ elementAnim = function(properties) {
                 if(type == "in") {elem.opacity = opacity} else if(type == "out") {elem.opacity = 1 - opacity}
             }
         }
-    },
+    }
+})
 
-    //combine ease and fade animations into one function
-    slide: function(type, idString, fadeInc, easeInc, maxHeight) {
 
-        var elem = select(idString).style,
-            opacity = 0,
-            height = 0,
-            timer = setInterval(render, (1000/50));
+//Create or destroy a class of forms for radios with two buttons; on create, the default button may be selected based on a string condition
+twoButtons = function(properties) {
 
-        function render() {
+    var self = function() { return };
 
-            opacity = (1-opacity > 0) ? opacity + fadeInc : 1;
-            height = (maxHeight-height > 0) ? height + easeInc : maxHeight;
+    for(prop in properties) { self[prop] = properties[prop] }
 
-            if (opacity == 1 && height == maxHeight) {
+    return self;  
+}({
 
-                clearInterval(timer);
+    create: function(buttonArray, conditionString, appendId, index) {
 
-            } else {
+        element({tag: "form", attributes: {
+                                  id:    buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(index+1),
+                                  class: buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form"
+                              }},
+                              appendId+(index+1));
 
-                switch(type) {
+        //radio buttons
+        for(var j=0; j<2; j++) {
 
-                    case "in":
-                        elem.opacity = opacity; 
-                        elem.height = height + 'vw';
-                        break;
+            element({tag: "input", attributes: {
+                                       type: "radio",
+                                       id: buttonArray[j][0]+"-"+"radio-"+(index+1),
+                                       name: buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"radio-"+(index+1),
+                                       value: buttonArray[j][1]
+                                   }},
+                                   buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(index+1));
 
-                    case "out":
-                        elem.opacity = 1 - opacity;
-                        elem.height = maxHeight - height + 'vw';
-                        break;
-                }
-            }
+            element({tag: "label", content: buttonArray[j][0].charAt(0).toUpperCase()+buttonArray[j][0].slice(1), 
+
+                                   attributes: {
+                                       "for": buttonArray[j][0]+"-"+"radio-"+(index+1), 
+                                       class: "radio "+buttonArray[0][0]+"-"+buttonArray[1][0]
+                                   }},
+                                   buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(index+1));
         }
+
+        //some default settings to save time during common trade setups
+        var bin = eval(conditionString) ? 0 : 1;
+        select(buttonArray[bin][0]+"-"+"radio-"+(index+1)).setAttribute("checked", "");
     }
 })
 
 
 //Create or destroy a class of forms for text-number fields
-textNumFields = function(properties) {
+numberFields = function(properties) {
 
     var self = function() { return };
 
-    for (prop in properties) { self[prop] = properties[prop] }
+    for(prop in properties) { self[prop] = properties[prop] }
 
     return self;  
 }({
@@ -229,7 +404,7 @@ textNumFields = function(properties) {
         }
 
         //ease in or out, set field value to zero on ease out
-        for (var i=1; i<g.TRADE_LEGS; i++) {
+        for(var i=1; i<g.TRADE_LEGS; i++) {
 
             (function(index) {
 
@@ -244,109 +419,6 @@ textNumFields = function(properties) {
         select(container+'-1').style.backgroundColor = color;
     }
 })
-
-
-//Create or destroy a class of forms for radios with two buttons; on create, the default button may be selected based on a string condition
-twoWayRadios = function(properties) {
-
-    var self = function() { return };
-
-    for (prop in properties) { self[prop] = properties[prop] }
-
-    return self;  
-}({
-
-    create: function(buttonArray, conditionString, appendId, index) {
-
-        element({tag: "form", attributes: {
-                                  id:    buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(index+1),
-                                  class: buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form"
-                              }},
-                              appendId+(index+1));
-
-        //radio buttons
-        for(var j=0; j<2; j++) {
-
-            element({tag: "input", attributes: {
-                                       type: "radio",
-                                       id: buttonArray[j][0]+"-"+"radio-"+(index+1),
-                                       name: buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"radio-"+(index+1),
-                                       value: buttonArray[j][1]
-                                   }},
-                                   buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(index+1));
-
-            element({tag: "label", content: buttonArray[j][0].charAt(0).toUpperCase()+buttonArray[j][0].slice(1), 
-
-                                   attributes: {
-                                       "for": buttonArray[j][0]+"-"+"radio-"+(index+1), 
-                                       class: "radio "+buttonArray[0][0]+"-"+buttonArray[1][0]
-                                   }},
-                                   buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(index+1));
-        }
-
-        //some default settings to save time during common trade setups
-        var bin = eval(conditionString) ? 0 : 1;
-        select(buttonArray[bin][0]+"-"+"radio-"+(index+1)).setAttribute("checked", "");
-    }
-})
-
-
-//Reset pre-defined parameter values in an object
-reset = function(obj) {
-
-    for(elem in obj) {
-
-        switch(typeof obj[elem]) {
-
-            case 'number':
-                obj[elem] = 0;
-                break;
-
-            case 'object':
-                obj[elem] = {};
-                break;
-
-            default:
-                break;
-        }
-    }
-}
-
-
-//Object size - thanks to 'James Coglan' on stackoverflow.com for this
-lastKey = function(obj) {
-
-    var size = 0;
-
-    for (key in obj) { if(obj.hasOwnProperty(key)) {size++} }
-
-    return size;
-}
-
-
-//Object min and max - thanks to 'levi' on stackoverflow.com for this
-objExtrema = function(extremum, obj) {
-
-    switch(extremum) {
-
-        case 'min':
-            return min = Object.keys(obj).reduce(function(m,n) {return obj[n] < m ? obj[n] : m}, Infinity);
-            break;
-
-        case 'max':
-            return max = Object.keys(obj).reduce(function(m,n) {return obj[n] > m ? obj[n] : m}, -Infinity);
-            break;
-    }
-}
-
-
-//Remove duplicate elements from an array - thanks to 'georg' on stackoverflow.com for this 
-uniqArr = function(array) {
-
-    array = array.filter(function(element, index) { return array.indexOf(element) == index });
-
-    return array;
-}
 
 
 //Return an object with with numbered id strings; current support for arrays with up to 2 id string types
@@ -432,114 +504,5 @@ integrate = function(leftBound, rightBound, numSubIntervals, expression) {
 }
 
 //END HELPERS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-//HEADER/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//nav menu
-nav = function(properties) {
-
-    var self = function() { return };
-      
-    for(prop in properties) { self[prop] = properties[prop] }
-
-    return self;   
-}({
-
-    create: function() {
-
-        //main header container
-        element({tag: "div", attributes: {id: "header-main"}}, ".body");
-
-        //icon
-        element({tag: "a", attributes: {id: "icon-link", href: "../html/home.htm"}}, "header-main");
-
-        element({tag: "img", attributes: {id: "icon", alt: "Risk Cloud", src: "../images/icon.png"}}, "icon-link");
-
-        //navigation menu
-        //main
-        (mainMenu = function() {
-
-            var headings = { 1: "models", 2: "info" };
-
-            element({tag: "ul", attributes: {id: "nav-menu"}}, "header-main");
-
-            for(num in headings) {
-
-                element({tag: "li", attributes: {id: "nav-list-item-"+num, class: "nav-list-item"}}, "nav-menu");
-
-                element({tag: "a", content: headings[num], attributes: {
-                                                               href: "#",
-                                                               class: "nav-list-item-link",
-                                                               onclick: "nav.anim("+num+")"
-                                                           }},
-                                                           "nav-list-item-"+num);
-            }
-        })();
-
-        //sub-menus
-        (subMenus = function() {
-
-            var subHeadings = {   
-
-                1: { a: {heading: "Black-Scholes-Merton", link: "../html/blackscholesmerton.htm"}, 
-                   /*b: {heading: "Variance-Gamma",   link: "#"}*/ },
-
-                2: { a: {heading: "about", link: "#"},
-                     b: {heading: "more", link: "#"} }
-            };
-
-            for(num in subHeadings) {
-
-                element({tag: "div", attributes: {id: "nav-sub-container-"+num, class: "nav-sub-container", "data-open": "false"}}, ".body");
-
-                element({tag: "ul", attributes: {id: "nav-sub-menu-"+num, class: "nav-sub-menu"}}, "nav-sub-container-"+num);
-
-                for(letter in subHeadings[num]) {
-
-                    element({tag: "li", attributes: {id: "nav-sub-list-item-"+num+letter, class: "nav-sub-list-item"}}, "nav-sub-menu-"+num);
-
-                    element({tag: "a", content: subHeadings[num][letter].heading, attributes: {
-                                                                                      href: subHeadings[num][letter].link, 
-                                                                                      class: "nav-sub-list-item-link"
-                                                                                  }},
-                                                                                  "nav-sub-list-item-"+num+letter);
-                }
-            }
-        })();
-    },
-
-    anim: function(index) {
-
-        //local parameters
-        var otherIndex = (index == "1") ? "2" : "1",
-            inc = 0.25,
-            maxHeight  = 4.5;
-
-        //close the other sub-menu if it's open
-        if(select("nav-sub-container-"+otherIndex).getAttribute("data-open") == "true") {
-
-            elementAnim.ease("out", "nav-sub-container-"+otherIndex, inc, maxHeight);
-            select("nav-sub-container-"+otherIndex).setAttribute("data-open", "false");
-        }
-
-        //open or close the relevant sub-menu
-        switch(select("nav-sub-container-"+index).getAttribute("data-open")) {
-
-            case "false":
-                elementAnim.ease("in", "nav-sub-container-"+index, inc, maxHeight);
-                select("nav-sub-container-"+index).setAttribute("data-open", "true");
-                break;
-
-            case "true":
-                elementAnim.ease("out", "nav-sub-container-"+index, inc, maxHeight);
-                select("nav-sub-container-"+index).setAttribute("data-open", "false");
-                break;
-        }
-    }
-})
-
-//END HEADER/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 

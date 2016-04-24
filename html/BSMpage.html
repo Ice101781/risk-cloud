@@ -7,8 +7,9 @@
             <script src="../javascript/application.js"></script>
 
             <title>Stock Option Trade Analytics | Black-Scholes-Merton Model | Risk Cloud</title>
-            <link rel="stylesheet" href="../css/blackscholesmerton.css" />
-            <script src="../javascript/blackscholesmerton.js"></script>
+            <link rel="stylesheet" href="../css/BSMpage.css" />
+            <script src="../javascript/BSMcalc.js"></script>
+            <script src="../javascript/BSMpage.js"></script>
         </head>
 
         <body class="body">
@@ -20,7 +21,7 @@
                 <pre>THE BLACK-SCHOLES-MERTON MODEL:   European-style options with continuously-payable dividends</pre>
             </h1>
 
-            <div id="user-params-container">
+            <div id="app-container">
                 <div id="initial-params-container">
                     <div id="initial-params-sub-container">
                         <form>    
@@ -64,6 +65,10 @@
                         <button id="calculate-button-1" type="button" onclick="finalParams.validate()">Calculate</button>
                     </div>
                 </div>
+
+                <div id="output-container">
+                    
+                </div>                
             </div>
 
             <script>window.onload = function() { document.getElementById("loadScreen").style.display = "none" }</script>
