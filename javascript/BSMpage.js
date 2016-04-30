@@ -146,13 +146,13 @@ finalParams = function(properties) {
 
             //on click, toggle visibility of some sub-containers 
             select("leg-sub-container-2-1").addEventListener("click",
-                                            expVis = function() {textNumFields.visible("leg-sub-container-2", 2.5, 'expiry')});
+                                            expVis = function() {numberFields.visible("leg-sub-container-2", 2.5, 'expiry')});
 
             select("leg-sub-container-3-1").addEventListener("click",
-                                            divVis = function() {textNumFields.visible("leg-sub-container-3", 2.5, 'div-yield')});
+                                            divVis = function() {numberFields.visible("leg-sub-container-3", 2.5, 'div-yield')});
 
             select("leg-sub-container-4-1").addEventListener("click",
-                                            rfrVis = function() {textNumFields.visible("leg-sub-container-4", 2.5, 'risk-free-rate')});
+                                            rfrVis = function() {numberFields.visible("leg-sub-container-4", 2.5, 'risk-free-rate')});
 
             //prevent a field element click from triggering a sub-container event
             select("expiry-field-1").addEventListener("click", function(e) {e.stopPropagation()});
