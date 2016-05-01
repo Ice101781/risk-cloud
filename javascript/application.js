@@ -398,7 +398,7 @@ numberFields = function(properties) {
 
             case "false":
                 type = "in";
-                color = '#fafafa';
+                color = '#ffcccc';
                 select(container+'-1').setAttribute("data-clicked", "true");
                 break;
         }
@@ -408,10 +408,7 @@ numberFields = function(properties) {
 
             (function(index) {
 
-                elementAnim.ease(type, container+'-'+(index+1), 0.25, maxHeight, function() {
-
-                    if(type == "out") {select(field+'-field-'+(index+1)).value = 0}
-                });
+                elementAnim.ease(type, container+'-'+(index+1), 0.25, maxHeight, function() { if(type == "out") {select(field+'-field-'+(index+1)).value = 0} });
             })(i);
         }
 
