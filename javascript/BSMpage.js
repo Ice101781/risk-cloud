@@ -297,11 +297,10 @@ finalParams = function(properties) {
 
                 //calculate and display output
                 //BSM.data();
+                visuals.init();
 
                 //testing and debug
                 //console.log();
         }
     }
 })
-
-

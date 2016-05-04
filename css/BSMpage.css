@@ -18,14 +18,14 @@
   height: 39vw;
   width: 92vw;
   margin-left: 3.375vw;
-  background-color: whitesmoke;
-  /**/
+  padding-top: 2.5vw;
+  background-color: transparent;
 }
 
 #app-container, #initial-params-container, #initial-params-sub-container, #final-params-container, #trade-legs-params-container, .trade-leg,
-.leg-sub-container, #current-price-container, #output-container, #output-sub-container-1, #continue-button-1, #return-button-1, #calculate-button-1,
-.radio.buy-sell, .radio.call-put, .radio.output-view, .radio.output-data, #fees-field, .num-contracts-field, .strike-price-field, .expiry-field,
-.div-yield-field, .risk-free-rate-field, .option-price-field, #current-price-field {
+.leg-sub-container, #current-price-container, #output-container, #output-sub-container-1, #output-sub-container-2, #continue-button-1, #return-button-1,
+#calculate-button-1, .radio.buy-sell, .radio.call-put, .radio.output-view, .radio.output-data, #fees-field, .num-contracts-field, .strike-price-field,
+.expiry-field, .div-yield-field, .risk-free-rate-field, .option-price-field, #current-price-field {
   overflow: hidden;
   font-family: Century Gothic;
   font-size: 1vw;
@@ -35,7 +35,6 @@
   height: 12.5vw;
   width: 35vw;
   margin-left: 28.5vw;
-  margin-top: 2.5vw;
   background-color: darkgrey;
   border-radius: 0.3vw;
 }
@@ -78,19 +77,34 @@
 #output-container {
   height: 36.5vw;
   width: 92vw;
-  background-color: lightyellow;
-  /**/
+  background-color: darkgrey;
   border-radius: 0.3vw;
   opacity: 0;
 }
 
-#output-sub-container-1 {
+#output-sub-container-1, #output-sub-container-2 {
   display: inline-block;
+  height: 30vw;
+  border-radius: 0.3vw;
+}
+
+#output-sub-container-1 {
   width: 16vw;
-  height: 29.75vw;
   background-color: paleturquoise;
   /**/
-  border-radius: 0.3vw;
+}
+
+#output-sub-container-2 {
+  width: 75.625vw;
+  background-color: darkgrey;
+}
+
+#output-view-container {
+  height: 28vw;
+  width: 73.5vw;
+  margin-left: 1.0625vw;
+  margin-top: 1vw;
+  background-color: black;
 }
 
 form {
@@ -133,7 +147,7 @@ form {
 }
 
 #calculate-button-1 {
-  margin-left: 1.4375vw;
+  margin-left: 1.45vw;
 }
 
 input[type=radio] {
@@ -283,4 +297,3 @@ label.radio.output-data {
 #current-price-field {
   margin-left: 0.25vw;
 }
-

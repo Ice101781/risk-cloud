@@ -7,6 +7,7 @@
             <script src="../javascript/helpers.js"></script>
             <script src="../javascript/application.js"></script>
             <script src="../javascript/three.js"></script>
+            <script src="../javascript/datavis.js"></script>
 
             <title>Stock Option Trade Analytics | Black-Scholes-Merton Model | Risk Cloud</title>
             <link rel="stylesheet" href="../css/BSMpage.css" />
@@ -98,7 +99,11 @@
                             <label class="radio output-data" for="output-data-radio-6">Rho</label>
                         </form>
                     </div>
-                </div>                
+
+                    <div id="output-sub-container-2">
+                        <div id="output-view-container"></div>
+                    </div>
+                </div>
             </div>
 
             <script>window.onload = function() { document.getElementById("loadScreen").style.display = "none" }</script>
