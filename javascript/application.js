@@ -2,6 +2,8 @@
 
 var g = {
 
+    LOAD_COUNT : 0,
+
     //user-defined parameters
     TRADE_LEGS : 0,
     CONTRACT_FEES : 0,

@@ -15,11 +15,11 @@
 }
 
 #app-container {
-  height: 39vw;
+  height: 36.5vw;
   width: 92vw;
   margin-left: 3.375vw;
   padding-top: 2.5vw;
-  background-color: transparent;
+  background-color: lightblue;
 }
 
 #app-container, #initial-params-container, #initial-params-sub-container, #final-params-container, #trade-legs-params-container, .trade-leg,
@@ -75,7 +75,7 @@
 }
 
 #output-container {
-  height: 36.5vw;
+  height: 32.5vw;
   width: 92vw;
   background-color: darkgrey;
   border-radius: 0.3vw;
@@ -89,20 +89,19 @@
 }
 
 #output-sub-container-1 {
-  width: 16vw;
-  background-color: paleturquoise;
-  /**/
+  width: 14vw;
+  background-color: darkgrey;
 }
 
 #output-sub-container-2 {
-  width: 75.625vw;
+  width: 77.625vw;
   background-color: darkgrey;
 }
 
 #output-view-container {
   height: 28vw;
-  width: 73.5vw;
-  margin-left: 1.0625vw;
+  width: 75.5vw;
+  margin-left: 0.75vw;
   margin-top: 1vw;
   background-color: black;
 }
@@ -231,7 +230,7 @@ label.radio.output-data {
   width: 12vw;
   margin: 0;
   padding: 0;
-  margin-left: 2vw;
+  margin-left: 1.625vw;
   margin-top: 1.75vw;
   padding-top: 0.5vw;
   background-color: #fafafa;

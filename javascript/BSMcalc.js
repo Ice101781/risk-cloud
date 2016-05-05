@@ -90,7 +90,7 @@ BSM = function(properties) {
     data: function() {
 
         //calculate implied volatilities
-        this.vols(g.STOCK_PRICE);
+        BSM.vols(g.STOCK_PRICE);
 
         var expMin = obj.min(g.EXPIRY),
             volMax = +(obj.max(g.IMPLIED_VOL)*Math.sqrt(expMin/365)).toFixed(6),
@@ -103,43 +103,52 @@ BSM = function(properties) {
         sRange = array.unique(sRange);
 
         //calculate the trade value on the first day of the trade
-        this.calc(0, g.STOCK_PRICE);
+        BSM.calc(0, g.STOCK_PRICE);
 
-        var origPrice = this.price;
+        var origPrice = BSM.price;
 
         //objects for profit/loss and greeks data
-        for(j=0; j<expMin; j++) {
+        (function(callback) {
 
-            g.PROFITLOSS_DATA[j] = {};
-            g.DELTA_DATA[j] = {};
-            g.GAMMA_DATA[j] = {};
-            g.THETA_DATA[j] = {};
-            g.VEGA_DATA[j] = {};
-            g.RHO_DATA[j] = {};
+            for(j=0; j<expMin; j++) {
 
-            for(k=0; k<num; k++) {
+                g.PROFITLOSS_DATA[j] = {};
+                g.DELTA_DATA[j] = {};
+                g.GAMMA_DATA[j] = {};
+                g.THETA_DATA[j] = {};
+                g.VEGA_DATA[j] = {};
+                g.RHO_DATA[j] = {};
 
-                //clear old values and calculate current values
-                obj.reset(this);
-                this.calc(j, sRange[k]);
+                for(k=0; k<num; k++) {
 
-                //store current values
-                g.PROFITLOSS_DATA[j][k] = Math.round((this.price-origPrice)*10000)/100;// <--- NEED TO ADD FEES HERE
-                g.DELTA_DATA[j][k] = Math.round(this.greeks.delta*10000)/100;
-                g.GAMMA_DATA[j][k] = Math.round(this.greeks.gamma*10000)/100;
-                g.THETA_DATA[j][k] = Math.round(this.greeks.theta*10000)/100;
-                g.VEGA_DATA[j][k] = Math.round(this.greeks.vega*10000)/100;
-                g.RHO_DATA[j][k] = Math.round(this.greeks.rho*10000)/100;
+                    //clear old values and calculate current values
+                    obj.reset(BSM);
+                    BSM.calc(j, sRange[k]);
 
-                //on the last day, export the expected range of stock prices over the life of the trade
-                if(j == expMin-1) { g.STOCK_RANGE[k] = sRange[k] }
+                    //store current values
+                    g.PROFITLOSS_DATA[j][k] = Math.round((BSM.price-origPrice)*10000)/100;// <--- NEED TO ADD FEES HERE
+                    g.DELTA_DATA[j][k] = Math.round(BSM.greeks.delta*10000)/100;
+                    g.GAMMA_DATA[j][k] = Math.round(BSM.greeks.gamma*10000)/100;
+                    g.THETA_DATA[j][k] = Math.round(BSM.greeks.theta*10000)/100;
+                    g.VEGA_DATA[j][k] = Math.round(BSM.greeks.vega*10000)/100;
+                    g.RHO_DATA[j][k] = Math.round(BSM.greeks.rho*10000)/100;
+
+                    //on the last day, export the expected range of stock prices over the life of the trade
+                    if(j == expMin-1) { g.STOCK_RANGE[k] = sRange[k] }
+
+                    //callback
+                    if(typeof callback === 'function') { callback() }
+
+                    //testing
+                    //console.log();
+                }
             }
-        }
+        })();
 
         //clear function values
-        obj.reset(this);
+        obj.reset(BSM);
 
         //testing
-        //console.log();
+        console.log(g.STOCK_RANGE, g.PROFITLOSS_DATA);
     }
 })

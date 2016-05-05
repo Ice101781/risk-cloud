@@ -231,13 +231,10 @@ math = function(properties) {
 	},
 
 
-	//Normal Distribution PDF
-	NORM: function(x, mu, sigma) {
+	//Standard Normal Distribution PDF
+	NORM: function(x) {
 
-		var mu    = typeof mu    === 'undefined' ? 0 : mu,
-		    sigma = typeof sigma === 'undefined' ? 1 : sigma;
-
-    	return (1/(sigma*Math.sqrt(2*Math.PI)))*Math.pow(Math.E, (-1/2)*Math.pow(((x-mu)/sigma),2));
+    	return (1/Math.sqrt(2*Math.PI))*Math.pow(Math.E, (-1/2)*Math.pow(x,2));
 	},
 
 

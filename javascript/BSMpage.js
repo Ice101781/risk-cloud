@@ -1,4 +1,5 @@
-﻿//INITIAL PARAMETERS
+﻿// INITIAL PARAMETERS ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 initialParams = function(properties) {
 
     var self = function() { return };
@@ -31,15 +32,21 @@ initialParams = function(properties) {
                 g.CONTRACT_FEES = (elem.select("fees-field").value/1).toFixed(2)/1;
 
                 //remove initial params and create elements needed to specify final params; transitions
-                elem.ease("out", "initial-params-container", 0.25, 12.5);
-                elem.fade("out", "initial-params-container", 0.02);
-                finalParams.create(elem.fade("in", "final-params-container", 0.02));
+                finalParams.create(function() {
+
+                    elem.ease("out", "initial-params-container", 0.25, 12.5);
+                    elem.fade("out", "initial-params-container", 0.02);
+                    elem.fade("in", "final-params-container", 0.02);
+                });
         }
     }
 })
 
+// END INITIAL PARAMETERS ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//FINAL PARAMETERS
+
+// FINAL PARAMETERS /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 finalParams = function(properties) {
 
     var self = function() { return };
@@ -171,10 +178,12 @@ finalParams = function(properties) {
         //clear global params
         obj.reset(g);
 
-        //destroy trade legs; transitions
+        //transitions
         elem.fade("out", "final-params-container", 0.02, function() {
 
+            //destroy trade info
             elem.destroy('trade-legs-params-container');
+            //reset stock price field value
             elem.select("current-price-field").value = 100.25;
         });
 
@@ -291,16 +300,22 @@ finalParams = function(properties) {
 
                 g.STOCK_PRICE = +(elem.select("current-price-field").value/1).toFixed(2);
 
+
                 //transitions
                 elem.ease("out", "final-params-container", 0.5, 32);
-                elem.fade("out", "final-params-container", 0.02, elem.fade("in", "output-container", 0.02));
+                elem.fade("out", "final-params-container", 0.02);
 
-                //calculate and display output
-                //BSM.data();
-                visuals.init();
+                elem.fade("in", "output-container", 0.02, function() {
+
+                    //calculate and display output
+                    setTimeout(function() { visuals.init() }, 350);
+                    setTimeout(function() { BSM.data() }, 1250);
+                });
 
                 //testing and debug
                 //console.log();
         }
     }
 })
+
+// END FINAL PARAMETERS /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
