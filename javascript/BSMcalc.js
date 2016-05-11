@@ -162,7 +162,7 @@ BSM = function(properties) {
         //objects for profit/loss and greeks data
         (function(callback) {
 
-            for(j=0; j<expMin; j++) {
+            for(j=0; j<=expMin; j++) {
 
                 g.PROFITLOSS_DATA[j] = {};
                 g.DELTA_DATA[j] = {};
@@ -173,9 +173,11 @@ BSM = function(properties) {
 
                 for(k=0; k<num; k++) {
 
-                    //clear old values and calculate new values
+                    //clear old values
                     obj.reset(BSM);
-                    BSM.calc(j, sRange[k]);
+
+                    //calculate new values with some basic handling for the edge case at expiry
+                    if(j!=expMin) { BSM.calc(j, sRange[k]) } else { BSM.calc(j*.99, sRange[k]) }
 
                     //store current values
                     g.PROFITLOSS_DATA[j][sRange[k].toFixed(2)] = Math.round((BSM.price-origPrice)*10000)/100;// <--- NEED TO ADD FEES HERE
