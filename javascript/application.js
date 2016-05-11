@@ -19,7 +19,6 @@ var g = {
 
     //application output
     IMPLIED_VOL : {},
-    STOCK_RANGE : {},
     PROFITLOSS_DATA : {},
     DELTA_DATA : {},
     GAMMA_DATA : {},

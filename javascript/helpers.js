@@ -244,11 +244,11 @@ math = function(properties) {
     	switch(b<0) {
 
         	case true:
-            	return +((1/2)-this.INTEGRAL(b, 0, 10, this.NORM)).toFixed(5);
+            	return +((1/2)-this.INTEGRAL(b, 0, 100, this.NORM)).toFixed(6); //CAN WE REDUCE THE NUMBER OF SUB-INTERVALS NEEDED?
             	break;
 
         	case false:
-            	return +((1/2)+this.INTEGRAL(0, b, 10, this.NORM)).toFixed(5);
+            	return +((1/2)+this.INTEGRAL(0, b, 100, this.NORM)).toFixed(6);
             	break;
     	}
 	}
