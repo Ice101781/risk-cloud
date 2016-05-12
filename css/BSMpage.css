@@ -89,19 +89,19 @@
 }
 
 #output-sub-container-1 {
-  width: 14vw;
-  background-color: darkgrey;
+  width: 13.375vw;
+  background-color: red;
 }
 
 #output-sub-container-2 {
-  width: 77.625vw;
-  background-color: darkgrey;
+  width: 78.125vw;
+  background-color: green;
 }
 
 #output-view-container {
   height: 28vw;
-  width: 75.5vw;
-  margin-left: 0.75vw;
+  width: 76.9375vw;
+  margin-left: 0.375vw;
   margin-top: 1vw;
   background-color: black;
 }
@@ -230,8 +230,8 @@ label.radio.output-data {
   width: 12vw;
   margin: 0;
   padding: 0;
-  margin-left: 1.625vw;
-  margin-top: 1.75vw;
+  margin-left: 1vw;
+  margin-top: 1vw;
   padding-top: 0.5vw;
   background-color: #fafafa;
   border-radius: 0.3vw;
@@ -239,6 +239,7 @@ label.radio.output-data {
 
 #output-view-form {
   height: 2.25vw;
+  padding-left: 0.0625vw;
 }
 
 #output-data-form {

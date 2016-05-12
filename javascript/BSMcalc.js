@@ -19,7 +19,7 @@ BSM = function(properties) {
         var type = g.CONTRACT_TYPE[leg],
             n = g.NUM_CONTRACTS[leg],
             K = g.STRIKE_PRICE[leg],
-            T = +(g.EXPIRY[leg]/365).toFixed(6),
+            T = g.EXPIRY[leg]/365,
             D = g.DIV_YIELD[leg],
             r = g.RISK_FREE[leg],
             optPrice = g.OPTION_PRICE[leg],
@@ -58,7 +58,7 @@ BSM = function(properties) {
         var type = g.CONTRACT_TYPE[leg],
             n = g.NUM_CONTRACTS[leg],
             K = g.STRIKE_PRICE[leg],
-            T = +(g.EXPIRY[leg]/365).toFixed(6),
+            T = g.EXPIRY[leg]/365,
             D = g.DIV_YIELD[leg],
             r = g.RISK_FREE[leg],
             optPrice = g.OPTION_PRICE[leg],
@@ -104,7 +104,7 @@ BSM = function(properties) {
             var signN = g.LEG_SIGN[i+1]*g.NUM_CONTRACTS[i+1],
                 type = g.CONTRACT_TYPE[i+1],
                 K = g.STRIKE_PRICE[i+1],
-                tau = +((g.EXPIRY[i+1]-t)/365).toFixed(6),
+                tau = (g.EXPIRY[i+1]-t)/365,
                 D = g.DIV_YIELD[i+1],
                 r = g.RISK_FREE[i+1],
                 vol = g.IMPLIED_VOL[i+1],
@@ -136,14 +136,14 @@ BSM = function(properties) {
 
 
     //Compute and store profit/loss and greeks data across a range of stock prices and time 
-    data: function() {
+    data: function(callback) {
 
         //calculate implied volatilities
         for(var i=0; i<g.TRADE_LEGS; i++) { g.IMPLIED_VOL[i+1] = BSM.newtRaph(i+1, g.STOCK_PRICE) || BSM.bisect(i+1, g.STOCK_PRICE) }
 
         //local variables
         var expMin = obj.min(g.EXPIRY),
-            volMax = +(obj.max(g.IMPLIED_VOL)*Math.sqrt(expMin/365)).toFixed(6),
+            volMax = obj.max(g.IMPLIED_VOL)*Math.sqrt(expMin/365),
             sRange = [],
             num = 500;
 
@@ -160,46 +160,43 @@ BSM = function(properties) {
         var origPrice = BSM.price;
 
         //objects for profit/loss and greeks data
-        (function(callback) {
+        for(j=0; j<=expMin; j++) {
 
-            for(j=0; j<=expMin; j++) {
+            g.PROFITLOSS_DATA[j] = {};
+            g.DELTA_DATA[j] = {};
+            g.GAMMA_DATA[j] = {};
+            g.THETA_DATA[j] = {};
+            g.VEGA_DATA[j] = {};
+            g.RHO_DATA[j] = {};
 
-                g.PROFITLOSS_DATA[j] = {};
-                g.DELTA_DATA[j] = {};
-                g.GAMMA_DATA[j] = {};
-                g.THETA_DATA[j] = {};
-                g.VEGA_DATA[j] = {};
-                g.RHO_DATA[j] = {};
+            for(k=0; k<num; k++) {
 
-                for(k=0; k<num; k++) {
+                //clear old values
+                obj.reset(BSM);
 
-                    //clear old values
-                    obj.reset(BSM);
+                //calculate new values with some basic handling for the edge case at expiry
+                if(j!=expMin) { BSM.calc(j, sRange[k]) } else { BSM.calc(j*.99, sRange[k]) }
 
-                    //calculate new values with some basic handling for the edge case at expiry
-                    if(j!=expMin) { BSM.calc(j, sRange[k]) } else { BSM.calc(j*.99, sRange[k]) }
+                //store current values
+                g.PROFITLOSS_DATA[j][sRange[k].toFixed(2)] = Math.round((BSM.price-origPrice)*10000)/100;// <--- NEED TO ADD FEES HERE
+                g.DELTA_DATA[j][sRange[k].toFixed(2)] = Math.round(BSM.greeks.delta*10000)/100;
+                g.GAMMA_DATA[j][sRange[k].toFixed(2)] = Math.round(BSM.greeks.gamma*10000)/100;
+                g.THETA_DATA[j][sRange[k].toFixed(2)] = Math.round(BSM.greeks.theta*10000)/100;
+                g.VEGA_DATA[j][sRange[k].toFixed(2)] = Math.round(BSM.greeks.vega*10000)/100;
+                g.RHO_DATA[j][sRange[k].toFixed(2)] = Math.round(BSM.greeks.rho*10000)/100;
 
-                    //store current values
-                    g.PROFITLOSS_DATA[j][sRange[k].toFixed(2)] = Math.round((BSM.price-origPrice)*10000)/100;// <--- NEED TO ADD FEES HERE
-                    g.DELTA_DATA[j][sRange[k].toFixed(2)] = Math.round(BSM.greeks.delta*10000)/100;
-                    g.GAMMA_DATA[j][sRange[k].toFixed(2)] = Math.round(BSM.greeks.gamma*10000)/100;
-                    g.THETA_DATA[j][sRange[k].toFixed(2)] = Math.round(BSM.greeks.theta*10000)/100;
-                    g.VEGA_DATA[j][sRange[k].toFixed(2)] = Math.round(BSM.greeks.vega*10000)/100;
-                    g.RHO_DATA[j][sRange[k].toFixed(2)] = Math.round(BSM.greeks.rho*10000)/100;
-
-                    //callback
-                    if(typeof callback === 'function') { callback() }
-
-                    //testing
-                    //console.log();
-                }
+                //testing
+                //console.log();
             }
-        })();
+        }
 
-        //clear function values
+        //clear values
         obj.reset(BSM);
 
+        //data visualization callback
+        if(typeof callback === 'function') { callback() }
+
         //testing
-        console.log(g.PROFITLOSS_DATA, g.IMPLIED_VOL);
+        console.log(g);
     }
 })

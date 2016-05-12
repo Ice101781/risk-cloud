@@ -226,6 +226,7 @@ math = function(properties) {
 
     	} else {
 
+            //some basic error handling
         	return "The number of sub-intervals, 'n', must be even.";
     	}
 	},
@@ -244,11 +245,11 @@ math = function(properties) {
     	switch(b<0) {
 
         	case true:
-            	return +((1/2)-this.INTEGRAL(b, 0, 100, this.NORM)).toFixed(6); //CAN WE REDUCE THE NUMBER OF SUB-INTERVALS NEEDED?
+            	return (1/2)-this.INTEGRAL(b, 0, 200, this.NORM); //CAN WE REDUCE THE NUMBER OF SUB-INTERVALS NEEDED?
             	break;
 
         	case false:
-            	return +((1/2)+this.INTEGRAL(0, b, 100, this.NORM)).toFixed(6);
+            	return (1/2)+this.INTEGRAL(0, b, 200, this.NORM);
             	break;
     	}
 	}
