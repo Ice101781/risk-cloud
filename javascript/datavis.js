@@ -37,22 +37,57 @@ visuals = function(properties) {
 		scene.add(camera);
 		scene.add(light);
 
+
+
+
+
 		//2D view
 		var plane1 = new THREE.Mesh(new THREE.PlaneGeometry(1, height/width, 1, 1), new THREE.MeshBasicMaterial({color: 0xffffff})),
-			plane2 = new THREE.Mesh(new THREE.PlaneGeometry(.7*1, .7*height/width, 1, 1), new THREE.MeshBasicMaterial({color: 0x333333})),
-			particles = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 0.0014, color: 0xff1234})),
+			plane2 = new THREE.Mesh(new THREE.PlaneGeometry(.7, .7*height/width, 1, 1), new THREE.MeshBasicMaterial({color: 0x333333})),
 		    zDist = -1/(2*(aspect)*Math.tan(vFOV/2));
 
 		plane1.position.set(0, 0, zDist);
-		plane2.position.set(.02125, .008125, zDist),
-		particles.position.set(.02125, .008125, zDist);
+		plane2.position.set(.02125, .008125, zDist);
+		camera.add(plane1, plane2);
+		
 
-		for(k=1; k<=500; k++) {
+		var w = .7,
 
-			particles.geometry.vertices.push(new THREE.Vector3( (.7/500)*(k)-(.35), 0, 0));
+			data = g.PROFITLOSS_DATA,
+
+			dataSets = { 0: data[0], T: data[obj.min(g.EXPIRY)] },
+
+			cloud = { 0: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: (w/obj.size(dataSets[0])), color: 0x0000ff})),
+					  T: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: (w/obj.size(dataSets[0])), color: 0xff0000})) },
+
+			globalRange = Math.abs(obj.max([obj.max(data[0]), obj.max(data[obj.min(g.EXPIRY)])])-obj.min([obj.min(data[0]), obj.min(data[obj.min(g.EXPIRY)])])),
+
+			k=1;
+
+
+		//add vectors to the point cloud geometries
+		for(t in dataSets) {
+
+			for(val in dataSets[t]) {
+
+				cloud[t].geometry.vertices.push(new THREE.Vector3(
+
+					(w)*((k-(obj.size(dataSets[0])/2))/obj.size(dataSets[0])), //x-coordinate
+
+					(+(w/aspect).toFixed(2))*(dataSets[t][val]/(2*globalRange)), //y-coordinate
+
+					0 //z-coordinate
+				));
+
+				k++;
+			}
+
+			//reset the loop variable
+			k=1;
+
+			cloud[t].position.copy(plane2.position);
+			camera.add(cloud[t]);
 		}
-
-		camera.add(plane1, plane2, particles);
 
 
 		//animation
