@@ -40,16 +40,28 @@ visuals = function(properties) {
 
 
 
-
-		//2D view
-		var plane1 = new THREE.Mesh(new THREE.PlaneGeometry(1, height/width, 1, 1), new THREE.MeshBasicMaterial({color: 0xffffff})),
+		// 2D VIEW //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		var plane1 = new THREE.Mesh(new THREE.PlaneGeometry(1, height/width, 1, 1), new THREE.MeshBasicMaterial({color: 0x0000ff})),
 			plane2 = new THREE.Mesh(new THREE.PlaneGeometry(.7, .7*height/width, 1, 1), new THREE.MeshBasicMaterial({color: 0x333333})),
 		    zDist = -1/(2*(aspect)*Math.tan(vFOV/2));
 
 		plane1.position.set(0, 0, zDist);
-		plane2.position.set(.02125, .008125, zDist);
+		plane2.position.set(0.02125, .008125, zDist);
 		camera.add(plane1, plane2);
-		
+
+
+		//axis objects
+		var gridline = new THREE.Mesh(new THREE.PlaneGeometry(.7020375, height/(750*width), 1, 1), new THREE.MeshBasicMaterial({color: 0xaaaaaa}));
+ 
+		gridline.position.set(0.02, .135, zDist);
+		camera.add(gridline);
+
+
+		var label = new THREE.Mesh(new THREE.PlaneGeometry(1/25, height/(45*width), 1, 1), new THREE.MeshBasicMaterial({color: 0x00ff00}));
+
+		label.position.set(-.35125, .13125, zDist);
+		camera.add(label);
+
 
 		var w = .7,
 
@@ -88,6 +100,9 @@ visuals = function(properties) {
 			cloud[t].position.copy(plane2.position);
 			camera.add(cloud[t]);
 		}
+	// END 2D VIEW //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 
 
 		//animation
