@@ -35,8 +35,7 @@
   height: 12.5vw;
   width: 35vw;
   margin-left: 28.5vw;
-  background-color: darkgrey;
-  border-radius: 0.3vw;
+  background-color: #e1e1e1;
 }
 
 #initial-params-sub-container {
@@ -45,24 +44,22 @@
   margin-top: 1.5vw;
   padding-bottom: 0.125vw;
   background-color: #fafafa;
-  border-radius: 0.3vw;
 }
 
 #final-params-container {
   height: 32vw;
-  background-color: darkgrey;
-  border-radius: 0.3vw;
+  background-color: #e1e1e1;
   opacity: 0;
 }
 
 #trade-legs-params-container {
   padding-left: 1vw;
-  padding-top: 1.75vw;
+  padding-top: 1.5vw;
 }
 
 .trade-leg {
   display: inline-block;
-  height: 24.5vw;
+  height: 24.75vw;
   width: 20vw;
   margin-left: 1.25vw;
   margin-right: 1.25vw;
@@ -71,21 +68,18 @@
 .leg-sub-container {
   margin-bottom: 0.5vw;
   background-color: #fafafa;
-  border-radius: 0.3vw;
 }
 
 #output-container {
   height: 32.5vw;
   width: 92vw;
-  background-color: darkgrey;
-  border-radius: 0.3vw;
+  background-color: #e1e1e1;
   opacity: 0;
 }
 
 #output-sub-container-1, #output-sub-container-2 {
   display: inline-block;
   height: 30vw;
-  border-radius: 0.3vw;
 }
 
 #output-sub-container-1 {
@@ -165,7 +159,6 @@ input[type=radio] + .radio {
   text-align: center;
   background-color: #d8d8d8;
   color: #333333;
-  border-radius: 0.1vw;
 }
 
 input[name=num-legs-radio] + .radio {
@@ -222,7 +215,6 @@ label.radio.output-data {
   margin-left: 1.5vw;
   margin-top: 1.25vw;
   background-color: #fafafa;
-  border-radius: 0.3vw;
 }
 
 #output-view-form, #output-data-form {
@@ -234,7 +226,6 @@ label.radio.output-data {
   margin-top: 1vw;
   padding-top: 0.5vw;
   background-color: #fafafa;
-  border-radius: 0.3vw;
 }
 
 #output-view-form {
@@ -256,7 +247,6 @@ label.radio.output-data {
 #fees-field, .num-contracts-field, .strike-price-field, .expiry-field, .div-yield-field, .risk-free-rate-field,
 .option-price-field, #current-price-field {
   background-color: #ddffdd;
-  border: 0.1vw solid #d8d8d8;
 }
 
 .num-contracts-field, .strike-price-field, .expiry-field, .div-yield-field, .risk-free-rate-field, .option-price-field {

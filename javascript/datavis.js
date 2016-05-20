@@ -12,7 +12,7 @@ visuals = function(properties) {
 		var width    = elem.select("output-view-container").offsetWidth,
             height   = elem.select("output-view-container").offsetHeight,
 			scene    = new THREE.Scene(),
-			renderer = new THREE.WebGLRenderer({ antialias: false, alpha: false }),
+			renderer = new THREE.WebGLRenderer({antialias: false, alpha: false}),
 			vFOV     = 45,
 			aspect   = width/height,
 			near     = 0.1,
@@ -51,13 +51,19 @@ visuals = function(properties) {
 
 
 		//axis objects
-		var gridline = new THREE.Mesh(new THREE.PlaneGeometry(.7020375, height/(750*width), 1, 1), new THREE.MeshBasicMaterial({color: 0xaaaaaa}));
+		var gridlines = {};
+
+		for (var i=0; i<33; i++ ) {
+
+			gridlines[i] = new THREE.Mesh(new THREE.PlaneGeometry(.7020375, (1/500)*.7*height/width, 1, 1), new THREE.MeshBasicMaterial({color: 0xffff11}));
  
-		gridline.position.set(0.02, .135, zDist);
-		camera.add(gridline);
+			gridlines[i].position.set(0.02, .135-((1/31.5)*.7*height/width).toFixed(3)*i, zDist);
+			camera.add(gridlines[i]);
 
+			console.log(gridlines[i]);
+		}
 
-		var label = new THREE.Mesh(new THREE.PlaneGeometry(1/25, height/(45*width), 1, 1), new THREE.MeshBasicMaterial({color: 0x00ff00}));
+		var label = new THREE.Mesh(new THREE.PlaneGeometry((1/25), (1/31.5)*.7*height/width, 1, 1), new THREE.MeshBasicMaterial({color: 0x00ff00}));
 
 		label.position.set(-.35125, .13125, zDist);
 		camera.add(label);
@@ -77,7 +83,7 @@ visuals = function(properties) {
 			k=1;
 
 
-		//add vectors to the point cloud geometries
+		//add vertices (as vectors) to the point cloud geometries
 		for(t in dataSets) {
 
 			for(val in dataSets[t]) {
@@ -100,7 +106,7 @@ visuals = function(properties) {
 			cloud[t].position.copy(plane2.position);
 			camera.add(cloud[t]);
 		}
-	// END 2D VIEW //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// END 2D VIEW //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
