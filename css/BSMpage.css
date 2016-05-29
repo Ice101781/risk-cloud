@@ -71,7 +71,7 @@
 }
 
 #output-container {
-  height: 32.5vw;
+  height: 36vw;
   width: 92vw;
   background-color: #e1e1e1;
   opacity: 0;
@@ -79,23 +79,22 @@
 
 #output-sub-container-1, #output-sub-container-2 {
   display: inline-block;
-  height: 30vw;
+  height: 33vw;
+  background-color: #e1e1e1;
 }
 
 #output-sub-container-1 {
-  width: 13.375vw;
-  background-color: red;
+  width: 13.125vw;
 }
 
 #output-sub-container-2 {
-  width: 78.125vw;
-  background-color: green;
+  width: 78vw;
 }
 
 #output-view-container {
-  height: 28vw;
-  width: 76.9375vw;
-  margin-left: 0.375vw;
+  height: 31vw;
+  width: 77.5vw;
+  margin-left: 0.25vw; 
   margin-top: 1vw;
   background-color: black;
 }
@@ -222,7 +221,7 @@ label.radio.output-data {
   width: 12vw;
   margin: 0;
   padding: 0;
-  margin-left: 1vw;
+  margin-left: 0.75vw;
   margin-top: 1vw;
   padding-top: 0.5vw;
   background-color: #fafafa;
@@ -230,7 +229,6 @@ label.radio.output-data {
 
 #output-view-form {
   height: 2.25vw;
-  padding-left: 0.0625vw;
 }
 
 #output-data-form {

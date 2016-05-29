@@ -13,11 +13,11 @@ visuals = function(properties) {
             height   = elem.select("output-view-container").offsetHeight,
 			scene    = new THREE.Scene(),
 			renderer = new THREE.WebGLRenderer({antialias: false, alpha: false}),
-			vFOV     = 45,
+			degVFOV  = 45,
 			aspect   = width/height,
 			near     = 0.1,
 			far      = 100,
-			camera   = new THREE.PerspectiveCamera(vFOV, aspect, near, far),
+			camera   = new THREE.PerspectiveCamera(degVFOV, aspect, near, far),
 			phi      = 0,
 			theta    = 0,
 			radius   = 0,
@@ -38,77 +38,136 @@ visuals = function(properties) {
 		scene.add(light);
 
 
-
-
 		// 2D VIEW //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		var plane1 = new THREE.Mesh(new THREE.PlaneGeometry(1, height/width, 1, 1), new THREE.MeshBasicMaterial({color: 0x0000ff})),
-			plane2 = new THREE.Mesh(new THREE.PlaneGeometry(.7, .7*height/width, 1, 1), new THREE.MeshBasicMaterial({color: 0x333333})),
-		    zDist = -1/(2*(aspect)*Math.tan(vFOV/2));
+		//
+		//local vars for graph
+		//	//
+		var //general and background vars
+			//
+			w = 1,
+			h = 0.4, //aspect is 2.5:1
+			scalar = 0.925,
+			radVFOV = Math.PI/4,
+			zDist = -h/(2*Math.tan(radVFOV/2)),
+			plane1 = new THREE.Mesh(new THREE.PlaneGeometry(w, h, 1, 1), new THREE.MeshBasicMaterial({ color: 'rgb(200,200,200)' })),
+			plane2 = new THREE.Mesh(new THREE.PlaneGeometry(scalar*w, scalar*h, 1, 1), new THREE.MeshBasicMaterial({ color: 0x333333 })),
+			//
+			//gridlines and labels vars
+			//
+			numGridLines = 25,
+        	canvasW = 3*Math.floor(width*(1-(1.01)*scalar)),
+        	canvasH = 3*Math.floor(height*(0.6)*scalar/(numGridLines-1)),
+        	xPos = canvasW/2,
+        	yPos = 3*canvasH/4,
+        	gridlines = {},
+			vLbls = { canvas: {}, context: {}, texture: {}, mesh: {} },
+			//
+   	     	//data vars
+   	     	//
+   	     	k=0,
+        	data = g.PROFITLOSS_DATA,
+        	globalRange = Math.abs(obj.max([obj.max(data[0]), obj.max(data[obj.min(g.EXPIRY)])])-obj.min([obj.min(data[0]), obj.min(data[obj.min(g.EXPIRY)])])),
+        	//COULD WE USE ANOTHER DATA STRUCTURE HERE?
+			dataSets = { T: data[obj.min(g.EXPIRY)], 0: data[0] },
+			cloud = { T: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*scalar*w/obj.size(dataSets[0]), color: 0xff0000})),
+					  0: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*scalar*w/obj.size(dataSets[0]), color: 0x0000ff})) };
 
+		//background
 		plane1.position.set(0, 0, zDist);
-		plane2.position.set(0.02125, .008125, zDist);
+		plane2.position.set(w/2*(1-scalar), h/2*(1-scalar*numGridLines/(numGridLines-1)), zDist);
 		camera.add(plane1, plane2);
 
-
-		//axis objects
-		var gridlines = {};
-
-		for (var i=0; i<33; i++ ) {
-
-			gridlines[i] = new THREE.Mesh(new THREE.PlaneGeometry(.7020375, (1/500)*.7*height/width, 1, 1), new THREE.MeshBasicMaterial({color: 0xffff11}));
- 
-			gridlines[i].position.set(0.02, .135-((1/31.5)*.7*height/width).toFixed(3)*i, zDist);
-			camera.add(gridlines[i]);
-
-			console.log(gridlines[i]);
-		}
-
-		var label = new THREE.Mesh(new THREE.PlaneGeometry((1/25), (1/31.5)*.7*height/width, 1, 1), new THREE.MeshBasicMaterial({color: 0x00ff00}));
-
-		label.position.set(-.35125, .13125, zDist);
-		camera.add(label);
-
-
-		var w = .7,
-
-			data = g.PROFITLOSS_DATA,
-
-			dataSets = { 0: data[0], T: data[obj.min(g.EXPIRY)] },
-
-			cloud = { 0: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: (w/obj.size(dataSets[0])), color: 0x0000ff})),
-					  T: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: (w/obj.size(dataSets[0])), color: 0xff0000})) },
-
-			globalRange = Math.abs(obj.max([obj.max(data[0]), obj.max(data[obj.min(g.EXPIRY)])])-obj.min([obj.min(data[0]), obj.min(data[obj.min(g.EXPIRY)])])),
-
-			k=1;
-
-
-		//add vertices (as vectors) to the point cloud geometries
+		//data
 		for(t in dataSets) {
 
+			//add vertices (as vectors) to the point cloud geometries
 			for(val in dataSets[t]) {
 
 				cloud[t].geometry.vertices.push(new THREE.Vector3(
 
-					(w)*((k-(obj.size(dataSets[0])/2))/obj.size(dataSets[0])), //x-coordinate
+					scalar*w*((k+0.5)/obj.size(dataSets[0])-0.5), //x-coordinate
 
-					(+(w/aspect).toFixed(2))*(dataSets[t][val]/(2*globalRange)), //y-coordinate
+					scalar*h*(dataSets[t][val]/(2*globalRange)), //y-coordinate
 
-					0 //z-coordinate
+					0.0001 //z-coordinate; place points slightly in front of gridlines, background
 				));
 
 				k++;
 			}
 
 			//reset the loop variable
-			k=1;
+			k=0;
 
 			cloud[t].position.copy(plane2.position);
 			camera.add(cloud[t]);
 		}
+
+		//add gridlines and labels
+		for(var i=0; i<numGridLines; i++) {
+
+			//gridlines
+			gridlines[i] = new THREE.Mesh(new THREE.PlaneGeometry(w*(1.01)*scalar, h*(0.002)*scalar, 1, 1), new THREE.MeshBasicMaterial({color: 0x444444}));
+
+			gridlines[i].position.set(w/2*(1-(1.01)*scalar), h/2*(1-scalar*(2*i+1)/(numGridLines-1)), zDist);
+			camera.add(gridlines[i]);
+
+			//labels
+			vLbls.canvas[i] = document.createElement('canvas');
+
+			vLbls.canvas[i].width = canvasW;
+			vLbls.canvas[i].height = canvasH;
+
+			vLbls.context[i] = vLbls.canvas[i].getContext('2d');
+
+			//paint the background
+			vLbls.context[i].fillStyle = 'rgb(200,200,200)';
+			vLbls.context[i].fillRect(0, 0, canvasW, canvasH);
+
+			//set color, font and alignment for the text
+			vLbls.context[i].fillStyle = 'rgb(0,0,0)';
+			vLbls.context[i].font = (canvasH-1) + 'px Arial';
+			vLbls.context[i].textAlign = 'center';
+
+			switch(i) {
+
+				case (numGridLines-1)/2:
+					//set color and value of the x-axis
+					gridlines[i].material.color.setHex(0x777777);
+					vLbls.context[i].fillText('0', xPos, yPos);
+					break;
+
+				default:
+					//set gridline value
+					vLbls.context[i].fillText(+(globalRange*(1-2*i/(numGridLines-1))).toFixed(2), xPos, yPos);
+			}
+
+			vLbls.texture[i] = new THREE.Texture(vLbls.canvas[i]);
+
+			//WHAT DO THESE ACTUALLY DO?
+			vLbls.texture[i].minFilter = THREE.LinearFilter;
+			vLbls.texture[i].needsUpdate = true;
+
+			vLbls.mesh[i] = new THREE.Mesh(
+							 	new THREE.PlaneGeometry(w*(1-(1.01)*scalar), h*(0.6)*scalar/(numGridLines-1), 1, 1),
+								new THREE.MeshBasicMaterial({map: vLbls.texture[i]})
+							);
+
+			vLbls.mesh[i].position.set(-w/2*(1.01)*scalar, h/2*(1-scalar*((2*i+1+(0.6)/2)/(numGridLines-1)-(0.002))), zDist);
+			camera.add(vLbls.mesh[i]);
+		}
+		//
 		// END 2D VIEW //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+		//re-size the 2D view if the window size is changed
+		window.addEventListener('resize', function onWindowResize() {
+
+			var width = elem.select("output-view-container").offsetWidth,
+			    height = elem.select("output-view-container").offsetHeight;
+  
+  			renderer.setSize(width,height);
+  			camera.aspect = (width/height);
+  		});
 
 
 		//animation
