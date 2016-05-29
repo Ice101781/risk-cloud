@@ -35,7 +35,7 @@
   height: 12.5vw;
   width: 35vw;
   margin-left: 28.5vw;
-  background-color: #e1e1e1;
+  background-color: #a1a1a1;
 }
 
 #initial-params-sub-container {
@@ -48,7 +48,7 @@
 
 #final-params-container {
   height: 32vw;
-  background-color: #e1e1e1;
+  background-color: #a1a1a1;
   opacity: 0;
 }
 
@@ -73,14 +73,14 @@
 #output-container {
   height: 36vw;
   width: 92vw;
-  background-color: #e1e1e1;
+  background-color: #a1a1a1;
   opacity: 0;
 }
 
 #output-sub-container-1, #output-sub-container-2 {
   display: inline-block;
   height: 33vw;
-  background-color: #e1e1e1;
+  background-color: #a1a1a1;
 }
 
 #output-sub-container-1 {
@@ -221,7 +221,7 @@ label.radio.output-data {
   width: 12vw;
   margin: 0;
   padding: 0;
-  margin-left: 0.75vw;
+  margin-left: 0.875vw;
   margin-top: 1vw;
   padding-top: 0.5vw;
   background-color: #fafafa;

@@ -58,7 +58,7 @@ visuals = function(properties) {
         	canvasW = 3*Math.floor(width*(1-(1.01)*scalar)),
         	canvasH = 3*Math.floor(height*(0.6)*scalar/(numGridLines-1)),
         	xPos = canvasW/2,
-        	yPos = 3*canvasH/4,
+        	yPos = 5*canvasH/6,
         	gridlines = {},
 			vLbls = { canvas: {}, context: {}, texture: {}, mesh: {} },
 			//
@@ -152,7 +152,7 @@ visuals = function(properties) {
 								new THREE.MeshBasicMaterial({map: vLbls.texture[i]})
 							);
 
-			vLbls.mesh[i].position.set(-w/2*(1.01)*scalar, h/2*(1-scalar*((2*i+1+(0.6)/2)/(numGridLines-1)-(0.002))), zDist);
+			vLbls.mesh[i].position.set(-w/2*(1.01)*scalar, h/2*(1-scalar*((2*i+1+(0.6)/4)/(numGridLines-1)-(0.002))), zDist);
 			camera.add(vLbls.mesh[i]);
 		}
 		//
