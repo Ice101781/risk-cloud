@@ -91,12 +91,14 @@ visuals = function(properties) {
 			for(var i=0; i<numHGridLines; i++) {
 
 				//gridlines
-				gridlines.yaxis[i] = new THREE.Mesh(
-									     new THREE.PlaneGeometry(w*(1.01)*scalar, h*(0.002)*scalar, 1, 1),
-										 new THREE.MeshBasicMaterial({color: 0x444444})
-									 );
+				var gridlineGeom = new THREE.Geometry();
 
-				gridlines.yaxis[i].position.set(w/2*(1-(1.01)*scalar), h/2*(1-scalar*(2*i+1)/(numHGridLines-1)), zDist);
+					gridlineGeom.vertices.push(new THREE.Vector3(w/2*(1-(1.01)*scalar*2), h/2*(1-scalar*(2*i+1)/(numHGridLines-1)), zDist)); //left vertex
+					gridlineGeom.vertices.push(new THREE.Vector3(w/2*(1-(1.01)*scalar), h/2*(1-scalar*(2*i+1)/(numHGridLines-1)), zDist)); //center vertex
+					gridlineGeom.vertices.push(new THREE.Vector3(w/2, h/2*(1-scalar*(2*i+1)/(numHGridLines-1)), zDist)); //right vertex
+
+				gridlines.yaxis[i] = new THREE.Line(gridlineGeom, new THREE.LineBasicMaterial({color: 0x444444}));
+
 				camera.add(gridlines.yaxis[i]);
 
 				//labels
