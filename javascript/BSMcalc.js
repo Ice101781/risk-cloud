@@ -147,8 +147,8 @@ BSM = function(properties) {
             sRange = [],
             num = 500;
 
-        //populate an array containing stock prices in a range of +-(3*volMax) - DOES NOT GUARANTEE EQUIDISTANT PRICES
-        for(i=0; i<num; i++) { sRange.push(+(g.STOCK_PRICE*(1-(3*volMax)*(1-(2*i/num)))).toFixed(2)) }
+        //populate an array containing stock prices in a range of +-(3*volMax)
+        for(i=0; i<num; i++) { sRange.push(+(g.STOCK_PRICE*(1-(3*volMax)*(1-(2*i/(num-1))))).toFixed(2)) } //MINOR ROUNDING ISSUE HERE - WORTH TRYING TO FIX?
 
         //delete any duplicate prices in the stock price array
         sRange = array.unique(sRange);
