@@ -18,7 +18,13 @@
         <body class="body">
             <div id="loadScreen"></div>
 
-            <script>nav.create()</script>
+            <script>
+                //prevent spacebar scroll-down of current page
+                disableHotKey(event, 32);
+
+                //render the navigation menu
+                nav.create();
+            </script>
 
             <h1 class="model-heading">
                 <pre>THE BLACK-SCHOLES-MERTON MODEL:   European-style options with continuously-payable dividends</pre>
