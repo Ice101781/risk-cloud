@@ -266,4 +266,14 @@ disableHotKey = function(event, key) {
     document.addEventListener('keydown', function(event) { if(event.keyCode == key) {event.preventDefault()} });
 }
 
+
+//given two sets of data measuring the same variable at different times, find the global range
+globalRange = function(set, t1, t2) {
+
+    var globalMax = obj.max([ obj.max(set[t1]), obj.max(set[t2]) ]),
+        globalMin = obj.min([ obj.min(set[t1]), obj.min(set[t2]) ]);
+
+    return Math.abs(globalMax-globalMin);
+}
+
 // END MISC /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -19,7 +19,8 @@
             <div id="loadScreen"></div>
 
             <script>
-                //prevent spacebar scroll-down of current page
+                //prevent enter key and spacebar usage on current page
+                disableHotKey(event, 13);
                 disableHotKey(event, 32);
 
                 //render the navigation menu

@@ -76,7 +76,7 @@ visuals = function(properties) {
 	   	     	//data vars
 	   	     	//
 	        	data = g.PROFITLOSS_DATA,
-	        	gRange = Math.abs(obj.max([obj.max(data[0]), obj.max(data[obj.min(g.EXPIRY)])])-obj.min([obj.min(data[0]), obj.min(data[obj.min(g.EXPIRY)])])),
+	        	gRange = globalRange(data, 0, obj.min(g.EXPIRY)) !== 0 ? globalRange(data, 0, obj.min(g.EXPIRY)) : 1,
 				dataSets = { T: data[obj.min(g.EXPIRY)], 0: data[0] }, //COULD WE USE ANOTHER DATA STRUCTURE HERE?
 				cloud = { T: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/obj.size(dataSets[0]), color: 0xff0000})),
 						  0: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/obj.size(dataSets[0]), color: 0x0000ff})) };
@@ -262,6 +262,8 @@ visuals = function(properties) {
 				//add the point cloud to the scene
 				camera.add(cloud[t]);
 			}
+
+			//console.log();
 		}
 
 
