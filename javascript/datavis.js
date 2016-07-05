@@ -59,42 +59,42 @@ visuals = function(properties) {
 				scalar = 0.925,
 				VFOVrad = Math.PI/4,
 				zDist = -h/(2*Math.tan(VFOVrad/2)),
-				plane1 = new THREE.Mesh(new THREE.PlaneGeometry(w, h, 1, 1), new THREE.MeshBasicMaterial({ color: 'rgb(200,200,200)' })),
-				plane2 = new THREE.Mesh(new THREE.PlaneGeometry(w*scalar, h*scalar, 1, 1), new THREE.MeshBasicMaterial({ color: 0x333333 })),
+				plane1 = new THREE.Mesh(new THREE.PlaneGeometry(w, h, 1, 1), new THREE.MeshBasicMaterial({color: 'rgb(200,200,200)'})),
+				plane2 = new THREE.Mesh(new THREE.PlaneGeometry(w*scalar, h*scalar, 1, 1), new THREE.MeshBasicMaterial({color: 0x333333})),
 				//
 				//gridlines and labels vars
 				//
-				numHGridLines = 25,
-				numVGridLines = 7,
-        		canvasW = 3*Math.floor(width*(1-(1.01)*scalar)),
-        		canvasH = 3*Math.floor(height*(0.6)*scalar/(numHGridLines-1)),
+				numH = 25,
+				numV = 7,
+        		canvasW = 3*Math.floor(width*(1-(1.01)*scalar)), //WHY DO THESE DIMENSIONS REQUIRE A MULTIPLIER?
+        		canvasH = 3*Math.floor(height*(0.6)*scalar/(numH-1)), //
 	        	xPos = canvasW/2,
 	        	yPos = 5*canvasH/6, //WHY IS THIS NOT 'canvasH/2'?
-	        	lines = { xaxis: {}, yaxis: {} }, //COULD WE USE ANOTHER DATA STRUCTURE HERE?
+	        	lines = { xaxis: {tick: {}, ends: {}, dots: {}}, yaxis: {} }, //COULD WE USE ANOTHER DATA STRUCTURE HERE?
 				labels = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} }, //AND HERE?
 				//
 	   	     	//data vars
 	   	     	//
 	        	data = g.PROFITLOSS_DATA,
-	        	globalRange = Math.abs(obj.max([obj.max(data[0]), obj.max(data[obj.min(g.EXPIRY)])])-obj.min([obj.min(data[0]), obj.min(data[obj.min(g.EXPIRY)])])),
+	        	gRange = Math.abs(obj.max([obj.max(data[0]), obj.max(data[obj.min(g.EXPIRY)])])-obj.min([obj.min(data[0]), obj.min(data[obj.min(g.EXPIRY)])])),
 				dataSets = { T: data[obj.min(g.EXPIRY)], 0: data[0] }, //COULD WE USE ANOTHER DATA STRUCTURE HERE?
 				cloud = { T: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/obj.size(dataSets[0]), color: 0xff0000})),
 						  0: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/obj.size(dataSets[0]), color: 0x0000ff})) };
 
 			//position the background
 			plane1.position.set(0, 0, zDist);
-			plane2.position.set(w/2*(1-scalar), h/2*(1-scalar*numHGridLines/(numHGridLines-1)), zDist);
+			plane2.position.set(w/2*(1-scalar), h/2*(1-scalar*numH/(numH-1)), zDist);
 			camera.add(plane1, plane2);
 
-			//ADD HORIZONTAL GRIDLINES AND LABELS
-			for(var i=0; i<numHGridLines; i++) {
+			//ADD HORIZONTAL GRIDLINES AND VERTICAL AXIS LABELS
+			for(var i=0; i<numH; i++) {
 
 				//gridlines
 				var gridlineGeom = new THREE.Geometry();
 
-					gridlineGeom.vertices.push(new THREE.Vector3(w/2*(1-(1.01)*scalar*2), h/2*(1-scalar*(2*i+1)/(numHGridLines-1)), zDist)); //left vertex
-					gridlineGeom.vertices.push(new THREE.Vector3(w/2*(1-(1.01)*scalar), h/2*(1-scalar*(2*i+1)/(numHGridLines-1)), zDist)); //center vertex
-					gridlineGeom.vertices.push(new THREE.Vector3(w/2, h/2*(1-scalar*(2*i+1)/(numHGridLines-1)), zDist)); //right vertex
+					gridlineGeom.vertices.push(new THREE.Vector3(w/2*(1-(1.01)*scalar*2), h/2*(1-scalar*(2*i+1)/(numH-1)), zDist)); //left vertex
+					gridlineGeom.vertices.push(new THREE.Vector3(w/2*(1-(1.01)*scalar), h/2*(1-scalar*(2*i+1)/(numH-1)), zDist)); //center vertex
+					gridlineGeom.vertices.push(new THREE.Vector3(w/2, h/2*(1-scalar*(2*i+1)/(numH-1)), zDist)); //right vertex
 
 				lines.yaxis[i] = new THREE.Line(gridlineGeom, new THREE.LineBasicMaterial({color: 0x444444}));
 
@@ -106,75 +106,137 @@ visuals = function(properties) {
 
 				labels.yaxis.context[i] = labels.yaxis.canvas[i].getContext('2d');
 
-				//paint the background
-				labels.yaxis.context[i].fillStyle = 'rgb(200,200,200)';
+				//paint the canvas background
+				labels.yaxis.context[i].fillStyle = 'rgb(255,200,200)'; //test
 				labels.yaxis.context[i].fillRect(0, 0, canvasW, canvasH);
 
-				//set color, font and alignment for the text
+				//set color, font and alignment for the label text
 				labels.yaxis.context[i].fillStyle = 'rgb(0,0,0)';
-				labels.yaxis.context[i].font = (canvasH-1) + 'px Arial';
+				labels.yaxis.context[i].font = (canvasH-1)+'px Arial';
 				labels.yaxis.context[i].textAlign = 'center';
 
+				//set color and value of the x-axis as well as all other gridline values
 				switch(i) {
 
-					//set color and value of the x-axis
-					case (numHGridLines-1)/2:
+					case (numH-1)/2:
 						lines.yaxis[i].material.color.setHex(0x777777);
 						labels.yaxis.context[i].fillText('0', xPos, yPos);
 						break;
 
-					//set all other gridline values
+					//MINOR ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
 					default:
-						labels.yaxis.context[i].fillText((globalRange*(1-2*i/(numHGridLines-1))).toFixed(2), xPos, yPos);
+						labels.yaxis.context[i].fillText((gRange*(1-2*i/(numH-1))).toFixed(2), xPos, yPos);
 				}
 
+				//set canvas as texture and specify texture parameters
 				labels.yaxis.texture[i] = new THREE.Texture(labels.yaxis.canvas[i]);
+				labels.yaxis.texture[i].minFilter = THREE.LinearFilter; //WHAT DOES THIS ACTUALLY DO?
+				labels.yaxis.texture[i].needsUpdate = true; //AND THIS?
 
-				//WHAT DO THESE ACTUALLY DO?
-				labels.yaxis.texture[i].minFilter = THREE.LinearFilter;
-				labels.yaxis.texture[i].needsUpdate = true;
-				//
-
+				//create label mesh and map canvas texture to it
 				labels.yaxis.mesh[i] = new THREE.Mesh(
-								 	   	   new THREE.PlaneGeometry(w*(1-(1.01)*scalar), h*(0.6)*scalar/(numHGridLines-1), 1, 1),
+								 	   	   new THREE.PlaneGeometry(w*(1-(1.01)*scalar), h*(0.6)*scalar/(numH-1), 1, 1),
 									   	   new THREE.MeshBasicMaterial({map: labels.yaxis.texture[i]})
 									   );
 
-				labels.yaxis.mesh[i].position.set(-w/2*(1.01)*scalar, h/2*(1-scalar*((2*i+1+(0.6)/4)/(numHGridLines-1)-(0.002))), zDist);
+				//set label position
+				labels.yaxis.mesh[i].position.set(-w/2*(1.01)*scalar, h/2*(1-scalar*((2*i+1+(0.6)/4)/(numH-1)-(0.002))), zDist);
 
 				//add gridlines and labels to the scene
 				camera.add(lines.yaxis[i], labels.yaxis.mesh[i]);
 			}
 
-			//ADD VERTICAL TICK MARKS AND DOTTED LINES, LABELS
-			//for(var i=0; i<numVGridLines; i++) {
+			//ADD VERTICAL TICK MARKS AND DOTTED LINES, AND HORIZONTAL AXIS LABELS
+			for(var i=0; i<numV; i++) {
 
 				//tick marks
 				var tickGeom = new THREE.Geometry();
 
-				tickGeom.vertices.push(new THREE.Vector3(w*(-scalar+0.5), h/2*(1-scalar*2), zDist)); //top vertex
-				tickGeom.vertices.push(new THREE.Vector3(w*(-scalar+0.5), h/2*(1-scalar*(2*numHGridLines-1)/(numHGridLines-1)), zDist)); //center vertex
-				tickGeom.vertices.push(new THREE.Vector3(w*(-scalar+0.5), h/2*(1-scalar*(2*numHGridLines)/(numHGridLines-1)), zDist)); //bottom vertex
+				tickGeom.vertices.push(new THREE.Vector3(w*(scalar*(i/6-1)+0.5), h/2*(1-scalar*2), zDist)); //top vertex
+				tickGeom.vertices.push(new THREE.Vector3(w*(scalar*(i/6-1)+0.5), h/2*(1-scalar*(2*numH-1)/(numH-1)), zDist)); //center vertex
+				tickGeom.vertices.push(new THREE.Vector3(w*(scalar*(i/6-1)+0.5), h/2*(1-scalar*(2*numH)/(numH-1)), zDist)); //bottom vertex
 
-				tick = new THREE.Line(tickGeom, new THREE.LineBasicMaterial({color: 0xffff00}));
+				lines.xaxis.tick[i] = new THREE.Line(tickGeom, new THREE.LineBasicMaterial({color: 0xffff00}));
 
 				//dotted lines
-				var dotLine = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/obj.size(dataSets[0]), color: 0xffff00}));
+				switch(i) {
 
-				for(var j=0; j<(4*numHGridLines-6); j++) {
+					//make the book-ends larger and brighter
+					case 0: //fall-through
+					case 6:
+						lines.xaxis.dots[i] = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/obj.size(dataSets[0]), color: 0xffff00}));
+						break;
+
+					default:
+						lines.xaxis.dots[i] = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: w*scalar/obj.size(dataSets[0]), color: 0xaaaa00}));
+						break;
+				}
+
+				//add vertices (as vectors) to the dotted line geometries
+				for(var j=0; j<(4*numH-6); j++) {
 				
-					dotLine.geometry.vertices.push(new THREE.Vector3(
+					lines.xaxis.dots[i].geometry.vertices.push(new THREE.Vector3(
 
-						w*(-scalar+0.5), //x-coordinate
+						w*(scalar*(i/6-1)+0.5), //x-coordinate
 
-						h*(0.5+scalar*(0.25*(j+1)/(numHGridLines-1)-1)), //y-coordinate
+						h*(scalar*(0.25*(j+1)/(numH-1)-1)+0.5), //y-coordinate
 
 						zDist //z-coordinate
 					));
 				}
 
-				camera.add(tick, dotLine);
-			//}
+				//labels
+				labels.xaxis.canvas[i] = document.createElement('canvas');
+
+				labels.xaxis.canvas[i].width = canvasW*0.75;
+				labels.xaxis.canvas[i].height = canvasH;
+
+				labels.xaxis.context[i] = labels.xaxis.canvas[i].getContext('2d');
+
+				//paint the canvas background
+				labels.xaxis.context[i].fillStyle = 'rgb(200,255,200)'; //test
+				labels.xaxis.context[i].fillRect(0, 0, canvasW, canvasH);
+
+				//set color, font and alignment for the label text
+				labels.xaxis.context[i].fillStyle = 'rgb(0,0,0)';
+				labels.xaxis.context[i].font = (canvasH-1)+'px Arial';
+				labels.xaxis.context[i].textAlign = 'center';
+
+				//set label values - MINOR ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
+				labels.xaxis.context[i].fillText('$'+(g.STOCK_PRICE*(1+obj.max(g.IMPLIED_VOL)*Math.sqrt(obj.min(g.EXPIRY)/365)*(i-3))).toFixed(2), xPos*0.75, yPos);
+
+				//set canvas as texture and specify texture parameters
+				labels.xaxis.texture[i] = new THREE.Texture(labels.xaxis.canvas[i]);
+				labels.xaxis.texture[i].minFilter = THREE.LinearFilter; //WHAT DOES THIS ACTUALLY DO?
+				labels.xaxis.texture[i].needsUpdate = true; //AND THIS?
+
+				//create label mesh and map canvas texture to it
+				labels.xaxis.mesh[i] = new THREE.Mesh(
+							       	       new THREE.PlaneGeometry(w*(1-(1.01)*scalar)*0.75, h*(0.6)*scalar/(numH-1), 1, 1),
+								           new THREE.MeshBasicMaterial({map: labels.xaxis.texture[i]})
+							           );
+
+				//set label position; bump in book-end labels
+				switch(i) {
+
+					case 0:
+						//bump right
+						labels.xaxis.mesh[i].position.set(w*(scalar*(i/6-1-1.01*0.375)+0.375+0.5), h*(scalar/(1-numH)*(numH+0.45)+0.5), zDist);
+						break;
+
+					case 6:
+						//bump left
+						labels.xaxis.mesh[i].position.set(w*(scalar*(i/6-1+1.01*0.375)-0.375+0.5), h*(scalar/(1-numH)*(numH+0.45)+0.5), zDist);
+						break;
+
+					default:
+						labels.xaxis.mesh[i].position.set(w*(scalar*(i/6-1)+0.5), h*(scalar/(1-numH)*(numH+0.45)+0.5), zDist);
+						break;
+				}
+
+				//add tick marks, dotted lines and labels to the scene
+				camera.add(lines.xaxis.tick[i], lines.xaxis.dots[i], labels.xaxis.mesh[i]);
+			}
 
 			//DATA
 			for(t in dataSets) {
@@ -187,16 +249,17 @@ visuals = function(properties) {
 
 					cloud[t].geometry.vertices.push(new THREE.Vector3(
 
-						w*(scalar*((k+0.5)/obj.size(dataSets[0])-1)+0.5), //x-coordinate
+						w*(scalar*(k/(obj.size(dataSets[0])-1)-1)+0.5), //x-coordinate
 
-						h/2*(scalar*(dataSets[t][val]/globalRange-numHGridLines/(numHGridLines-1))+1), //y-coordinate
+						h/2*(scalar*(dataSets[t][val]/gRange-numH/(numH-1))+1), //y-coordinate
 
-						zDist+0.00001 //z-coordinate - place points just in front of the grid and background
+						zDist+0.00001 //z-coordinate - place points just in front of the grid and the background
 					));
 
 					k++;
 				}
 
+				//add the point cloud to the scene
 				camera.add(cloud[t]);
 			}
 		}
