@@ -70,7 +70,7 @@ visuals = function(properties) {
         		canvasH = 3*Math.floor(height*(0.6)*scalar/(numH-1)), //
 	        	xPos = canvasW/2,
 	        	yPos = 5*canvasH/6, //WHY IS THIS NOT 'canvasH/2'?
-	        	lines = { xaxis: {tick: {}, ends: {}, dots: {}}, yaxis: {} }, //COULD WE USE ANOTHER DATA STRUCTURE HERE?
+	        	lines = { xaxis: {tick: {}, ext: {}, dots: {}}, yaxis: {} }, //COULD WE USE ANOTHER DATA STRUCTURE HERE?
 				labels = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} }, //AND HERE?
 				//
 	   	     	//data vars
@@ -107,7 +107,7 @@ visuals = function(properties) {
 				labels.yaxis.context[i] = labels.yaxis.canvas[i].getContext('2d');
 
 				//paint the canvas background
-				labels.yaxis.context[i].fillStyle = 'rgb(255,200,200)'; //test
+				labels.yaxis.context[i].fillStyle = 'rgb(200,200,200)';
 				labels.yaxis.context[i].fillRect(0, 0, canvasW, canvasH);
 
 				//set color, font and alignment for the label text
@@ -142,7 +142,7 @@ visuals = function(properties) {
 				//set label position
 				labels.yaxis.mesh[i].position.set(-w/2*(1.01)*scalar, h/2*(1-scalar*((2*i+1+(0.6)/4)/(numH-1)-(0.002))), zDist);
 
-				//add gridlines and labels to the scene
+				//add gridline and label to the scene
 				camera.add(lines.yaxis[i], labels.yaxis.mesh[i]);
 			}
 
@@ -175,14 +175,7 @@ visuals = function(properties) {
 				//add vertices (as vectors) to the dotted line geometries
 				for(var j=0; j<(4*numH-6); j++) {
 				
-					lines.xaxis.dots[i].geometry.vertices.push(new THREE.Vector3(
-
-						w*(scalar*(i/6-1)+0.5), //x-coordinate
-
-						h*(scalar*(0.25*(j+1)/(numH-1)-1)+0.5), //y-coordinate
-
-						zDist //z-coordinate
-					));
+					lines.xaxis.dots[i].geometry.vertices.push(new THREE.Vector3(w*(scalar*(i/6-1)+0.5), h*(scalar*(0.25*(j+1)/(numH-1)-1)+0.5), zDist));
 				}
 
 				//labels
@@ -194,7 +187,7 @@ visuals = function(properties) {
 				labels.xaxis.context[i] = labels.xaxis.canvas[i].getContext('2d');
 
 				//paint the canvas background
-				labels.xaxis.context[i].fillStyle = 'rgb(200,255,200)'; //test
+				labels.xaxis.context[i].fillStyle = 'rgb(200,200,200)';
 				labels.xaxis.context[i].fillRect(0, 0, canvasW, canvasH);
 
 				//set color, font and alignment for the label text
@@ -202,7 +195,7 @@ visuals = function(properties) {
 				labels.xaxis.context[i].font = (canvasH-1)+'px Arial';
 				labels.xaxis.context[i].textAlign = 'center';
 
-				//set label values - MINOR ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
+				//set label value - MINOR ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
 				labels.xaxis.context[i].fillText('$'+(g.STOCK_PRICE*(1+obj.max(g.IMPLIED_VOL)*Math.sqrt(obj.min(g.EXPIRY)/365)*(i-3))).toFixed(2), xPos*0.75, yPos);
 
 				//set canvas as texture and specify texture parameters
@@ -216,17 +209,37 @@ visuals = function(properties) {
 								           new THREE.MeshBasicMaterial({map: labels.xaxis.texture[i]})
 							           );
 
-				//set label position; bump in book-end labels
+				//set label position; at book-ends: bump in label and extend tick mark
 				switch(i) {
 
 					case 0:
-						//bump right
+						//bump label right
 						labels.xaxis.mesh[i].position.set(w*(scalar*(i/6-1-1.01*0.375)+0.375+0.5), h*(scalar/(1-numH)*(numH+0.45)+0.5), zDist);
+
+						//extend tick mark right
+						var extGeom = new THREE.Geometry();
+
+						extGeom.vertices.push(new THREE.Vector3(w*(-scalar+0.5), h/2*(1-scalar*(2*numH)/(numH-1)), zDist)); //left vertex
+						extGeom.vertices.push(new THREE.Vector3(w*0.25*(-scalar*(1.01*0.75+4)+0.75+2), h/2*(1-scalar*(2*numH)/(numH-1)), zDist)); //center vertex
+						extGeom.vertices.push(new THREE.Vector3(w*0.5*(-scalar*(1.01*0.75+2)+0.75+1), h/2*(1-scalar*(2*numH)/(numH-1)), zDist)); //right vertex
+
+						lines.xaxis.ext[i] = new THREE.Line(extGeom, new THREE.LineBasicMaterial({color: 0xffff00}));
+						camera.add(lines.xaxis.ext[i]);
 						break;
 
 					case 6:
-						//bump left
+						//bump label left
 						labels.xaxis.mesh[i].position.set(w*(scalar*(i/6-1+1.01*0.375)-0.375+0.5), h*(scalar/(1-numH)*(numH+0.45)+0.5), zDist);
+
+						//extend tick mark left
+						var extGeom = new THREE.Geometry();
+
+						extGeom.vertices.push(new THREE.Vector3(w*0.5*(0.75*(scalar*1.01-1)+1), h/2*(1-scalar*(2*numH)/(numH-1)), zDist)); //left vertex
+						extGeom.vertices.push(new THREE.Vector3(w*0.25*(0.75*(scalar*1.01-1)+2), h/2*(1-scalar*(2*numH)/(numH-1)), zDist)); //center vertex
+						extGeom.vertices.push(new THREE.Vector3(w*0.5, h/2*(1-scalar*(2*numH)/(numH-1)), zDist)); //right vertex
+
+						lines.xaxis.ext[i] = new THREE.Line(extGeom, new THREE.LineBasicMaterial({color: 0xffff00}));
+						camera.add(lines.xaxis.ext[i]);
 						break;
 
 					default:
@@ -262,7 +275,6 @@ visuals = function(properties) {
 				//add the point cloud to the scene
 				camera.add(cloud[t]);
 			}
-
 			//console.log();
 		}
 
