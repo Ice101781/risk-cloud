@@ -260,10 +260,13 @@ math = function(properties) {
 
 // MISC /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//disable a specific key
-disableHotKey = function(event, key) {
+//disable certain keys
+disableKey = function(key) {
 
-    document.addEventListener('keydown', function(event) { if(event.keyCode == key) {event.preventDefault()} });
+    document.addEventListener('keydown', function(e) { if((e.keyCode || e.charCode) == key) { e.preventDefault() } });
+
+    //required for certain keys in Firefox (i.e., the spacebar)
+    document.addEventListener('keyup', function(e) { if((e.keyCode || e.charCode) == key) { e.preventDefault() } });
 }
 
 

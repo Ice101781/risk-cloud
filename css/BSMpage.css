@@ -1,6 +1,6 @@
 ﻿.model-heading {
   margin: 0;
-  margin-top: 2.5vw;
+  margin-top: 1.5vw;
   margin-bottom: 0.5vw;
   padding: 0;
 }
@@ -15,10 +15,10 @@
 }
 
 #app-container {
-  height: 36.5vw;
+  height: 39vw;
   width: 92vw;
   margin-left: 3.375vw;
-  padding-top: 2.5vw;
+  padding-top: 1.5vw;
   background-color: lightblue;
 }
 
@@ -71,7 +71,7 @@
 }
 
 #output-container {
-  height: 36vw;
+  height: 38.5vw;
   width: 92vw;
   background-color: #a1a1a1;
   opacity: 0;
@@ -96,7 +96,7 @@
   width: 77.5vw;
   margin-left: 0.25vw; 
   margin-top: 1vw;
-  background-color: black;
+  background-color: transparent;
 }
 
 form {
