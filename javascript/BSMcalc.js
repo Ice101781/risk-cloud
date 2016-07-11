@@ -148,7 +148,7 @@ BSM = function(properties) {
             num = 500;
 
         //populate an array containing stock prices in a range of +-(3*volMax)
-        for(i=0; i<num; i++) { sRange.push(+(g.STOCK_PRICE*(1-(3*volMax)*(1-(2*i/(num-1))))).toFixed(2)) } //MINOR ROUNDING ISSUE HERE - WORTH TRYING TO FIX?
+        for(i=0; i<num+1; i++) { sRange.push(+(g.STOCK_PRICE*(1-(3*volMax)*(1-(2*i/num)))).toFixed(2)) } //MINOR ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
 
         //delete any duplicate prices in the stock price array
         sRange = array.unique(sRange);
@@ -169,7 +169,7 @@ BSM = function(properties) {
             g.VEGA_DATA[j] = {};
             g.RHO_DATA[j] = {};
 
-            for(k=0; k<num; k++) {
+            for(k=0; k<num+1; k++) {
 
                 //clear old values
                 obj.reset(BSM);
@@ -178,7 +178,7 @@ BSM = function(properties) {
                 if(j!=expMin) { BSM.calc(j, sRange[k]) } else { BSM.calc(j*.99, sRange[k]) }
 
                 //store current values
-                g.PROFITLOSS_DATA[j][sRange[k].toFixed(2)] = Math.round((BSM.price-origPrice)*10000)/100;// <--- NEED TO ADD FEES HERE
+                g.PROFITLOSS_DATA[j][sRange[k].toFixed(2)] = Math.round((BSM.price-origPrice)*10000)/100; //NEED TO ADD FEES HERE
                 g.DELTA_DATA[j][sRange[k].toFixed(2)] = Math.round(BSM.greeks.delta*10000)/100;
                 g.GAMMA_DATA[j][sRange[k].toFixed(2)] = Math.round(BSM.greeks.gamma*10000)/100;
                 g.THETA_DATA[j][sRange[k].toFixed(2)] = Math.round(BSM.greeks.theta*10000)/100;

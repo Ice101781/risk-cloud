@@ -263,10 +263,12 @@ math = function(properties) {
 //disable certain keys
 disableKey = function(key) {
 
-    document.addEventListener('keydown', function(e) { if((e.keyCode || e.charCode) == key) { e.preventDefault() } });
+    block = function(e) { if((e.keyCode || e.charCode) == key) { e.preventDefault() } }
+
+    document.addEventListener('keydown', block);
 
     //required for certain keys in Firefox (i.e., the spacebar)
-    document.addEventListener('keyup', function(e) { if((e.keyCode || e.charCode) == key) { e.preventDefault() } });
+    document.addEventListener('keyup', block);
 }
 
 

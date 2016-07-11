@@ -195,8 +195,8 @@ visuals = function(properties) {
 				labels.xaxis.context[i].font = (canvasH-1)+'px Arial';
 				labels.xaxis.context[i].textAlign = 'center';
 
-				//set label value - MINOR ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
-				labels.xaxis.context[i].fillText('$'+(g.STOCK_PRICE*(1+obj.max(g.IMPLIED_VOL)*Math.sqrt(obj.min(g.EXPIRY)/365)*(i-3))).toFixed(2), xPos*0.75, yPos);
+				//set label value
+				labels.xaxis.context[i].fillText('$'+Object.keys(dataSets[0])[83*i+Math.floor((i+1)/3)], xPos*0.75, yPos); //thanks to Michael Wunder for this
 
 				//set canvas as texture and specify texture parameters
 				labels.xaxis.texture[i] = new THREE.Texture(labels.xaxis.canvas[i]);
