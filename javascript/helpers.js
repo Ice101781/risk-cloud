@@ -49,10 +49,19 @@ obj = function(properties) {
         return Object.keys(obj).reduce(function(m,n) {return obj[n] < m ? obj[n] : m}, Infinity);
     },
 
-
     max: function(obj) {
         
         return Object.keys(obj).reduce(function(m,n) {return obj[n] > m ? obj[n] : m}, -Infinity);
+    },
+
+
+    //Object values total - thanks to 'Sirko' on stackoverflow.com for this
+    sum: function(obj) {
+
+        //some basic error handling
+        for(key in obj) { if(typeof obj[key] !== 'number') {return "The 'obj.sum()' method requires all object values to be numbers."} }
+
+        return Object.keys(obj).reduce(function(s,key) {return s + obj[key]}, 0);
     }
 })
 

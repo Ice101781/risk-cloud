@@ -59,7 +59,7 @@
 
 .trade-leg {
   display: inline-block;
-  height: 24.75vw;
+  height: 25.25vw;
   width: 20vw;
   margin-left: 1.25vw;
   margin-right: 1.25vw;
@@ -212,7 +212,7 @@ label.radio.output-data {
 #current-price-form {
   display: inline-block;
   margin-left: 1.5vw;
-  margin-top: 1.25vw;
+  margin-top: 0.75vw;
   background-color: #fafafa;
 }
 
