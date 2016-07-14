@@ -12,7 +12,7 @@ visuals = function(properties) {
 		var width    = elem.select("output-view-container").offsetWidth,
             height   = elem.select("output-view-container").offsetHeight,
 			scene    = new THREE.Scene(),
-			renderer = new THREE.WebGLRenderer({antialias: false, alpha: false}),
+			renderer = new THREE.WebGLRenderer({antialias: false, alpha: true}),
 			VFOVdeg  = 45,
 			aspect   = width/height,
 			near     = 0.1,
@@ -28,7 +28,7 @@ visuals = function(properties) {
 		if(elem.select("output-view-container") != null) {
 
 			renderer.setSize(width, height);
-			renderer.setClearColor(0x000000);
+			renderer.setClearColor(0x000000, 0);
 			elem.select("output-view-container").appendChild(renderer.domElement);
 		}
 
@@ -51,9 +51,7 @@ visuals = function(properties) {
 		show2DView = function() {
 
 			//LOCAL VARS FOR THE GRAPH
-			var //
-			 	//general and background vars
-				//
+			var //general and background vars
 				w = 1,
 				h = 0.4, //container aspect is 2.5:1
 				scalar = 0.925,
@@ -61,20 +59,18 @@ visuals = function(properties) {
 				zDist = -h/(2*Math.tan(VFOVrad/2)),
 				plane1 = new THREE.Mesh(new THREE.PlaneGeometry(w, h, 1, 1), new THREE.MeshBasicMaterial({color: 'rgb(200,200,200)'})),
 				plane2 = new THREE.Mesh(new THREE.PlaneGeometry(w*scalar, h*scalar, 1, 1), new THREE.MeshBasicMaterial({color: 0x333333})),
-				//
+
 				//gridlines and labels vars
-				//
 				numH = 25,
 				numV = 7,
         		canvasW = 3*Math.floor(width*(1-(1.01)*scalar)), //WHY DO THESE DIMENSIONS REQUIRE A MULTIPLIER?
-        		canvasH = 3*Math.floor(height*(0.6)*scalar/(numH-1)), //
+        		canvasH = 3*Math.floor(height*(0.6)*scalar/(numH-1)), //AND THESE AS WELL?
 	        	xPos = canvasW/2,
 	        	yPos = 5*canvasH/6, //WHY IS THIS NOT 'canvasH/2'?
 	        	lines = { xaxis: {tick: {}, ext: {}, dots: {}}, yaxis: {} }, //COULD WE USE ANOTHER DATA STRUCTURE HERE?
 				labels = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} }, //AND HERE?
-				//
+
 	   	     	//data vars
-	   	     	//
 	        	data = g.PROFITLOSS_DATA,
 	        	gRange = globalRange(data, 0, obj.min(g.EXPIRY)) !== 0 ? globalRange(data, 0, obj.min(g.EXPIRY)) : 1,
 				dataSets = { T: data[obj.min(g.EXPIRY)], 0: data[0] }, //COULD WE USE ANOTHER DATA STRUCTURE HERE?
@@ -275,7 +271,6 @@ visuals = function(properties) {
 				//add the point cloud to the scene
 				camera.add(cloud[t]);
 			}
-			//console.log();
 		}
 
 

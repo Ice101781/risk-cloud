@@ -268,7 +268,7 @@ finalParams = function(properties) {
                 //capture user-defined final parameters
                 for(var i=0; i<g.TRADE_LEGS; i++) {
 
-                    g.LEG_SIGN[(i+1)] = +elem.select("input[name=buy-sell-radio-"+(i+1)+"]:checked").value;
+                    g.LONG_SHORT[(i+1)] = +elem.select("input[name=buy-sell-radio-"+(i+1)+"]:checked").value;
                     g.CONTRACT_TYPE[(i+1)] = +elem.select("input[name=call-put-radio-"+(i+1)+"]:checked").value;
                     g.NUM_CONTRACTS[(i+1)] = +elem.select("num-contracts-field-"+(i+1)).value;
                     g.STRIKE_PRICE[(i+1)] = +(elem.select("strike-price-field-"+(i+1)).value/1).toFixed(2);

@@ -2,11 +2,11 @@
 
 var g = {
 
-    //user-defined parameters
+    //user input
     TRADE_LEGS : 0,
     CONTRACT_FEES : 0,
     STOCK_PRICE : 0,
-    LEG_SIGN : {},
+    LONG_SHORT : {},
     CONTRACT_TYPE : {},
     NUM_CONTRACTS : {},
     STRIKE_PRICE : {},
@@ -17,6 +17,11 @@ var g = {
 
     //application output
     IMPLIED_VOL : {},
+    DELTA : {},
+    GAMMA : {},
+    THETA : {},
+    VEGA : {},
+    RHO : {},
     PROFITLOSS_DATA : {},
     DELTA_DATA : {},
     GAMMA_DATA : {},

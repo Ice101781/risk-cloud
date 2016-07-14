@@ -8,9 +8,18 @@ BSM = function(properties) {
     return self;
 }({
 
-    price: 0,
+    //Objects to store theoretical option prices and the 'greeks'
+    price: {},
 
-    greeks: {},
+    delta: {},
+
+    gamma: {},
+
+    theta: {},
+
+    vega: {},
+
+    rho: {},
 
     //The Newton-Raphson method to extract implied volatility from market option prices
     newtRaph: function(leg, S) {
@@ -101,7 +110,7 @@ BSM = function(properties) {
         for(var i=0; i<g.TRADE_LEGS; i++) {
 
             //local variables
-            var signN = g.LEG_SIGN[i+1]*g.NUM_CONTRACTS[i+1],
+            var signN = g.LONG_SHORT[i+1]*g.NUM_CONTRACTS[i+1],
                 type = g.CONTRACT_TYPE[i+1],
                 K = g.STRIKE_PRICE[i+1],
                 tau = (g.EXPIRY[i+1]-t)/365,
@@ -112,26 +121,21 @@ BSM = function(properties) {
                 d2 = d1-(vol*Math.sqrt(tau));
 
             //price
-            this.price += signN*type*((S*math.CUSTNORM(type*d1)*Math.pow(Math.E,-D*tau))-(K*math.CUSTNORM(type*d2)*Math.pow(Math.E,-r*tau)));
+            this.price[i+1] = Math.round((signN*type*((S*math.CUSTNORM(type*d1)*Math.pow(Math.E,-D*tau))
+                                                     -(K*math.CUSTNORM(type*d2)*Math.pow(Math.E,-r*tau))))*10000)/100;
 
             //greeks
-            this.greeks = obj.size(this.greeks) !== 0 ? this.greeks : {delta: 0, gamma: 0, theta: 0, vega: 0, rho: 0};
+            this.delta[i+1] = Math.round((signN*type*Math.pow(Math.E,-D*tau)*math.CUSTNORM(type*d1))*10000)/100;
 
-                this.greeks.delta += signN*type*Math.pow(Math.E,-D*tau)*math.CUSTNORM(type*d1);
+            this.gamma[i+1] = Math.round((signN*(Math.pow(Math.E,-D*tau)*math.NORM(d1))/(S*vol*Math.sqrt(tau)))*10000)/100;
 
-                this.greeks.gamma += signN*(Math.pow(Math.E,-D*tau)*math.NORM(d1))/(S*vol*Math.sqrt(tau));
+            this.theta[i+1] = Math.round((signN*((S*Math.pow(Math.E,-D*tau)*(D*type*math.CUSTNORM(type*d1)))
+                                                -(K*Math.pow(Math.E,-r*tau)*((r*type*math.CUSTNORM(type*d2))+((vol*math.NORM(d2))/(2*Math.sqrt(tau))))))/365)*10000)/100;
 
-                this.greeks.theta += signN*((S*Math.pow(Math.E,-D*tau)*(D*type*math.CUSTNORM(type*d1)))
-                                           -(K*Math.pow(Math.E,-r*tau)*((r*type*math.CUSTNORM(type*d2))+((vol*math.NORM(d2))/(2*Math.sqrt(tau))))))/365;
+            this.vega[i+1] = Math.round((signN*(S*Math.pow(Math.E,-D*tau)*math.NORM(d1)*Math.sqrt(tau)))*100)/100;
 
-                this.greeks.vega += signN*(S*Math.pow(Math.E,-D*tau)*math.NORM(d1)*Math.sqrt(tau))/100;
-
-                this.greeks.rho += signN*(type*K*tau*Math.pow(Math.E,-r*tau)*math.CUSTNORM(type*d2))/100;
+            this.rho[i+1] = Math.round((signN*(type*K*tau*Math.pow(Math.E,-r*tau)*math.CUSTNORM(type*d2)))*100)/100;
         }
-
-        //rounding
-        this.price = Math.round(this.price*10000)/10000;
-        for(greek in this.greeks) { this.greeks[greek] = Math.round(this.greeks[greek]*1000000)/1000000 }
     },
 
 
@@ -142,13 +146,12 @@ BSM = function(properties) {
         for(var i=0; i<g.TRADE_LEGS; i++) { g.IMPLIED_VOL[i+1] = BSM.newtRaph(i+1, g.STOCK_PRICE) || BSM.bisect(i+1, g.STOCK_PRICE) }
 
         //local variables
-        var expMin = obj.min(g.EXPIRY),
-            volMax = obj.max(g.IMPLIED_VOL)*Math.sqrt(expMin/365),
+        var tradeVol = obj.max(g.IMPLIED_VOL)*Math.sqrt(obj.min(g.EXPIRY)/365),
             sRange = [],
             num = 500;
 
-        //populate an array containing stock prices in a range of +-(3*volMax)
-        for(i=0; i<num+1; i++) { sRange.push(+(g.STOCK_PRICE*(1-(3*volMax)*(1-(2*i/num)))).toFixed(2)) } //MINOR ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
+        //populate an array containing stock prices in a range of +-(3*tradeVol)
+        for(i=0; i<num+1; i++) { sRange.push(+(g.STOCK_PRICE*(1-(3*tradeVol)*(1-(2*i/num)))).toFixed(2)) } //ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
 
         //delete any duplicate prices in the stock price array
         sRange = array.unique(sRange);
@@ -156,11 +159,11 @@ BSM = function(properties) {
         //calculate current trade values
         BSM.calc(0, g.STOCK_PRICE);
 
-        //store the price of the trade at the time of transaction
-        var origPrice = BSM.price;
+        //store the current price of the trade
+        var origPrice = obj.sum(BSM.price);
 
         //objects for profit/loss and greeks data
-        for(j=0; j<=expMin; j++) {
+        for(j=0; j<=obj.min(g.EXPIRY); j++) {
 
             g.PROFITLOSS_DATA[j] = {};
             g.DELTA_DATA[j] = {};
@@ -175,15 +178,21 @@ BSM = function(properties) {
                 obj.reset(BSM);
 
                 //calculate new values with some basic handling for the edge case at expiry
-                if(j!=expMin) { BSM.calc(j, sRange[k]) } else { BSM.calc(j*.99, sRange[k]) }
+                if(j!=obj.min(g.EXPIRY)) { BSM.calc(j, sRange[k]) } else { BSM.calc(j*.99, sRange[k]) }
 
-                //store current values
-                g.PROFITLOSS_DATA[j][sRange[k].toFixed(2)] = Math.round((BSM.price-origPrice)*10000)/100; //NEED TO ADD FEES HERE
-                g.DELTA_DATA[j][sRange[k].toFixed(2)] = Math.round(BSM.greeks.delta*10000)/100;
-                g.GAMMA_DATA[j][sRange[k].toFixed(2)] = Math.round(BSM.greeks.gamma*10000)/100;
-                g.THETA_DATA[j][sRange[k].toFixed(2)] = Math.round(BSM.greeks.theta*10000)/100;
-                g.VEGA_DATA[j][sRange[k].toFixed(2)] = Math.round(BSM.greeks.vega*10000)/100;
-                g.RHO_DATA[j][sRange[k].toFixed(2)] = Math.round(BSM.greeks.rho*10000)/100;
+                //store current values for trade summary to the global object
+                if(j==0 && k==num/2) { 
+
+                    ['delta','gamma','theta','vega','rho'].forEach(function(greek) { for(n in BSM[greek]) { g[greek.toUpperCase()][n] = BSM[greek][n] } });
+                }
+
+                //store values across time and stock price for graphing
+                g.PROFITLOSS_DATA[j][sRange[k].toFixed(2)] = +(obj.sum(BSM.price)-origPrice).toFixed(2); //NEED TO ADD FEES HERE
+                g.DELTA_DATA[j][sRange[k].toFixed(2)] = +(obj.sum(BSM.delta)).toFixed(2);
+                g.GAMMA_DATA[j][sRange[k].toFixed(2)] = +(obj.sum(BSM.gamma)).toFixed(2);
+                g.THETA_DATA[j][sRange[k].toFixed(2)] = +(obj.sum(BSM.theta)).toFixed(2);
+                g.VEGA_DATA[j][sRange[k].toFixed(2)] = +(obj.sum(BSM.vega)).toFixed(2);
+                g.RHO_DATA[j][sRange[k].toFixed(2)] = +(obj.sum(BSM.rho)).toFixed(2);
 
                 //testing
                 //console.log();
@@ -196,7 +205,7 @@ BSM = function(properties) {
         //data visualization callback
         if(typeof callback === 'function') { callback() }
 
-        //testing
+        //display the global object in the console
         console.log(g);
     }
 })
