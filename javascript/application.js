@@ -108,6 +108,7 @@ nav = function(properties) {
         })();
     },
 
+
     anim: function(index) {
 
         //local parameters
@@ -199,7 +200,7 @@ inputErrorMsg = function(element, msg) {
 }
 
 
-//Create or destroy a class of forms for radios with two buttons; on create, the default button may be selected based on a string condition
+//A class of forms for radios with two buttons; on create, the default button may be selected based on a string condition
 twoButtons = function(properties) {
 
     var self = function() { return };
@@ -245,7 +246,7 @@ twoButtons = function(properties) {
 })
 
 
-//Create or destroy a class of forms for text-number fields
+//A class of forms for text-number fields
 numberFields = function(properties) {
 
     var self = function() { return };
@@ -270,6 +271,7 @@ numberFields = function(properties) {
                                    idString+"-form-"+(idx+1));
     },
 
+
     //on first container click, toggle visibility of remaining field containers
     visible: function(container, maxHeight, field) {
 
@@ -290,14 +292,14 @@ numberFields = function(properties) {
                 break;
         }
 
-        //ease in or out, set field value to zero on ease out
+        //ease in or out, set field value to attribute "min" on ease out
         for(var i=1; i<g.TRADE_LEGS; i++) {
 
             (function(index) {
 
                 elem.ease(type, container+'-'+(index+1), 0.13625, maxHeight, function() {
 
-                    if(type == "out") {elem.select(field+'-field-'+(index+1)).value = 0}
+                    if(type == "out") { elem.select(field+'-field-'+(index+1)).value = elem.select(field+'-field-'+(index+1)).getAttribute("min") }
                 });
             })(i);
         }

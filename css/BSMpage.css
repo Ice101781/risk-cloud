@@ -79,8 +79,8 @@
 
 #output-sub-container-1, #output-sub-container-2 {
   display: inline-block;
-  height: 33vw;
-  background-color: #a1a1a1;
+  height: 38.5vw;
+  background-color: transparent; /*background-color: red; /*test*/
 }
 
 #output-sub-container-1 {
@@ -91,12 +91,31 @@
   width: 78vw;
 }
 
-#output-view-container {
+#output-view-container, #BSM-loading-text {
   height: 31vw;
+}
+
+#output-view-container, #output-summary-container {
   width: 77.5vw;
-  margin-left: 0.25vw; 
+  margin-left: 0.25vw;
+}
+
+#BSM-loading-text {
+  line-height: 31vw;
+  text-align: center;
+  font-size: 1.75vw;
+  color: black;
+}
+
+#output-view-container {
   margin-top: 1vw;
-  background-color: transparent;
+  background-color: #888888;
+}
+
+#output-summary-container {
+  height: 5.375vw;
+  margin-top: 0.375vw;
+  background-color: #fafafa;
 }
 
 form {

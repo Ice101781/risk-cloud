@@ -9,8 +9,12 @@ visuals = function(properties) {
 
 	init: function() {
 
+		//remove the loading text
+		elem.destroyChildren("output-view-container", ['BSM-loading-text']);
+
+		//local vars for the 2D and 3D views 
 		var width    = elem.select("output-view-container").offsetWidth,
-            height   = elem.select("output-view-container").offsetHeight,
+			height   = elem.select("output-view-container").offsetHeight,
 			scene    = new THREE.Scene(),
 			renderer = new THREE.WebGLRenderer({antialias: false, alpha: true}),
 			VFOVdeg  = 45,
@@ -27,17 +31,17 @@ visuals = function(properties) {
 		//set params and attach the renderer to the container when available
 		if(elem.select("output-view-container") != null) {
 
-			renderer.setSize(width, height);
-			renderer.setClearColor(0x000000, 0);
+			renderer.setSize(width,height);
+			renderer.setClearColor(0x000000,0);
 			elem.select("output-view-container").appendChild(renderer.domElement);
 		}
 
-		//re-size the 2D view if the window size is changed
+		//re-size the renderer if the window size is changed
 		window.addEventListener('resize', function onWindowResize() {
 
-			var width = elem.select("output-view-container").offsetWidth,
-			    height = elem.select("output-view-container").offsetHeight;
-  
+			var width  = elem.select("output-view-container").offsetWidth,
+				height = elem.select("output-view-container").offsetHeight;
+
   			renderer.setSize(width,height);
   			camera.aspect = (width/height);
   		});
@@ -50,32 +54,31 @@ visuals = function(properties) {
 		//THE 2D VIEW
 		show2DView = function() {
 
-			//LOCAL VARS FOR THE GRAPH
-			var //general and background vars
-				w = 1,
-				h = 0.4, //container aspect is 2.5:1
+			//LOCAL VARS
+			var //general and background
+				w      = 1,
+				h      = 0.4, //container aspect is 2.5:1
 				scalar = 0.925,
-				VFOVrad = Math.PI/4,
-				zDist = -h/(2*Math.tan(VFOVrad/2)),
-				plane1 = new THREE.Mesh(new THREE.PlaneGeometry(w, h, 1, 1), new THREE.MeshBasicMaterial({color: 'rgb(200,200,200)'})),
+				zDist  = -h/(2*Math.tan((VFOVdeg*Math.PI/180)/2)),
+				plane1 = new THREE.Mesh(new THREE.PlaneGeometry(w, h, 1, 1), new THREE.MeshBasicMaterial({color: 0x888888})),
 				plane2 = new THREE.Mesh(new THREE.PlaneGeometry(w*scalar, h*scalar, 1, 1), new THREE.MeshBasicMaterial({color: 0x333333})),
 
-				//gridlines and labels vars
-				numH = 25,
-				numV = 7,
-        		canvasW = 3*Math.floor(width*(1-(1.01)*scalar)), //WHY DO THESE DIMENSIONS REQUIRE A MULTIPLIER?
-        		canvasH = 3*Math.floor(height*(0.6)*scalar/(numH-1)), //AND THESE AS WELL?
-	        	xPos = canvasW/2,
-	        	yPos = 5*canvasH/6, //WHY IS THIS NOT 'canvasH/2'?
-	        	lines = { xaxis: {tick: {}, ext: {}, dots: {}}, yaxis: {} }, //COULD WE USE ANOTHER DATA STRUCTURE HERE?
-				labels = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} }, //AND HERE?
+				//gridlines and labels
+				numH    = 25,
+				numV    = 7,
+        		canvasW = 2*Math.floor(width*(1-(1.01)*scalar)), //WHY THE MULTIPLIER TO FIX BLURRY TEXT - IS IT RELATED TO THE 'devicePixelRatio' PROPERTY?
+        		canvasH = 2*Math.floor(height*(0.6)*scalar/(numH-1)), //AND HERE AS WELL
+	        	xPos    = canvasW/2,
+	        	yPos    = 5*canvasH/6, //WHY IS THIS NOT 'canvasH/2'?
+	        	lines   = { xaxis: {tick: {}, ext: {}, dots: {}}, yaxis: {} }, //COULD ANOTHER DATA STRUCTURE BE USED HERE?
+				labels  = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} }, //AND HERE?
 
-	   	     	//data vars
-	        	data = g.PROFITLOSS_DATA,
-	        	gRange = globalRange(data, 0, obj.min(g.EXPIRY)) !== 0 ? globalRange(data, 0, obj.min(g.EXPIRY)) : 1,
-				dataSets = { T: data[obj.min(g.EXPIRY)], 0: data[0] }, //COULD WE USE ANOTHER DATA STRUCTURE HERE?
-				cloud = { T: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/obj.size(dataSets[0]), color: 0xff0000})),
-						  0: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/obj.size(dataSets[0]), color: 0x0000ff})) };
+	   	     	//data
+	        	data     = g.PROFITLOSS_DATA,
+	        	gRange   = globalRange(data, 0, obj.min(g.EXPIRY)) !== 0 ? globalRange(data, 0, obj.min(g.EXPIRY)) : 1,
+				dataSets = { T: data[obj.min(g.EXPIRY)], 0: data[0] }, //COULD ANOTHER DATA STRUCTURE BE USED HERE?
+				cloud    = { T: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/obj.size(dataSets[0]), color: 0xff0000})),
+						     0: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/obj.size(dataSets[0]), color: 0x0000ff})) };
 
 			//position the background
 			plane1.position.set(0, 0, zDist);
@@ -94,20 +97,18 @@ visuals = function(properties) {
 
 				lines.yaxis[i] = new THREE.Line(gridlineGeom, new THREE.LineBasicMaterial({color: 0x444444}));
 
-				//labels
+				//labels - create the canvas
 				labels.yaxis.canvas[i] = document.createElement('canvas');
-
-				labels.yaxis.canvas[i].width = canvasW;
+				labels.yaxis.canvas[i].width  = canvasW;
 				labels.yaxis.canvas[i].height = canvasH;
 
+				//get context, paint the canvas background
 				labels.yaxis.context[i] = labels.yaxis.canvas[i].getContext('2d');
-
-				//paint the canvas background
-				labels.yaxis.context[i].fillStyle = 'rgb(200,200,200)';
+				labels.yaxis.context[i].fillStyle = '#888888';
 				labels.yaxis.context[i].fillRect(0, 0, canvasW, canvasH);
 
 				//set color, font and alignment for the label text
-				labels.yaxis.context[i].fillStyle = 'rgb(0,0,0)';
+				labels.yaxis.context[i].fillStyle = 'black';
 				labels.yaxis.context[i].font = (canvasH-1)+'px Arial';
 				labels.yaxis.context[i].textAlign = 'center';
 
@@ -119,9 +120,10 @@ visuals = function(properties) {
 						labels.yaxis.context[i].fillText('0', xPos, yPos);
 						break;
 
-					//MINOR ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
+					//ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
 					default:
 						labels.yaxis.context[i].fillText((gRange*(1-2*i/(numH-1))).toFixed(2), xPos, yPos);
+						break;
 				}
 
 				//set canvas as texture and specify texture parameters
@@ -160,7 +162,7 @@ visuals = function(properties) {
 					//make the book-ends larger and brighter
 					case 0: //fall-through
 					case 6:
-						lines.xaxis.dots[i] = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/obj.size(dataSets[0]), color: 0xffff00}));
+						lines.xaxis.dots[i] = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.5*w*scalar/obj.size(dataSets[0]), color: 0xffff00}));
 						break;
 
 					default:
@@ -174,20 +176,18 @@ visuals = function(properties) {
 					lines.xaxis.dots[i].geometry.vertices.push(new THREE.Vector3(w*(scalar*(i/6-1)+0.5), h*(scalar*(0.25*(j+1)/(numH-1)-1)+0.5), zDist));
 				}
 
-				//labels
+				//labels - create the canvas
 				labels.xaxis.canvas[i] = document.createElement('canvas');
-
-				labels.xaxis.canvas[i].width = canvasW*0.75;
+				labels.xaxis.canvas[i].width  = canvasW*0.75;
 				labels.xaxis.canvas[i].height = canvasH;
 
+				//get context, paint the canvas background
 				labels.xaxis.context[i] = labels.xaxis.canvas[i].getContext('2d');
-
-				//paint the canvas background
-				labels.xaxis.context[i].fillStyle = 'rgb(200,200,200)';
+				labels.xaxis.context[i].fillStyle = '#888888';
 				labels.xaxis.context[i].fillRect(0, 0, canvasW, canvasH);
 
 				//set color, font and alignment for the label text
-				labels.xaxis.context[i].fillStyle = 'rgb(0,0,0)';
+				labels.xaxis.context[i].fillStyle = 'black';
 				labels.xaxis.context[i].font = (canvasH-1)+'px Arial';
 				labels.xaxis.context[i].textAlign = 'center';
 

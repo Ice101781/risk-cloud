@@ -19,7 +19,7 @@
             <div id="loadScreen"></div>
 
             <script>
-                //prevent enter key and spacebar usage on the current page
+                //prevent enter key and spacebar usage on the current page (fixes scrolling bug)
                 disableKey(13);
                 disableKey(32);
 
@@ -108,7 +108,12 @@
                     </div>
 
                     <div id="output-sub-container-2">
-                        <div id="output-view-container"></div>
+
+                        <div id="output-view-container">
+                            <div id="BSM-loading-text">LOADING...</div>
+                        </div>
+
+                        <div id="output-summary-container"></div>
                     </div>
                 </div>
             </div>

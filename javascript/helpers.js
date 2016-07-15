@@ -141,21 +141,35 @@ elem = function(properties) {
     },
 
 
-    //Remove all children from an element - thanks to Gabriel McAdams on stackoverflow.com for this
-    destroy: function(idString) {
+    //Remove children from an element of the DOM - thanks to Gabriel McAdams on stackoverflow.com for help on the case for removing all children from an element
+    destroyChildren: function(idStringParent, idArrayChildren) {
 
-        var element = this.select(idString);
+        idArrayChildren = typeof idArrayChildren !== 'undefined' ? idArrayChildren : 'none specified';
 
-        while(element.firstChild) { element.removeChild(element.firstChild) }
+        var parent = this.select(idStringParent),
+            children = idArrayChildren;
+
+        switch(children) {
+
+            //remove all children
+            case 'none specified':
+                while(parent.firstChild) { parent.removeChild(parent.firstChild) }
+                break;
+
+            //remove specified children
+            default:
+                for(i=0; i<children.length; i++) { parent.removeChild(this.select(children[i])) }
+                break;
+        }
     },
 
 
-    //HTML element ease animation
+    //HTML element transition animations
     ease: function(type, idString, increment, maxHeight, callback) {
 
         var element = this.select(idString).style,
             height = 0,
-            timer = setInterval(render, (1000/50));
+            timer = setInterval(render, (1000/50)); //50 fps
 
         function render() {
 
@@ -169,22 +183,20 @@ elem = function(properties) {
             } else {
 
                 height += increment;
-                if(type == "in") {element.height = height + 'vw'} else if(type == "out") {element.height = maxHeight - height + 'vw'}
+                if(type == "in") { element.height = height + 'vw' } else if(type == "out") { element.height = maxHeight - height + 'vw' }
             }
         }
     },
 
-
-    //HTML element opacity animation
-    fade: function(type, idString, inc, callback) {
+    fade: function(type, idString, increment, callback) {
 
         var element = this.select(idString).style,
             opacity = 0,
-            timer = setInterval(render, (1000/50));
+            timer = setInterval(render, (1000/50)); //50 fps
 
         function render() {
 
-            opacity = (1-opacity > 0) ? opacity + inc : 1;
+            opacity = (1-opacity > 0) ? opacity + increment : 1;
 
             if(opacity == 1) {
 
@@ -193,8 +205,8 @@ elem = function(properties) {
 
             } else {
 
-                opacity += inc;
-                if(type == "in") {element.opacity = opacity} else if(type == "out") {element.opacity = 1 - opacity}
+                opacity += increment;
+                if(type == "in") { element.opacity = opacity } else if(type == "out") { element.opacity = 1 - opacity }
             }
         }
     }

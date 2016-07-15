@@ -193,9 +193,6 @@ BSM = function(properties) {
                 g.THETA_DATA[j][sRange[k].toFixed(2)] = +(obj.sum(BSM.theta)).toFixed(2);
                 g.VEGA_DATA[j][sRange[k].toFixed(2)] = +(obj.sum(BSM.vega)).toFixed(2);
                 g.RHO_DATA[j][sRange[k].toFixed(2)] = +(obj.sum(BSM.rho)).toFixed(2);
-
-                //testing
-                //console.log();
             }
         }
 

@@ -12,8 +12,8 @@ initialParams = function(properties) {
     validate: function() {
 
         //string objects containing element id's
-        var numLegsRadio = idStringsObject(["num-legs-radio"], 4),
-            feesField = "fees-field",
+        var numLegsRadio    = idStringsObject(["num-legs-radio"], 4),
+            feesField       = "fees-field",
             continueButton1 = "continue-button-1",
 
             //evaluate text form input conditions
@@ -38,6 +38,7 @@ initialParams = function(properties) {
                     elem.fade("out", "initial-params-container", 0.02);
                     elem.fade("in", "final-params-container", 0.02);
                 });
+                break;
         }
     }
 })
@@ -87,28 +88,30 @@ finalParams = function(properties) {
                 }
             }
 
-            //children for each trade leg container
-            (function(index) {
-
-                //buy-sell radios
-                twoButtons.create([["buy","1"],["sell","-1"]], "(index % 2 == 0)", "leg-sub-container-1-", index);
-                //call-put radios
-                twoButtons.create([["call","1"],["put","-1"]], "(index < 2)", "leg-sub-container-1-", index);
-                //number of contracts fields
-                numberFields.create("num-contracts", "no. of contracts :", {min:"1", step:"1", value:"1"}, "leg-sub-container-1-", index);
-                //strike prices
-                numberFields.create("strike-price", "exercise price :", {min:".01", step:".01", value:"100"}, "leg-sub-container-1-", index);
-                //calendar times to expiry
-                numberFields.create("expiry", "calendar days to expiry :", {min:"0", step:"1", value:"30"}, "leg-sub-container-2-", index);
-                //dividend % fields
-                numberFields.create("div-yield", "dividend yield % :", {min:"0", step:".01", value:"0"}, "leg-sub-container-3-", index);
-                //risk-free rates
-                numberFields.create("risk-free-rate", "risk-free rate % :", {min:"0", step:".01", value:"0.25"}, "leg-sub-container-4-", index);
-                //option prices
-                numberFields.create("option-price", "option price :", {min:".01", step:".01", value:"1.25"}, "leg-sub-container-5-", index);
-            })(i);
+            //buy-sell radios
+            twoButtons.create([["buy","1"],["sell","-1"]], "(index % 2 == 0)", "leg-sub-container-1-", i);
+                
+            //call-put radios
+            twoButtons.create([["call","1"],["put","-1"]], "(index < 2)", "leg-sub-container-1-", i);
+                
+            //number of contracts fields
+            numberFields.create("num-contracts", "no. of contracts :", {min:"1", step:"1", value:"1"}, "leg-sub-container-1-", i);
+                
+            //strike prices
+            numberFields.create("strike-price", "exercise price :", {min:".01", step:".01", value:"100"}, "leg-sub-container-1-", i);
+                
+            //calendar times to expiry
+            numberFields.create("expiry", "calendar days to expiry :", {min:"1", step:"1", value:"30"}, "leg-sub-container-2-", i);
+                
+            //dividend % fields
+            numberFields.create("div-yield", "dividend yield % :", {min:"0", step:".01", value:"0"}, "leg-sub-container-3-", i);
+            
+            //risk-free rates
+            numberFields.create("risk-free-rate", "risk-free rate % :", {min:"0", step:".01", value:"0.25"}, "leg-sub-container-4-", i);
+            
+            //option prices
+            numberFields.create("option-price", "option price :", {min:".01", step:".01", value:"1.25"}, "leg-sub-container-5-", i);
         }
-
 
         //some more logic needed to apply certain trade parameters to all legs on multi-leg trades
         if(g.TRADE_LEGS>1) {
@@ -128,7 +131,6 @@ finalParams = function(properties) {
             elem.select("div-yield-field-1").addEventListener("click", function(e) {e.stopPropagation()});
             elem.select("risk-free-rate-field-1").addEventListener("click", function(e) {e.stopPropagation()});
         }
-
 
         //adaptive sizing and positioning for final-params-container and two of its children
         (function() {
@@ -173,6 +175,7 @@ finalParams = function(properties) {
         if(typeof callback === 'function') { callback() }
     },
 
+
     destroy: function() {
 
         //clear global params
@@ -182,7 +185,8 @@ finalParams = function(properties) {
         elem.fade("out", "final-params-container", 0.02, function() {
 
             //destroy trade info
-            elem.destroy('trade-legs-params-container');
+            elem.destroyChildren('trade-legs-params-container');
+
             //reset stock price field value
             elem.select("current-price-field").value = 100.25;
         });
@@ -191,29 +195,30 @@ finalParams = function(properties) {
         elem.fade("in", "initial-params-container", 0.02);
     },
 
+
     validate: function() {
 
         //id strings
-        var buySellRadios = idStringsObject(["buy-radio", "sell-radio"], g.TRADE_LEGS),
-            callPutRadios = idStringsObject(["call-radio", "put-radio"], g.TRADE_LEGS),
+        var buySellRadios      = idStringsObject(["buy-radio", "sell-radio"], g.TRADE_LEGS),
+            callPutRadios      = idStringsObject(["call-radio", "put-radio"], g.TRADE_LEGS),
             numContractsFields = idStringsObject(["num-contracts-field"], g.TRADE_LEGS),
-            strikePriceFields = idStringsObject(["strike-price-field"], g.TRADE_LEGS),
-            expiryFields = idStringsObject(["expiry-field"], g.TRADE_LEGS),
-            divYieldFields = idStringsObject(["div-yield-field"], g.TRADE_LEGS),
-            riskFreeFields = idStringsObject(["risk-free-rate-field"], g.TRADE_LEGS),
-            optionPriceFields = idStringsObject(["option-price-field"], g.TRADE_LEGS),
-            stockPriceField = "current-price-field",
-            returnButton1 = "return-button-1",
-            calculateButton1 = "calculate-button-1",
+            strikePriceFields  = idStringsObject(["strike-price-field"], g.TRADE_LEGS),
+            expiryFields       = idStringsObject(["expiry-field"], g.TRADE_LEGS),
+            divYieldFields     = idStringsObject(["div-yield-field"], g.TRADE_LEGS),
+            riskFreeFields     = idStringsObject(["risk-free-rate-field"], g.TRADE_LEGS),
+            optionPriceFields  = idStringsObject(["option-price-field"], g.TRADE_LEGS),
+            stockPriceField    = "current-price-field",
+            returnButton1      = "return-button-1",
+            calculateButton1   = "calculate-button-1",
 
             //evaluate text form input conditions
             numContractsFieldsCond = classInputCheck("num-contracts-field", g.TRADE_LEGS, ['>= 1', '== Math.floor(elem.select(element+"-"+(i+1)).value)']),
-            strikePriceFieldsCond = classInputCheck("strike-price-field", g.TRADE_LEGS, ['> 0']),
-            expiryFieldsCond = classInputCheck("expiry-field", g.TRADE_LEGS, ['>= 0', '<= 183', '== Math.floor(elem.select(element+"-"+(i+1)).value)']),
-            divYieldFieldsCond = classInputCheck("div-yield-field", g.TRADE_LEGS, ['>= 0', '<= 100']),
-            riskFreeFieldsCond = classInputCheck("risk-free-rate-field", g.TRADE_LEGS, ['>= 0', '<= 25']),
-            optionPriceFieldsCond = classInputCheck("option-price-field", g.TRADE_LEGS, ['> 0']),
-            stockPriceFieldCond = (elem.select(stockPriceField).value != "" && elem.select(stockPriceField).value > 0);
+            strikePriceFieldsCond  = classInputCheck("strike-price-field", g.TRADE_LEGS, ['> 0']),
+            expiryFieldsCond       = classInputCheck("expiry-field", g.TRADE_LEGS, ['>= 1', '<= 183', '== Math.floor(elem.select(element+"-"+(i+1)).value)']),
+            divYieldFieldsCond     = classInputCheck("div-yield-field", g.TRADE_LEGS, ['>= 0', '<= 100']),
+            riskFreeFieldsCond     = classInputCheck("risk-free-rate-field", g.TRADE_LEGS, ['>= 0', '<= 25']),
+            optionPriceFieldsCond  = classInputCheck("option-price-field", g.TRADE_LEGS, ['> 0']),
+            stockPriceFieldCond    = (elem.select(stockPriceField).value != "" && elem.select(stockPriceField).value > 0);
 
 
         //input validation and error message handling
@@ -231,7 +236,7 @@ finalParams = function(properties) {
 
             case expiryFieldsCond[obj.size(expiryFieldsCond)]:
                 inputErrorMsg("expiry-field-"+obj.size(expiryFieldsCond),
-                              "Please enter a whole number greater than or equal to 0, and less than or equal to 183, for the number "+
+                              "Please enter a whole number greater than or equal to 1, and less than or equal to 183, for the number "+
                               "of calendar days to expiry in this trade leg.");
                 break;
 
@@ -268,12 +273,13 @@ finalParams = function(properties) {
                 //capture user-defined final parameters
                 for(var i=0; i<g.TRADE_LEGS; i++) {
 
-                    g.LONG_SHORT[(i+1)] = +elem.select("input[name=buy-sell-radio-"+(i+1)+"]:checked").value;
+                    g.LONG_SHORT[(i+1)]    = +elem.select("input[name=buy-sell-radio-"+(i+1)+"]:checked").value;
                     g.CONTRACT_TYPE[(i+1)] = +elem.select("input[name=call-put-radio-"+(i+1)+"]:checked").value;
                     g.NUM_CONTRACTS[(i+1)] = +elem.select("num-contracts-field-"+(i+1)).value;
-                    g.STRIKE_PRICE[(i+1)] = +(elem.select("strike-price-field-"+(i+1)).value/1).toFixed(2);
-                    g.OPTION_PRICE[(i+1)] = +(elem.select("option-price-field-"+(i+1)).value/1).toFixed(3);
+                    g.STRIKE_PRICE[(i+1)]  = +(elem.select("strike-price-field-"+(i+1)).value/1).toFixed(2);
+                    g.OPTION_PRICE[(i+1)]  = +(elem.select("option-price-field-"+(i+1)).value/1).toFixed(3);
 
+                    //on multi-leg trades, take the value of certain parameters in the first trade leg unless the user specifies otherwise
                     if(elem.select('leg-sub-container-2-1').getAttribute("data-clicked") == "false") {
 
                         g.EXPIRY[(i+1)] = (i == 0) ? +elem.select("expiry-field-"+(i+1)).value : g.EXPIRY[1];
@@ -310,9 +316,7 @@ finalParams = function(properties) {
                     //calculate and display output
                     setTimeout(function() { BSM.data(visuals.init) }, 350);
                 });
-
-                //testing and debug
-                //console.log();
+                break;
         }
     }
 })
