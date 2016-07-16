@@ -74,7 +74,7 @@ visuals = function(properties) {
 				labels  = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} }, //AND HERE?
 
 	   	     	//data
-	        	data     = g.PROFITLOSS_DATA,
+	        	data     = g.GAMMA_DATA,
 	        	gRange   = globalRange(data, 0, obj.min(g.EXPIRY)) !== 0 ? globalRange(data, 0, obj.min(g.EXPIRY)) : 1,
 				dataSets = { T: data[obj.min(g.EXPIRY)], 0: data[0] }, //COULD ANOTHER DATA STRUCTURE BE USED HERE?
 				cloud    = { T: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/obj.size(dataSets[0]), color: 0xff0000})),

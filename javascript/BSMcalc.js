@@ -17,34 +17,34 @@ BSM = function(properties) {
 
     theta: {},
 
-    vega: {},
+    vega:  {},
 
-    rho: {},
+    rho:   {},
 
     //The Newton-Raphson method to extract implied volatility from market option prices
     newtRaph: function(leg, S) {
 
         //local variables
-        var type = g.CONTRACT_TYPE[leg],
-            n = g.NUM_CONTRACTS[leg],
-            K = g.STRIKE_PRICE[leg],
-            T = g.EXPIRY[leg]/365,
-            D = g.DIV_YIELD[leg],
-            r = g.RISK_FREE[leg],
+        var type     = g.CONTRACT_TYPE[leg],
+            n        = g.NUM_CONTRACTS[leg],
+            K        = g.STRIKE_PRICE[leg],
+            T        = g.EXPIRY[leg]/365,
+            D        = g.DIV_YIELD[leg],
+            r        = g.RISK_FREE[leg],
             optPrice = g.OPTION_PRICE[leg],
             bsmPrice = 0,
-            volEst = 0.2,
-            maxIter = 15;
+            volEst   = 0.2,
+            maxIter  = 15;
 
         for(var j=0; j<maxIter; j++) {
 
             //local loop variables
-            var d1 = (Math.log(S/K)+((r-D+(Math.pow(volEst,2)/2))*T))/(volEst*Math.sqrt(T)),
-                d2 = d1-(volEst*Math.sqrt(T)),
+            var d1      = (Math.log(S/K)+((r-D+(Math.pow(volEst,2)/2))*T))/(volEst*Math.sqrt(T)),
+                d2      = d1-(volEst*Math.sqrt(T)),
                 bsmVega = S*Math.pow(Math.E,-D*T)*math.NORM(d1)*Math.sqrt(T);
 
             //option price based on current estimate for implied volatility
-            bsmPrice = type*((S*math.CUSTNORM(type*d1)*Math.pow(Math.E,-D*T))-(K*math.CUSTNORM(type*d2)*Math.pow(Math.E,-r*T)));
+            bsmPrice = type*((S*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*T))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*T)));
 
             //check if error is within threshold
             if(Math.abs(optPrice-bsmPrice)<=0.01) { return +volEst.toFixed(6) }
@@ -64,27 +64,27 @@ BSM = function(properties) {
         console.log('The Newton-Raphson method did not converge for leg '+leg+'. Now implementing the Bisection method...');
 
         //local variables
-        var type = g.CONTRACT_TYPE[leg],
-            n = g.NUM_CONTRACTS[leg],
-            K = g.STRIKE_PRICE[leg],
-            T = g.EXPIRY[leg]/365,
-            D = g.DIV_YIELD[leg],
-            r = g.RISK_FREE[leg],
+        var type     = g.CONTRACT_TYPE[leg],
+            n        = g.NUM_CONTRACTS[leg],
+            K        = g.STRIKE_PRICE[leg],
+            T        = g.EXPIRY[leg]/365,
+            D        = g.DIV_YIELD[leg],
+            r        = g.RISK_FREE[leg],
             optPrice = g.OPTION_PRICE[leg],
             bsmPrice = 0,
-            volLow = 0.01,
-            volHigh = 2;
-            maxIter = 50;
+            volLow   = 0.01,
+            volHigh  = 2,
+            maxIter  = 50;
 
         for(var j=0; j<maxIter; j++) {
 
             //local loop variables
             var volMid = (volLow+volHigh)/2,
-                d1 = (Math.log(S/K)+((r-D+(Math.pow(volMid,2)/2))*T))/(volMid*Math.sqrt(T)),
-                d2 = d1-(volMid*Math.sqrt(T));
-            
+                d1     = (Math.log(S/K)+((r-D+(Math.pow(volMid,2)/2))*T))/(volMid*Math.sqrt(T)),
+                d2     = d1-(volMid*Math.sqrt(T));
+
             //option price based on current estimate for implied volatility
-            bsmPrice = type*((S*math.CUSTNORM(type*d1)*Math.pow(Math.E,-D*T))-(K*math.CUSTNORM(type*d2)*Math.pow(Math.E,-r*T)));
+            bsmPrice = type*((S*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*T))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*T)));
 
             //next estimate for implied volatility
             switch(Math.sign(optPrice-bsmPrice)) {
@@ -111,30 +111,31 @@ BSM = function(properties) {
 
             //local variables
             var signN = g.LONG_SHORT[i+1]*g.NUM_CONTRACTS[i+1],
-                type = g.CONTRACT_TYPE[i+1],
-                K = g.STRIKE_PRICE[i+1],
-                tau = (g.EXPIRY[i+1]-t)/365,
-                D = g.DIV_YIELD[i+1],
-                r = g.RISK_FREE[i+1],
-                vol = g.IMPLIED_VOL[i+1],
-                d1 = (Math.log(S/K)+((r-D+(Math.pow(vol,2)/2))*tau))/(vol*Math.sqrt(tau)),
-                d2 = d1-(vol*Math.sqrt(tau));
+                type  = g.CONTRACT_TYPE[i+1],
+                K     = g.STRIKE_PRICE[i+1],
+                tau   = (g.EXPIRY[i+1]-t)/365,
+                D     = g.DIV_YIELD[i+1],
+                r     = g.RISK_FREE[i+1],
+                vol   = g.IMPLIED_VOL[i+1],
+                log$  = S != K ? Math.log(S/K) : Math.log(S/(K+Math.pow(10,-5))), //hack needed here because of an issue with some trades when S==K, but why?
+                d1    = (log$+((r-D+(Math.pow(vol,2)/2))*tau))/(vol*Math.sqrt(tau)),
+                d2    = d1-(vol*Math.sqrt(tau));
 
             //price
-            this.price[i+1] = Math.round((signN*type*((S*math.CUSTNORM(type*d1)*Math.pow(Math.E,-D*tau))
-                                                     -(K*math.CUSTNORM(type*d2)*Math.pow(Math.E,-r*tau))))*10000)/100;
+            this.price[i+1] = Math.round((signN*type*((S*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*tau))
+                                                     -(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*tau))))*10000)/100;
 
             //greeks
-            this.delta[i+1] = Math.round((signN*type*Math.pow(Math.E,-D*tau)*math.CUSTNORM(type*d1))*10000)/100;
+            this.delta[i+1] = Math.round((signN*type*Math.pow(Math.E,-D*tau)*math.LOGISTIC(type*d1))*10000)/100;
 
             this.gamma[i+1] = Math.round((signN*(Math.pow(Math.E,-D*tau)*math.NORM(d1))/(S*vol*Math.sqrt(tau)))*10000)/100;
 
-            this.theta[i+1] = Math.round((signN*((S*Math.pow(Math.E,-D*tau)*(D*type*math.CUSTNORM(type*d1)))
-                                                -(K*Math.pow(Math.E,-r*tau)*((r*type*math.CUSTNORM(type*d2))+((vol*math.NORM(d2))/(2*Math.sqrt(tau))))))/365)*10000)/100;
+            this.theta[i+1] = Math.round((signN*((S*Math.pow(Math.E,-D*tau)*(D*type*math.LOGISTIC(type*d1)))
+                                                -(K*Math.pow(Math.E,-r*tau)*((r*type*math.LOGISTIC(type*d2))+((vol*math.NORM(d2))/(2*Math.sqrt(tau))))))/365)*10000)/100;
 
             this.vega[i+1] = Math.round((signN*(S*Math.pow(Math.E,-D*tau)*math.NORM(d1)*Math.sqrt(tau)))*100)/100;
 
-            this.rho[i+1] = Math.round((signN*(type*K*tau*Math.pow(Math.E,-r*tau)*math.CUSTNORM(type*d2)))*100)/100;
+            this.rho[i+1] = Math.round((signN*(type*K*tau*Math.pow(Math.E,-r*tau)*math.LOGISTIC(type*d2)))*100)/100;
         }
     },
 
@@ -147,8 +148,8 @@ BSM = function(properties) {
 
         //local variables
         var tradeVol = obj.max(g.IMPLIED_VOL)*Math.sqrt(obj.min(g.EXPIRY)/365),
-            sRange = [],
-            num = 500;
+            sRange   = [],
+            num      = 500;
 
         //populate an array containing stock prices in a range of +-(3*tradeVol)
         for(i=0; i<num+1; i++) { sRange.push(+(g.STOCK_PRICE*(1-(3*tradeVol)*(1-(2*i/num)))).toFixed(2)) } //ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
@@ -177,10 +178,10 @@ BSM = function(properties) {
                 //clear old values
                 obj.reset(BSM);
 
-                //calculate new values with some basic handling for the edge case at expiry
-                if(j!=obj.min(g.EXPIRY)) { BSM.calc(j, sRange[k]) } else { BSM.calc(j*.99, sRange[k]) }
+                //calculate new values
+                BSM.calc(j, sRange[k]);
 
-                //store current values for trade summary to the global object
+                //store current 'greek' values for the trade summary to the global object
                 if(j==0 && k==num/2) { 
 
                     ['delta','gamma','theta','vega','rho'].forEach(function(greek) { for(n in BSM[greek]) { g[greek.toUpperCase()][n] = BSM[greek][n] } });

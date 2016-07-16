@@ -256,24 +256,38 @@ math = function(properties) {
 	//Standard Normal Distribution PDF
 	NORM: function(x) {
 
-    	return (1/Math.sqrt(2*Math.PI))*Math.pow(Math.E, (-1/2)*Math.pow(x,2));
+    	return (1/Math.sqrt(2*Math.PI))*Math.pow(Math.E,(-1/2)*Math.pow(x,2));
 	},
 
 
-	//Cumulative Standard Normal Distribution function
-	CUSTNORM: function(b) {
+	//Cumulative Standard Normal Distribution functions - note that the use of these functions with option prices close to zero leads to errors
+	CUSTNORM: function(z, n) {
+
+        /*
+        this method has additional limitations:
+
+            - far slower than the one below
+            - errors at expiry edge case, when tau = 0
+            - n >= 200 is necessary for most practical trade situations
+        */
 
     	switch(b<0) {
 
         	case true:
-            	return (1/2)-this.INTEGRAL(b, 0, 200, this.NORM); //CAN WE REDUCE THE NUMBER OF SUB-INTERVALS NEEDED?
+            	return (1/2)-this.INTEGRAL(z, 0, n, this.NORM);
             	break;
 
         	case false:
-            	return (1/2)+this.INTEGRAL(0, b, 200, this.NORM);
+            	return (1/2)+this.INTEGRAL(0, z, n, this.NORM);
             	break;
     	}
-	}
+	},
+
+    //Logistic approximation - thanks to http://http://www.jiem.org/index.php/jiem/article/viewFile/60/27 for this
+    LOGISTIC: function(z) {
+
+        return Math.pow((1+Math.pow(Math.E,-(0.07056*Math.pow(z,3)+1.5976*z))),-1);
+    }
 })
 
 // END MATH /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
