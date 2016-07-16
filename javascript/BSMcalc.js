@@ -117,25 +117,22 @@ BSM = function(properties) {
                 D     = g.DIV_YIELD[i+1],
                 r     = g.RISK_FREE[i+1],
                 vol   = g.IMPLIED_VOL[i+1],
-                log$  = S != K ? Math.log(S/K) : Math.log(S/(K+Math.pow(10,-5))), //hack needed here because of an issue with some trades when S==K, but why?
-                d1    = (log$+((r-D+(Math.pow(vol,2)/2))*tau))/(vol*Math.sqrt(tau)),
+                d1    = (Math.log(S/K)+((r-D+(Math.pow(vol,2)/2))*tau))/(vol*Math.sqrt(tau)),
                 d2    = d1-(vol*Math.sqrt(tau));
 
             //price
-            this.price[i+1] = Math.round((signN*type*((S*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*tau))
-                                                     -(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*tau))))*10000)/100;
+            this.price[i+1] = Math.round((signN*type*((S*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*tau))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*tau))))*10000)/100;
 
             //greeks
             this.delta[i+1] = Math.round((signN*type*Math.pow(Math.E,-D*tau)*math.LOGISTIC(type*d1))*10000)/100;
 
             this.gamma[i+1] = Math.round((signN*(Math.pow(Math.E,-D*tau)*math.NORM(d1))/(S*vol*Math.sqrt(tau)))*10000)/100;
 
-            this.theta[i+1] = Math.round((signN*((S*Math.pow(Math.E,-D*tau)*(D*type*math.LOGISTIC(type*d1)))
-                                                -(K*Math.pow(Math.E,-r*tau)*((r*type*math.LOGISTIC(type*d2))+((vol*math.NORM(d2))/(2*Math.sqrt(tau))))))/365)*10000)/100;
+            this.theta[i+1] = Math.round((signN*((S*Math.pow(Math.E,-D*tau)*(D*type*math.LOGISTIC(type*d1)))-(K*Math.pow(Math.E,-r*tau)*((r*type*math.LOGISTIC(type*d2))+((vol*math.NORM(d2))/(2*Math.sqrt(tau))))))/365)*10000)/100;
 
-            this.vega[i+1] = Math.round((signN*(S*Math.pow(Math.E,-D*tau)*math.NORM(d1)*Math.sqrt(tau)))*100)/100;
+            this.vega[i+1]  = Math.round((signN*(S*Math.pow(Math.E,-D*tau)*math.NORM(d1)*Math.sqrt(tau)))*100)/100;
 
-            this.rho[i+1] = Math.round((signN*(type*K*tau*Math.pow(Math.E,-r*tau)*math.LOGISTIC(type*d2)))*100)/100;
+            this.rho[i+1]   = Math.round((signN*(type*K*tau*Math.pow(Math.E,-r*tau)*math.LOGISTIC(type*d2)))*100)/100;
         }
     },
 
@@ -178,8 +175,8 @@ BSM = function(properties) {
                 //clear old values
                 obj.reset(BSM);
 
-                //calculate new values
-                BSM.calc(j, sRange[k]);
+                //calculate new values, handle edge case at expiry when tau = 0
+                if(j!=obj.min(g.EXPIRY)) { BSM.calc(j, sRange[k]) } else { BSM.calc((j-1)+(1415/1440), sRange[k]) }
 
                 //store current 'greek' values for the trade summary to the global object
                 if(j==0 && k==num/2) { 

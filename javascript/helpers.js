@@ -263,14 +263,7 @@ math = function(properties) {
 	//Cumulative Standard Normal Distribution functions - note that the use of these functions with option prices close to zero leads to errors
 	CUSTNORM: function(z, n) {
 
-        /*
-        this method has additional limitations:
-
-            - far slower than the one below
-            - errors at expiry edge case, when tau = 0
-            - n >= 200 is necessary for most practical trade situations
-        */
-
+        //this method is far slower than the logistic approximation below; n >= 200 is necessary for reasonable accuracy in most trade setups
     	switch(b<0) {
 
         	case true:

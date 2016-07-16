@@ -69,12 +69,12 @@ visuals = function(properties) {
         		canvasW = 2*Math.floor(width*(1-(1.01)*scalar)), //WHY THE MULTIPLIER TO FIX BLURRY TEXT - IS IT RELATED TO THE 'devicePixelRatio' PROPERTY?
         		canvasH = 2*Math.floor(height*(0.6)*scalar/(numH-1)), //AND HERE AS WELL
 	        	xPos    = canvasW/2,
-	        	yPos    = 5*canvasH/6, //WHY IS THIS NOT 'canvasH/2'?
+	        	yPos    = canvasH/2,
 	        	lines   = { xaxis: {tick: {}, ext: {}, dots: {}}, yaxis: {} }, //COULD ANOTHER DATA STRUCTURE BE USED HERE?
 				labels  = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} }, //AND HERE?
 
 	   	     	//data
-	        	data     = g.GAMMA_DATA,
+	        	data     = g.PROFITLOSS_DATA,
 	        	gRange   = globalRange(data, 0, obj.min(g.EXPIRY)) !== 0 ? globalRange(data, 0, obj.min(g.EXPIRY)) : 1,
 				dataSets = { T: data[obj.min(g.EXPIRY)], 0: data[0] }, //COULD ANOTHER DATA STRUCTURE BE USED HERE?
 				cloud    = { T: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/obj.size(dataSets[0]), color: 0xff0000})),
@@ -111,6 +111,8 @@ visuals = function(properties) {
 				labels.yaxis.context[i].fillStyle = 'black';
 				labels.yaxis.context[i].font = (canvasH-1)+'px Arial';
 				labels.yaxis.context[i].textAlign = 'center';
+				labels.yaxis.context[i].textBaseline = 'middle';
+
 
 				//set color and value of the x-axis as well as all other gridline values
 				switch(i) {
@@ -160,7 +162,7 @@ visuals = function(properties) {
 				switch(i) {
 
 					//make the book-ends larger and brighter
-					case 0: //fall-through
+					case 0: //fall-through to mimic the '||' operator
 					case 6:
 						lines.xaxis.dots[i] = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.5*w*scalar/obj.size(dataSets[0]), color: 0xffff00}));
 						break;
@@ -190,6 +192,7 @@ visuals = function(properties) {
 				labels.xaxis.context[i].fillStyle = 'black';
 				labels.xaxis.context[i].font = (canvasH-1)+'px Arial';
 				labels.xaxis.context[i].textAlign = 'center';
+				labels.xaxis.context[i].textBaseline = 'middle';
 
 				//set label value
 				labels.xaxis.context[i].fillText('$'+Object.keys(dataSets[0])[83*i+Math.floor((i+1)/3)], xPos*0.75, yPos); //thanks to Michael Wunder for this
