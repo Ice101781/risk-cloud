@@ -16,6 +16,7 @@ var g = {
     OPTION_PRICE : {},
 
     //application output
+    STOCKRANGE_LENGTH: 0,
     IMPLIED_VOL : {},
     DELTA : {},
     GAMMA : {},

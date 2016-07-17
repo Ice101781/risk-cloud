@@ -55,6 +55,14 @@ obj = function(properties) {
     },
 
 
+    //function that accepts an object of strike prices and the current stock price as parameters, finds the minimum distance between all strikes
+    //and the current stock price, then returns the key of that strike price in the object
+    minDistKey: function(obj, value) {
+
+        
+    },
+
+
     //Object values total - thanks to 'Sirko' on stackoverflow.com for this
     sum: function(obj) {
 
@@ -260,7 +268,7 @@ math = function(properties) {
 	},
 
 
-	//Cumulative Standard Normal Distribution functions - note that the use of these functions with option prices close to zero leads to errors
+	//Cumulative Standard Normal Distribution functions
 	CUSTNORM: function(z, n) {
 
         //this method is far slower than the logistic approximation below; n >= 200 is necessary for reasonable accuracy in most trade setups

@@ -77,8 +77,8 @@ visuals = function(properties) {
 	        	data     = g.PROFITLOSS_DATA,
 	        	gRange   = globalRange(data, 0, obj.min(g.EXPIRY)) !== 0 ? globalRange(data, 0, obj.min(g.EXPIRY)) : 1,
 				dataSets = { T: data[obj.min(g.EXPIRY)], 0: data[0] }, //COULD ANOTHER DATA STRUCTURE BE USED HERE?
-				cloud    = { T: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/obj.size(dataSets[0]), color: 0xff0000})),
-						     0: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/obj.size(dataSets[0]), color: 0x0000ff})) };
+				cloud    = { T: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/500, color: 0xff0000})),
+						     0: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/500, color: 0x0000ff})) };
 
 			//position the background
 			plane1.position.set(0, 0, zDist);
@@ -164,11 +164,11 @@ visuals = function(properties) {
 					//make the book-ends larger and brighter
 					case 0: //fall-through to mimic the '||' operator
 					case 6:
-						lines.xaxis.dots[i] = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.5*w*scalar/obj.size(dataSets[0]), color: 0xffff00}));
+						lines.xaxis.dots[i] = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.5*w*scalar/500, color: 0xffff00}));
 						break;
 
 					default:
-						lines.xaxis.dots[i] = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: w*scalar/obj.size(dataSets[0]), color: 0xaaaa00}));
+						lines.xaxis.dots[i] = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: w*scalar/500, color: 0xaaaa00}));
 						break;
 				}
 
@@ -195,7 +195,19 @@ visuals = function(properties) {
 				labels.xaxis.context[i].textBaseline = 'middle';
 
 				//set label value
-				labels.xaxis.context[i].fillText('$'+Object.keys(dataSets[0])[83*i+Math.floor((i+1)/3)], xPos*0.75, yPos); //thanks to Michael Wunder for this
+				switch((g.STOCKRANGE_LENGTH-1)/(numV-1) % 2) {
+
+					case 0:
+						var labelText = '$'+Object.keys(dataSets[0])[(g.STOCKRANGE_LENGTH-1)/(numV-1)*i];
+						break;
+
+					default:
+						//Thanks to Michael Wunder for his help with this
+						var labelText = '$'+Object.keys(dataSets[0])[Math.floor((g.STOCKRANGE_LENGTH-1)/(numV-1))*i+Math.floor((i+1)/3)];
+						break;
+				}
+
+				labels.xaxis.context[i].fillText(labelText, xPos*0.75, yPos);
 
 				//set canvas as texture and specify texture parameters
 				labels.xaxis.texture[i] = new THREE.Texture(labels.xaxis.canvas[i]);

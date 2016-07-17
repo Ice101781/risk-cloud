@@ -144,15 +144,17 @@ BSM = function(properties) {
         for(var i=0; i<g.TRADE_LEGS; i++) { g.IMPLIED_VOL[i+1] = BSM.newtRaph(i+1, g.STOCK_PRICE) || BSM.bisect(i+1, g.STOCK_PRICE) }
 
         //local variables
-        var tradeVol = obj.max(g.IMPLIED_VOL)*Math.sqrt(obj.min(g.EXPIRY)/365),
+        var tradeVol = obj.max(g.IMPLIED_VOL)*Math.sqrt(obj.min(g.EXPIRY)/365), //need to change this to select the IV 'nearest-to-the-money'
             sRange   = [],
             num      = 500;
 
         //populate an array containing stock prices in a range of +-(3*tradeVol)
         for(i=0; i<num+1; i++) { sRange.push(+(g.STOCK_PRICE*(1-(3*tradeVol)*(1-(2*i/num)))).toFixed(2)) } //ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
 
-        //delete any duplicate prices in the stock price array
+        //delete any duplicate prices in the stock price array, then store the new array's length to the global object so it's available to datavis.js
         sRange = array.unique(sRange);
+        g.STOCKRANGE_LENGTH = sRange.length;
+        if(g.STOCKRANGE_LENGTH % 2 == 0) { console.log('The length of the stock range is an even number!') } //if this message is logged, there's a graphing issue
 
         //calculate current trade values
         BSM.calc(0, g.STOCK_PRICE);
@@ -170,7 +172,7 @@ BSM = function(properties) {
             g.VEGA_DATA[j] = {};
             g.RHO_DATA[j] = {};
 
-            for(k=0; k<num+1; k++) {
+            for(k=0; k<sRange.length; k++) {
 
                 //clear old values
                 obj.reset(BSM);
