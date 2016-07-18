@@ -194,16 +194,27 @@ visuals = function(properties) {
 				labels.xaxis.context[i].textAlign = 'center';
 				labels.xaxis.context[i].textBaseline = 'middle';
 
-				//set label value
-				switch((g.STOCKRANGE_LENGTH-1)/(numV-1) % 2) {
+				//set label values from -3 to +3 implied standard deviations
+				switch((g.STOCKRANGE_LENGTH-1)%(numV-1)) {
 
 					case 0:
 						var labelText = '$'+Object.keys(dataSets[0])[(g.STOCKRANGE_LENGTH-1)/(numV-1)*i];
 						break;
 
 					default:
-						//Thanks to Michael Wunder for his help with this
-						var labelText = '$'+Object.keys(dataSets[0])[Math.floor((g.STOCKRANGE_LENGTH-1)/(numV-1))*i+Math.floor((i+1)/3)];
+						switch(Math.floor((g.STOCKRANGE_LENGTH-1)/(numV-1))) {
+
+							//Thanks to Michael Wunder for his help with this
+							case Math.round((g.STOCKRANGE_LENGTH-1)/(numV-1)):
+								//the case where the fractional part of the remainder is < 0.5
+								var labelText = '$'+Object.keys(dataSets[0])[Math.floor((g.STOCKRANGE_LENGTH-1)/(numV-1))*i+Math.floor((i+1)/3)];
+								break;
+
+							default:
+								//the case where the fractional part of the remainder is >= 0.5
+								var labelText = '$'+Object.keys(dataSets[0])[Math.ceil((g.STOCKRANGE_LENGTH-1)/(numV-1))*i-Math.floor((i+1)/3)];
+								break;
+						}
 						break;
 				}
 

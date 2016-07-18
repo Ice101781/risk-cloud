@@ -65,7 +65,7 @@ obj = function(properties) {
     },
 
 
-    //Return the key of an object property that is closest to some value
+    //Return the key of an object property that is closest to some value - NOTE: this function does not yet account for equidistant object properties
     minDistKey: function(obj, value) {
 
         var distObj = Object.keys(obj).map(function(key) { return Math.abs(obj[key]-value) }),

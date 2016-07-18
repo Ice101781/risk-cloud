@@ -21,8 +21,8 @@ BSM = function(properties) {
 
     rho:   {},
 
-    //The Newton-Raphson method to extract implied volatility from market option prices
-    newtRaph: function(leg, S) {
+    //Extract implied volatility from market option prices
+    impVol: function(leg, S, method) {
 
         //local variables
         var type     = g.CONTRACT_TYPE[leg],
@@ -32,74 +32,76 @@ BSM = function(properties) {
             D        = g.DIV_YIELD[leg],
             r        = g.RISK_FREE[leg],
             optPrice = g.OPTION_PRICE[leg],
-            bsmPrice = 0,
-            volEst   = 0.2,
-            maxIter  = 15;
+            bsmPrice = 0;
 
-        for(var j=0; j<maxIter; j++) {
+        switch(method) {
 
-            //local loop variables
-            var d1      = (Math.log(S/K)+((r-D+(Math.pow(volEst,2)/2))*T))/(volEst*Math.sqrt(T)),
-                d2      = d1-(volEst*Math.sqrt(T)),
-                bsmVega = S*Math.pow(Math.E,-D*T)*math.NORM(d1)*Math.sqrt(T);
+            //The Newton-Raphson method
+            case 'Newton-Raphson':
 
-            //option price based on current estimate for implied volatility
-            bsmPrice = type*((S*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*T))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*T)));
+                //case-specific local vars
+                var volEst   = 0.2,
+                    maxIter  = 15;
 
-            //check if error is within threshold
-            if(Math.abs(optPrice-bsmPrice)<=0.01) { return +volEst.toFixed(6) }
+                for(var j=0; j<maxIter; j++) {
 
-            //next estimate for implied volatility
-            volEst += (optPrice-bsmPrice)/bsmVega;
-        }
+                    //local loop variables
+                    var d1      = (Math.log(S/K)+((r-D+(Math.pow(volEst,2)/2))*T))/(volEst*Math.sqrt(T)),
+                        d2      = d1-(volEst*Math.sqrt(T)),
+                        bsmVega = S*Math.pow(Math.E,-D*T)*math.NORM(d1)*Math.sqrt(T);
 
-        if(j==maxIter) { return false }
-    },
+                    //option price based on current estimate for implied volatility
+                    bsmPrice = type*((S*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*T))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*T)));
+
+                    //check if error is within threshold
+                    if(Math.abs(optPrice-bsmPrice)<=0.01) { return +volEst.toFixed(6) }
+
+                    //next estimate for implied volatility
+                    volEst += (optPrice-bsmPrice)/bsmVega;
+                }
+
+                if(j==maxIter) { return false }
 
 
-    //The Bisection method to extract implied volatility from market option prices
-    bisect: function(leg, S) {
+            //The Bisection method
+            case 'Bisection':
 
-        //console message
-        console.log('The Newton-Raphson method did not converge for leg '+leg+'. Now implementing the Bisection method...');
+                //console message
+                console.log('The Newton-Raphson method did not converge for leg '+leg+'. Now implementing the Bisection method...');
 
-        //local variables
-        var type     = g.CONTRACT_TYPE[leg],
-            n        = g.NUM_CONTRACTS[leg],
-            K        = g.STRIKE_PRICE[leg],
-            T        = g.EXPIRY[leg]/365,
-            D        = g.DIV_YIELD[leg],
-            r        = g.RISK_FREE[leg],
-            optPrice = g.OPTION_PRICE[leg],
-            bsmPrice = 0,
-            volLow   = 0.01,
-            volHigh  = 2,
-            maxIter  = 50;
+                //case-specific local vars
+                var volLow   = 0.01,
+                    volHigh  = 2,
+                    maxIter  = 50;
 
-        for(var j=0; j<maxIter; j++) {
+                for(var j=0; j<maxIter; j++) {
 
-            //local loop variables
-            var volMid = (volLow+volHigh)/2,
-                d1     = (Math.log(S/K)+((r-D+(Math.pow(volMid,2)/2))*T))/(volMid*Math.sqrt(T)),
-                d2     = d1-(volMid*Math.sqrt(T));
+                    //local loop variables
+                    var volMid = (volLow+volHigh)/2,
+                        d1     = (Math.log(S/K)+((r-D+(Math.pow(volMid,2)/2))*T))/(volMid*Math.sqrt(T)),
+                        d2     = d1-(volMid*Math.sqrt(T));
 
-            //option price based on current estimate for implied volatility
-            bsmPrice = type*((S*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*T))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*T)));
+                    //option price based on current estimate for implied volatility
+                    bsmPrice = type*((S*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*T))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*T)));
 
-            //next estimate for implied volatility
-            switch(Math.sign(optPrice-bsmPrice)) {
+                    //next estimate for implied volatility
+                    switch(Math.sign(optPrice-bsmPrice)) {
 
-                case 1:
-                    volLow = volMid;
-                    break;
+                        case 1:
+                            volLow = volMid;
+                            break;
 
-                case -1:
-                    volHigh = volMid;
-                    break;
-            }
+                        case -1:
+                            volHigh = volMid;
+                            break;
+                    }
 
-            //check if error is within threshold
-            if(Math.abs(volLow-volHigh)<=0.000001) { return +volMid.toFixed(6) }
+                    //check if error is within threshold
+                    if(Math.abs(volLow-volHigh)<=0.000001) { return +volMid.toFixed(6) }
+                }
+
+                //return a value even if the maximum number of iterations is reached
+                return +volMid.toFixed(6);
         }
     },
 
@@ -141,7 +143,7 @@ BSM = function(properties) {
     data: function(callback) {
 
         //calculate implied volatilities
-        for(var i=0; i<g.TRADE_LEGS; i++) { g.IMPLIED_VOL[i+1] = BSM.newtRaph(i+1, g.STOCK_PRICE) || BSM.bisect(i+1, g.STOCK_PRICE) }
+        for(var i=0; i<g.TRADE_LEGS; i++) { g.IMPLIED_VOL[i+1] = BSM.impVol(i+1, g.STOCK_PRICE, 'Newton-Raphson') || BSM.impVol(i+1, g.STOCK_PRICE, 'Bisection') }
 
         //local variables
         var tradeVol = g.IMPLIED_VOL[obj.minDistKey(g.STRIKE_PRICE,g.STOCK_PRICE)]*Math.sqrt(obj.min(g.EXPIRY)/365), //select the IV 'nearest-to-the-money'
@@ -154,7 +156,9 @@ BSM = function(properties) {
         //delete any duplicate prices in the stock price array, then store the new array's length to the global object so it's available to datavis.js
         sRange = array.unique(sRange);
         g.STOCKRANGE_LENGTH = sRange.length;
-        if(g.STOCKRANGE_LENGTH % 2 == 0) { console.log('The length of the stock range is an even number!') } //if this message is logged, there's a graphing issue
+
+        //if the following condition is true, there's a graphing issue
+        if(g.STOCKRANGE_LENGTH % 2 == 0) { console.log('The length of the stock range is an even number!') }
 
         //calculate current trade values
         BSM.calc(0, g.STOCK_PRICE);
