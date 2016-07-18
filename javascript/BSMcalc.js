@@ -144,7 +144,7 @@ BSM = function(properties) {
         for(var i=0; i<g.TRADE_LEGS; i++) { g.IMPLIED_VOL[i+1] = BSM.newtRaph(i+1, g.STOCK_PRICE) || BSM.bisect(i+1, g.STOCK_PRICE) }
 
         //local variables
-        var tradeVol = obj.max(g.IMPLIED_VOL)*Math.sqrt(obj.min(g.EXPIRY)/365), //need to change this to select the IV 'nearest-to-the-money'
+        var tradeVol = g.IMPLIED_VOL[obj.minDistKey(g.STRIKE_PRICE,g.STOCK_PRICE)]*Math.sqrt(obj.min(g.EXPIRY)/365), //select the IV 'nearest-to-the-money'
             sRange   = [],
             num      = 500;
 

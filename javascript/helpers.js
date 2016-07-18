@@ -46,20 +46,12 @@ obj = function(properties) {
     //Object min and max - thanks to 'levi' on stackoverflow.com for this
     min: function(obj) {
 
-        return Object.keys(obj).reduce(function(m,n) {return obj[n] < m ? obj[n] : m}, Infinity);
+        return Object.keys(obj).reduce(function(m,n) { return obj[n] < m ? obj[n] : m }, Infinity);
     },
 
     max: function(obj) {
         
-        return Object.keys(obj).reduce(function(m,n) {return obj[n] > m ? obj[n] : m}, -Infinity);
-    },
-
-
-    //function that accepts an object of strike prices and the current stock price as parameters, finds the minimum distance between all strikes
-    //and the current stock price, then returns the key of that strike price in the object
-    minDistKey: function(obj, value) {
-
-        
+        return Object.keys(obj).reduce(function(m,n) { return obj[n] > m ? obj[n] : m }, -Infinity);
     },
 
 
@@ -67,9 +59,19 @@ obj = function(properties) {
     sum: function(obj) {
 
         //some basic error handling
-        for(key in obj) { if(typeof obj[key] !== 'number') {return "The 'obj.sum()' method requires all object values to be numbers."} }
+        for(key in obj) { if(typeof obj[key] !== 'number') { return "The 'obj.sum()' method requires all object values to be numbers." } }
 
-        return Object.keys(obj).reduce(function(s,key) {return s + obj[key]}, 0);
+        return Object.keys(obj).reduce(function(s,key) { return s + obj[key] }, 0);
+    },
+
+
+    //Return the key of an object property that is closest to some value
+    minDistKey: function(obj, value) {
+
+        var distObj = Object.keys(obj).map(function(key) { return Math.abs(obj[key]-value) }),
+            distObjMin = this.min(distObj);
+
+        return distObj.indexOf(distObjMin)+1;
     }
 })
 
@@ -299,7 +301,7 @@ math = function(properties) {
 //disable certain keys
 disableKey = function(key) {
 
-    block = function(e) { if((e.keyCode || e.charCode) == key) { e.preventDefault() } }
+    block = function(e) { if((e.keyCode || e.charCode) == key) {e.preventDefault()} }
 
     document.addEventListener('keydown', block);
 
