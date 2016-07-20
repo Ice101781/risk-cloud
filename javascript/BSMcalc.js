@@ -120,7 +120,7 @@ BSM = function(properties) {
 
         for(j=0; j<kDistsKeys.length; j++) { vols[kDistsKeys[j]] = g.IMPLIED_VOL[kDistsKeys[j]] } //IV's of the options at the desired strikes
 
-        //return a simple average of the IV's adjusted for the trade horizon
+        //return a simple average of the IV's adjusted for the nearest trade horizon
         return obj.avg(vols)*Math.sqrt(obj.min(g.EXPIRY)/365);
     },
 
@@ -172,7 +172,7 @@ BSM = function(properties) {
         //stock price space IV
         vol = BSM.sRangeVol();
 
-        //populate an array with stock prices in a range of +-3 implied standard deviations
+        //create the stock price space using a range of -3 to +3 vols
         for(i=0; i<num+1; i++) { sRange.push(+(g.STOCK_PRICE*(1-(3*vol)*(1-(2*i/num)))).toFixed(2)) } //ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
 
         //delete any duplicate prices in the stock price array

@@ -257,7 +257,7 @@ finalParams = function(properties) {
                 break;
 
             case stockPriceFieldCond:
-                inputErrorMsg(stockPriceField, "Please enter a number greater than 0 for the current price of the underlying asset.");
+                inputErrorMsg(stockPriceField, "Please enter a number greater than 0 for the current price of the underlying stock.");
                 break;
 
             default:

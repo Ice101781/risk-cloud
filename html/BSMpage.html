@@ -67,7 +67,7 @@
                         <button id="return-button-1" type="button" onclick="finalParams.destroy()">Return</button>
                         
                         <form id="current-price-form">
-                            <div id="current-price-align-helper" class="align-helper">Current price of the underlying asset :</div>
+                            <div id="current-price-align-helper" class="align-helper">Current price of the underlying stock :</div>
 
                             <input type="number" id="current-price-field" min=".01" step=".01" value="100.25" />
                         </form>
@@ -113,7 +113,20 @@
                             <div id="BSM-loading-text">LOADING...</div>
                         </div>
 
-                        <div id="output-summary-container"></div>
+                        <div id="output-summary-container">
+                            <table id="output-summary-table">
+                                <tr>
+                                    <th id="trade-summary-heading" class="trade-summary-group">Trade Summary</th>
+                                    <th id="option-price-heading">Option Price</th>
+                                    <th id="option-iv-heading" class="option-iv-group">IV</th>
+                                    <th class="greek-headings">Delta</th>
+                                    <th class="greek-headings">Gamma</th>
+                                    <th class="greek-headings">Theta</th>
+                                    <th class="greek-headings">Vega</th>
+                                    <th class="greek-headings option-rho-group">Rho</th>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

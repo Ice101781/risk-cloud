@@ -118,6 +118,25 @@
   background-color: #fafafa;
 }
 
+#output-summary-table {
+  width: 65.625vw;
+  font-family: Arial;
+  font-size: 0.65vw;
+  background-color: #9999ff;
+}
+
+#trade-summary-heading {
+  width: 16.625vw;
+}
+
+#option-price-heading, #option-iv-heading, .greek-headings {
+  width: 7vw;
+}
+
+.trade-summary-group, .option-iv-group, .option-rho-group {
+  border-right: 1px solid;
+}
+
 form {
   padding: 0.625vw;
 }

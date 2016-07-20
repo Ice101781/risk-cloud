@@ -328,6 +328,8 @@ classInputCheck = function(element, indexMax) {
                 break;
 
             case "strike-price-field":
+                /* fall-through */
+            case "option-price-field":
                 switch(false) {
 
                     case val > 0:
@@ -374,19 +376,6 @@ classInputCheck = function(element, indexMax) {
                 switch(false) {
 
                     case val >= 0 && val <= 25:
-                        obj[i] = false;
-                        return obj;
-
-                    default:
-                        obj[i] = true;
-                        break;
-                }
-                break;
-
-            case "option-price-field":
-                switch(false) {
-
-                    case val > 0:
                         obj[i] = false;
                         return obj;
 

@@ -162,7 +162,8 @@ visuals = function(properties) {
 				switch(i) {
 
 					//make the book-ends larger and brighter
-					case 0: //fall-through to mimic the '||' operator
+					case 0:
+						/* fall-through */
 					case 6:
 						lines.xaxis.dots[i] = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.5*w*scalar/500, color: 0xffff00}));
 						break;
