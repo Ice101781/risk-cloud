@@ -153,51 +153,19 @@ idStringsObject = function(stringArray, indexMax) {
     switch(stringArray.length) {
 
         case 1:
-            for(var i=0; i<indexMax; i++) { obj[(i+1)] = stringArray[0]+"-"+(i+1) }
+            for(var i=1; i<indexMax+1; i++) { obj[i] = stringArray[0]+"-"+i }
             break;
 
         case 2:
-            for(var i=0; i<indexMax; i++) {
+            for(var i=1; i<indexMax+1; i++) {
 
-                obj[(2*i)+1] = stringArray[0]+"-"+(i+1);
-                obj[2*(i+1)] = stringArray[1]+"-"+(i+1);
+                obj[2*i-1] = stringArray[0]+"-"+i;
+                obj[2*i]   = stringArray[1]+"-"+i;
             }
             break;
     }
 
     return obj;
-}
-
-
-//Determine whether text input form conditions are met for a class of elements; return an object with boolean values
-classInputCheck = function(element, indexMax, condArray) {
-
-    condArray.push('!= ""');
-
-    var obj = {};
-
-    for(var i=0; i<indexMax; i++) {
-
-        for(var j=0; j<condArray.length; j++) {
-
-            obj[(i+1)] = eval('elem.select(element+"-"+(i+1)).value'+condArray[j]) ? true : false;
-
-            if(!obj[(i+1)]) { return obj }
-        }
-    }
-
-    return obj;
-}
-
-
-//Some basic error message handling for text form input
-inputErrorMsg = function(element, msg) {
-
-    elem.select(element).style.borderColor = '#ff0000';
-    alert(msg);
-    elem.select(element).style.borderColor = '#d8d8d8';
-
-    return;
 }
 
 
@@ -211,38 +179,47 @@ twoButtons = function(properties) {
     return self;  
 }({
 
-    create: function(buttonArray, conditionString, appendId, index) {
+    create: function(buttonArray, appendId, n) {
 
         elem.create({tag: "form", attributes: {
-                                      id:    buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(index+1),
+                                      id:    buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+n,
                                       class: buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form"
                                   }},
-                                  appendId+(index+1));
+                                  appendId+n);
 
         //radio buttons
         for(var j=0; j<2; j++) {
 
             elem.create({tag: "input", attributes: {
                                            type: "radio",
-                                           id: buttonArray[j][0]+"-"+"radio-"+(index+1),
-                                           name: buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"radio-"+(index+1),
+                                           id: buttonArray[j][0]+"-"+"radio-"+n,
+                                           name: buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"radio-"+n,
                                            value: buttonArray[j][1]
                                        }},
-                                       buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(index+1));
+                                       buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+n);
 
             elem.create({tag: "label", content: buttonArray[j][0].charAt(0).toUpperCase()+buttonArray[j][0].slice(1), 
 
                                        attributes: {
-                                           "for": buttonArray[j][0]+"-"+"radio-"+(index+1), 
+                                           "for": buttonArray[j][0]+"-"+"radio-"+n, 
                                            class: "radio "+buttonArray[0][0]+"-"+buttonArray[1][0]
                                        }},
-                                       buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+(index+1));
+                                       buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+n);
         }
 
         //some default settings to save time during common trade setups
-        var bit = eval(conditionString) ? 0 : 1;
+        switch(buttonArray[0][0]) {
 
-        elem.select(buttonArray[bit][0]+"-"+"radio-"+(index+1)).setAttribute("checked", "");
+            case "buy":
+                if(n == 1 || n == 4) { var bit = 0 } else { var bit = 1 }
+                break;
+
+            case "call":
+                if(n < 3) { var bit = 1 } else { var bit = 0 }
+                break;
+        }
+
+        elem.select(buttonArray[bit][0]+"-"+"radio-"+n).setAttribute("checked", "");
     }
 })
 
@@ -257,51 +234,56 @@ numberFields = function(properties) {
     return self;  
 }({
 
-    create: function(idString, content, attr, appendId, idx) {
+    create: function(idString, content, attr, appendId, n) {
     
-        elem.create({tag: "form", content: content, attributes: {id: idString+"-form-"+(idx+1), class: idString+"-form"}}, appendId+(idx+1));
+        elem.create({tag: "form", content: content, attributes: {id: idString+"-form-"+n, class: idString+"-form"}}, appendId+n);
 
         elem.create({tag: "input", attributes: {
                                        type: "number",
-                                       id: idString+"-field-"+(idx+1),
+                                       id: idString+"-field-"+n,
                                        class: idString+"-field",
                                        min: attr.min,
                                        step: attr.step,
                                        value: attr.value
                                    }},
-                                   idString+"-form-"+(idx+1));
+                                   idString+"-form-"+n);
     },
 
 
     //on first container click, toggle visibility of remaining field containers
     visible: function(container, maxHeight, field) {
 
-        var type, color;
-
         switch(elem.select(container+'-1').getAttribute("data-clicked")) {
 
             case "true":
-                type = "out";
-                color = '#cbdafb';
+                var type  = "out",
+                    color = '#cbdafb';
+
                 elem.select(container+'-1').setAttribute("data-clicked", "false");
                 break;
 
             case "false":
-                type = "in";
-                color = '#ffcccc';
+                var type  = "in",
+                    color = '#ffcccc';
+
                 elem.select(container+'-1').setAttribute("data-clicked", "true");
                 break;
         }
 
         //ease in or out, set field value to attribute "min" on ease out
-        for(var i=1; i<g.TRADE_LEGS; i++) {
+        for(i=2; i<g.TRADE_LEGS+1; i++) {
 
-            (function(index) {
+            (function(n) {
 
-                elem.ease(type, container+'-'+(index+1), 0.13625, maxHeight, function() {
+                elem.ease(type, container+'-'+n, 0.13625, maxHeight, function() {
 
-                    if(type == "out") { elem.select(field+'-field-'+(index+1)).value = elem.select(field+'-field-'+(index+1)).getAttribute("min") }
-                });
+                    if(type == "out") {
+
+                        var f = elem.select(field+'-field-'+n);
+
+                        f.value = f.getAttribute("min");
+                    }
+                })
             })(i);
         }
 
@@ -309,5 +291,123 @@ numberFields = function(properties) {
         elem.select(container+'-1').style.backgroundColor = color;
     }
 })
+
+
+//Determine whether text input form conditions are met for a class of elements; return an object with boolean values
+classInputCheck = function(element, indexMax) {
+
+    var obj = {};
+
+    for(i=1; i<indexMax+1; i++) {
+
+        var val = elem.select(element+"-"+i).value;
+
+        if(val == "") {
+
+            obj[i] = false;
+            return obj;
+        }
+
+        switch(element) {
+
+            case "num-contracts-field":
+                switch(false) {
+
+                    case val >= 1:
+                        obj[i] = false;
+                        return obj;
+
+                    case val == Math.floor(val):
+                        obj[i] = false;
+                        return obj;
+
+                    default:
+                        obj[i] = true;
+                        break;
+                }
+                break;
+
+            case "strike-price-field":
+                switch(false) {
+
+                    case val > 0:
+                        obj[i] = false;
+                        return obj;
+
+                    default:
+                        obj[i] = true;
+                        break;
+                }
+                break;
+
+            case "expiry-field":
+                switch(false) {
+
+                    case val >= 1 && val <= 183:
+                        obj[i] = false;
+                        return obj;
+
+                    case val == Math.floor(val):
+                        obj[i] = false;
+                        return obj;
+
+                    default:
+                        obj[i] = true;
+                        break;
+                }
+                break;
+
+            case "div-yield-field":
+                switch(false) {
+
+                    case val >= 0 && val <= 100:
+                        obj[i] = false;
+                        return obj;
+
+                    default:
+                        obj[i] = true;
+                        break;
+                }
+                break;
+
+            case "risk-free-rate-field":
+                switch(false) {
+
+                    case val >= 0 && val <= 25:
+                        obj[i] = false;
+                        return obj;
+
+                    default:
+                        obj[i] = true;
+                        break;
+                }
+                break;
+
+            case "option-price-field":
+                switch(false) {
+
+                    case val > 0:
+                        obj[i] = false;
+                        return obj;
+
+                    default:
+                        obj[i] = true;
+                        break;
+                }
+                break;
+        }
+    }
+
+    return obj;
+}
+
+
+//Some basic error message handling for text form input
+inputErrorMsg = function(element, msg) {
+
+    elem.select(element).style.borderColor = '#ff0000';
+    alert(msg);
+    elem.select(element).style.borderColor = '#d8d8d8';
+}
 
 // END MISC /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

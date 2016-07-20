@@ -60,28 +60,28 @@ finalParams = function(properties) {
     create: function(callback) {
 
         //create trade leg containers
-        for(var i=0; i<g.TRADE_LEGS; i++) {
+        for(i=1; i<g.TRADE_LEGS+1; i++) {
 
-            elem.create({tag: "div", attributes: {id: "leg-"+(i+1), class: "trade-leg"}}, "trade-legs-params-container");
+            elem.create({tag: "div", attributes: {id: "leg-"+i, class: "trade-leg"}}, "trade-legs-params-container");
 
             //sub-containers and logic
-            for(var j=0; j<5; j++) {
+            for(j=1; j<6; j++) {
 
-                elem.create({tag: "div", attributes: {id: "leg-sub-container-"+(j+1)+"-"+(i+1), class: "leg-sub-container"}}, "leg-"+(i+1));
+                elem.create({tag: "div", attributes: {id: "leg-sub-container-"+j+"-"+i, class: "leg-sub-container"}}, "leg-"+i);
 
                 //hide leg-sub-containers 2 through 4 when g.TRADE_LEGS is greater than 1
-                if(j>0 && j<4) {
+                if(j>1 && j<5) {
                         
-                    switch(i>0) {
+                    switch(i>1) {
 
                         case true:
-                            elem.select("leg-sub-container-"+(j+1)+"-"+(i+1)).style.height = 0;
+                            elem.select("leg-sub-container-"+j+"-"+i).style.height = 0;
                             break;
 
-                        case false:                                
+                        case false:
                             if(g.TRADE_LEGS>1) {
-                                elem.select("leg-sub-container-"+(j+1)+"-1").setAttribute("data-clicked", "false");
-                                elem.select("leg-sub-container-"+(j+1)+"-1").style.backgroundColor = '#cbdafb';
+                                elem.select("leg-sub-container-"+j+"-1").setAttribute("data-clicked", "false");
+                                elem.select("leg-sub-container-"+j+"-1").style.backgroundColor = '#cbdafb';
                             }
                             break;
                     }
@@ -89,26 +89,26 @@ finalParams = function(properties) {
             }
 
             //buy-sell radios
-            twoButtons.create([["buy","1"],["sell","-1"]], "(index % 2 == 0)", "leg-sub-container-1-", i);
-                
+            twoButtons.create([["buy","1"],["sell","-1"]], "leg-sub-container-1-", i);
+
             //call-put radios
-            twoButtons.create([["call","1"],["put","-1"]], "(index < 2)", "leg-sub-container-1-", i);
-                
+            twoButtons.create([["call","1"],["put","-1"]], "leg-sub-container-1-", i);
+
             //number of contracts fields
             numberFields.create("num-contracts", "no. of contracts :", {min:"1", step:"1", value:"1"}, "leg-sub-container-1-", i);
-                
+
             //strike prices
             numberFields.create("strike-price", "exercise price :", {min:".01", step:".01", value:"100"}, "leg-sub-container-1-", i);
-                
+
             //calendar times to expiry
             numberFields.create("expiry", "calendar days to expiry :", {min:"1", step:"1", value:"30"}, "leg-sub-container-2-", i);
-                
+
             //dividend % fields
             numberFields.create("div-yield", "dividend yield % :", {min:"0", step:".01", value:"0"}, "leg-sub-container-3-", i);
-            
+
             //risk-free rates
             numberFields.create("risk-free-rate", "risk-free rate % :", {min:"0", step:".01", value:"0.25"}, "leg-sub-container-4-", i);
-            
+
             //option prices
             numberFields.create("option-price", "option price :", {min:".01", step:".01", value:"1.25"}, "leg-sub-container-5-", i);
         }
@@ -212,14 +212,13 @@ finalParams = function(properties) {
             calculateButton1   = "calculate-button-1",
 
             //evaluate text form input conditions
-            numContractsFieldsCond = classInputCheck("num-contracts-field", g.TRADE_LEGS, ['>= 1', '== Math.floor(elem.select(element+"-"+(i+1)).value)']),
-            strikePriceFieldsCond  = classInputCheck("strike-price-field", g.TRADE_LEGS, ['> 0']),
-            expiryFieldsCond       = classInputCheck("expiry-field", g.TRADE_LEGS, ['>= 1', '<= 183', '== Math.floor(elem.select(element+"-"+(i+1)).value)']),
-            divYieldFieldsCond     = classInputCheck("div-yield-field", g.TRADE_LEGS, ['>= 0', '<= 100']),
-            riskFreeFieldsCond     = classInputCheck("risk-free-rate-field", g.TRADE_LEGS, ['>= 0', '<= 25']),
-            optionPriceFieldsCond  = classInputCheck("option-price-field", g.TRADE_LEGS, ['> 0']),
+            numContractsFieldsCond = classInputCheck("num-contracts-field", g.TRADE_LEGS),
+            strikePriceFieldsCond  = classInputCheck("strike-price-field", g.TRADE_LEGS),
+            expiryFieldsCond       = classInputCheck("expiry-field", g.TRADE_LEGS),
+            divYieldFieldsCond     = classInputCheck("div-yield-field", g.TRADE_LEGS),
+            riskFreeFieldsCond     = classInputCheck("risk-free-rate-field", g.TRADE_LEGS),
+            optionPriceFieldsCond  = classInputCheck("option-price-field", g.TRADE_LEGS),
             stockPriceFieldCond    = (elem.select(stockPriceField).value != "" && elem.select(stockPriceField).value > 0);
-
 
         //input validation and error message handling
         switch(false) {
@@ -271,51 +270,46 @@ finalParams = function(properties) {
                 }
 
                 //capture user-defined final parameters
-                for(var i=0; i<g.TRADE_LEGS; i++) {
+                for(i=1; i<g.TRADE_LEGS+1; i++) {
 
-                    g.LONG_SHORT[(i+1)]    = +elem.select("input[name=buy-sell-radio-"+(i+1)+"]:checked").value;
-                    g.CONTRACT_TYPE[(i+1)] = +elem.select("input[name=call-put-radio-"+(i+1)+"]:checked").value;
-                    g.NUM_CONTRACTS[(i+1)] = +elem.select("num-contracts-field-"+(i+1)).value;
-                    g.STRIKE_PRICE[(i+1)]  = +(elem.select("strike-price-field-"+(i+1)).value/1).toFixed(2);
-                    g.OPTION_PRICE[(i+1)]  = +(elem.select("option-price-field-"+(i+1)).value/1).toFixed(3);
+                    g.LONG_SHORT[i]    = +elem.select("input[name=buy-sell-radio-"+i+"]:checked").value;
+                    g.CONTRACT_TYPE[i] = +elem.select("input[name=call-put-radio-"+i+"]:checked").value;
+                    g.NUM_CONTRACTS[i] = +elem.select("num-contracts-field-"+i).value;
+                    g.STRIKE_PRICE[i]  = +(elem.select("strike-price-field-"+i).value/1).toFixed(2);
+                    g.OPTION_PRICE[i]  = +(elem.select("option-price-field-"+i).value/1).toFixed(3);
 
                     //on multi-leg trades, take the value of certain parameters in the first trade leg unless the user specifies otherwise
                     if(elem.select('leg-sub-container-2-1').getAttribute("data-clicked") == "false") {
 
-                        g.EXPIRY[(i+1)] = (i == 0) ? +elem.select("expiry-field-"+(i+1)).value : g.EXPIRY[1];
+                        g.EXPIRY[i] = (i==1) ? +elem.select("expiry-field-"+i).value : g.EXPIRY[1];
                     } else {
-                        g.EXPIRY[(i+1)] = +elem.select("expiry-field-"+(i+1)).value;
+                        g.EXPIRY[i] = +elem.select("expiry-field-"+i).value;
                     }
 
 
                     if(elem.select('leg-sub-container-3-1').getAttribute("data-clicked") == "false") {
 
-                        g.DIV_YIELD[(i+1)] = (i == 0) ? elem.select("div-yield-field-"+(i+1)).value/100 : g.DIV_YIELD[1];
+                        g.DIV_YIELD[i] = (i==1) ? elem.select("div-yield-field-"+i).value/100 : g.DIV_YIELD[1];
                     } else {
-                        g.DIV_YIELD[(i+1)] = elem.select("div-yield-field-"+(i+1)).value/100;
+                        g.DIV_YIELD[i] = elem.select("div-yield-field-"+i).value/100;
                     }
 
 
                     if(elem.select('leg-sub-container-4-1').getAttribute("data-clicked") == "false") {
 
-                        g.RISK_FREE[(i+1)] = (i == 0) ? elem.select("risk-free-rate-field-"+(i+1)).value/100 : g.RISK_FREE[1];
+                        g.RISK_FREE[i] = (i==1) ? elem.select("risk-free-rate-field-"+i).value/100 : g.RISK_FREE[1];
                     } else {
-                        g.RISK_FREE[(i+1)] = elem.select("risk-free-rate-field-"+(i+1)).value/100;
+                        g.RISK_FREE[i] = elem.select("risk-free-rate-field-"+i).value/100;
                     }
                 }
 
                 g.STOCK_PRICE = +(elem.select("current-price-field").value/1).toFixed(2);
 
 
-                //transitions
+                //transitions, calculate and display output
                 elem.ease("out", "final-params-container", 0.5, 32);
                 elem.fade("out", "final-params-container", 0.02);
-
-                elem.fade("in", "output-container", 0.015, function() {
-
-                    //calculate and display output
-                    setTimeout(function() { BSM.data(visuals.init) }, 350);
-                });
+                elem.fade("in", "output-container", 0.015, function() { setTimeout(function() { BSM.data(visuals.init) }, 350) });
                 break;
         }
     }

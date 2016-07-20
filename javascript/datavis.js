@@ -66,17 +66,17 @@ visuals = function(properties) {
 				//gridlines and labels
 				numH    = 25,
 				numV    = 7,
-        		canvasW = 2*Math.floor(width*(1-(1.01)*scalar)), //WHY THE MULTIPLIER TO FIX BLURRY TEXT - IS IT RELATED TO THE 'devicePixelRatio' PROPERTY?
+        		canvasW = 2*Math.floor(width*(1-(1.01)*scalar)), //THE MULTIPLIER FIXES BLURRY TEXT - IS IT RELATED TO THE 'devicePixelRatio' PROPERTY?
         		canvasH = 2*Math.floor(height*(0.6)*scalar/(numH-1)), //AND HERE AS WELL
 	        	xPos    = canvasW/2,
 	        	yPos    = canvasH/2,
-	        	lines   = { xaxis: {tick: {}, ext: {}, dots: {}}, yaxis: {} }, //COULD ANOTHER DATA STRUCTURE BE USED HERE?
-				labels  = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} }, //AND HERE?
+	        	lines   = { xaxis: {tick: {}, ext: {}, dots: {}}, yaxis: {} },
+				labels  = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} },
 
 	   	     	//data
 	        	data     = g.PROFITLOSS_DATA,
-	        	gRange   = globalRange(data, 0, obj.min(g.EXPIRY)) !== 0 ? globalRange(data, 0, obj.min(g.EXPIRY)) : 1,
-				dataSets = { T: data[obj.min(g.EXPIRY)], 0: data[0] }, //COULD ANOTHER DATA STRUCTURE BE USED HERE?
+	        	gRange   = obj.range(data[0], data[obj.min(g.EXPIRY)]) !== 0 ? obj.range(data[0], data[obj.min(g.EXPIRY)]) : 1,
+				dataSets = { T: data[obj.min(g.EXPIRY)], 0: data[0] },
 				cloud    = { T: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/500, color: 0xff0000})),
 						     0: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/500, color: 0x0000ff})) };
 
@@ -204,14 +204,14 @@ visuals = function(properties) {
 					default:
 						switch(Math.floor((g.STOCKRANGE_LENGTH-1)/(numV-1))) {
 
-							//Thanks to Michael Wunder for his help with this
+							//the case where the fractional part of the remainder is < 0.5
 							case Math.round((g.STOCKRANGE_LENGTH-1)/(numV-1)):
-								//the case where the fractional part of the remainder is < 0.5
+								//Thanks to Michael Wunder for his help with this
 								var labelText = '$'+Object.keys(dataSets[0])[Math.floor((g.STOCKRANGE_LENGTH-1)/(numV-1))*i+Math.floor((i+1)/3)];
 								break;
 
+							//the case where the fractional part of the remainder is >= 0.5
 							default:
-								//the case where the fractional part of the remainder is >= 0.5
 								var labelText = '$'+Object.keys(dataSets[0])[Math.ceil((g.STOCKRANGE_LENGTH-1)/(numV-1))*i-Math.floor((i+1)/3)];
 								break;
 						}

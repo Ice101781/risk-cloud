@@ -24,9 +24,6 @@ obj = function(properties) {
                 case 'object':
                     obj[element] = {};
                     break;
-
-                default:
-                    break;
             }
         }
     },
@@ -43,6 +40,23 @@ obj = function(properties) {
     },
 
 
+    //Object values total - thanks to 'Sirko' on stackoverflow.com for this
+    sum: function(obj) {
+
+        //some basic error handling
+        for(key in obj) { if(typeof obj[key] !== 'number') { return "The 'obj.sum()' method requires all object values to be numbers." } }
+
+        return Object.keys(obj).reduce(function(s,key) { return s + obj[key] }, 0);
+    },
+
+
+    //Object values average
+    avg: function(obj) {
+
+        return this.sum(obj)/this.size(obj);
+    },
+
+
     //Object min and max - thanks to 'levi' on stackoverflow.com for this
     min: function(obj) {
 
@@ -55,23 +69,23 @@ obj = function(properties) {
     },
 
 
-    //Object values total - thanks to 'Sirko' on stackoverflow.com for this
-    sum: function(obj) {
+    //Given two sets, find the global range of the values
+    range: function(set1, set2) {
 
-        //some basic error handling
-        for(key in obj) { if(typeof obj[key] !== 'number') { return "The 'obj.sum()' method requires all object values to be numbers." } }
+        var all = array.merge(set1, set2);
 
-        return Object.keys(obj).reduce(function(s,key) { return s + obj[key] }, 0);
+        return Math.abs(this.max(all)-this.min(all));
     },
 
 
-    //Return the key of an object property that is closest to some value - NOTE: this function does not yet account for equidistant object properties
-    minDistKey: function(obj, value) {
+    //Return all keys of an object whose properties meet a given condition
+    filterKeys: function(obj, test) {
 
-        var distObj = Object.keys(obj).map(function(key) { return Math.abs(obj[key]-value) }),
-            distObjMin = this.min(distObj);
+        var keys = [];
 
-        return distObj.indexOf(distObjMin)+1;
+        for(key in obj) { if(test(obj[key])) { keys.push(key) } }
+
+        return keys;
     }
 })
 
@@ -90,11 +104,36 @@ array = function(properties) {
     unique: function(array) {
 
         return array.filter(function(element, index) { return array.indexOf(element) == index });
+    },
+
+
+    //Merge all elements of two arrays OR all properties of two objects; return an array
+    merge: function(a1, a2) {
+
+        var merged = [];
+
+        for(i=0; i<Object.keys(a1).length; i++) { merged[i] = a1[Object.keys(a1)[i]] }
+
+        for(j=0; j<Object.keys(a2).length; j++) { merged[obj.size(a1)+j] = a2[Object.keys(a2)[j]] }
+
+        //remove duplicate elements
+        return this.unique(merged);
+    },
+
+
+    //Find the intersection of two arrays
+    intersect: function(a1, a2) { // <--- THIS FUNCTION NOT CURRENTLY IN USE
+
+        //thanks to 'Anon.' on stackoverflow.com for help on this
+        var x = a1.filter(function(element) { return a2.indexOf(element) != -1 });
+
+        //remove duplicate elements
+        return this.unique(x);
     }
 })
 
 
-//Element functions
+//HTML element functions
 elem = function(properties) {
 
     var self = function() { return };
@@ -104,7 +143,7 @@ elem = function(properties) {
     return self;
 }({
 
-    //HTML element selection
+    //Selection
     select: function(idString) {
 
         return document.getElementById(idString) || document.querySelector(idString);
@@ -112,7 +151,7 @@ elem = function(properties) {
 
 
     //Disable or enable multpile classes of elements at once
-    avail: function(idObject, bool) {
+    avail: function(idObject, bool) { // <--- THIS FUNCTION NOT CURRENTLY IN USE
 
         for(key in idObject) {
 
@@ -130,7 +169,7 @@ elem = function(properties) {
     },
 
 
-    //HTML element creation
+    //Creation
     create: function(paramsObject, appendId) {
 
         //create a new document element
@@ -151,17 +190,17 @@ elem = function(properties) {
     },
 
 
-    //Remove children from an element of the DOM - thanks to Gabriel McAdams on stackoverflow.com for help on the case for removing all children from an element
+    //Remove children from an element of the DOM
     destroyChildren: function(idStringParent, idArrayChildren) {
 
         idArrayChildren = typeof idArrayChildren !== 'undefined' ? idArrayChildren : 'none specified';
 
-        var parent = this.select(idStringParent),
+        var parent   = this.select(idStringParent),
             children = idArrayChildren;
 
         switch(children) {
 
-            //remove all children
+            //remove all children - thanks to Gabriel McAdams on stackoverflow.com for this
             case 'none specified':
                 while(parent.firstChild) { parent.removeChild(parent.firstChild) }
                 break;
@@ -174,12 +213,12 @@ elem = function(properties) {
     },
 
 
-    //HTML element transition animations
+    //Transition animations
     ease: function(type, idString, increment, maxHeight, callback) {
 
         var element = this.select(idString).style,
-            height = 0,
-            timer = setInterval(render, (1000/50)); //50 fps
+            height  = 0,
+            timer   = setInterval(render, (1000/50)); //50 fps
 
         function render() {
 
@@ -188,11 +227,13 @@ elem = function(properties) {
             if(height == maxHeight) {
 
                 clearInterval(timer);
+
                 if(typeof callback === 'function') { callback() }
 
             } else {
 
                 height += increment;
+
                 if(type == "in") { element.height = height + 'vw' } else if(type == "out") { element.height = maxHeight - height + 'vw' }
             }
         }
@@ -202,7 +243,7 @@ elem = function(properties) {
 
         var element = this.select(idString).style,
             opacity = 0,
-            timer = setInterval(render, (1000/50)); //50 fps
+            timer   = setInterval(render, (1000/50)); //50 fps
 
         function render() {
 
@@ -211,11 +252,13 @@ elem = function(properties) {
             if(opacity == 1) {
 
                 clearInterval(timer);
+
                 if(typeof callback === 'function') { callback() }
 
             } else {
 
                 opacity += increment;
+
                 if(type == "in") { element.opacity = opacity } else if(type == "out") { element.opacity = 1 - opacity }
             }
         }
@@ -237,7 +280,7 @@ math = function(properties) {
 }({
 
 	//Compute integrals numerically using Simpson's rule
-	INTEGRAL: function(leftBound, rightBound, numSubIntervals, expression) {
+	INTEGRAL: function(leftBound, rightBound, numSubIntervals, expression) { // <--- THIS FUNCTION NOT CURRENTLY IN USE
 
 		var a = leftBound,
         	b = rightBound,
@@ -271,7 +314,7 @@ math = function(properties) {
 
 
 	//Cumulative Standard Normal Distribution functions
-	CUSTNORM: function(z, n) {
+	CUSTNORM: function(z, n) { // <--- THIS FUNCTION NOT CURRENTLY IN USE
 
         //this method is far slower than the logistic approximation below; n >= 200 is necessary for reasonable accuracy in most trade setups
     	switch(b<0) {
@@ -307,16 +350,6 @@ disableKey = function(key) {
 
     //required for certain keys in Firefox (i.e., the spacebar)
     document.addEventListener('keyup', block);
-}
-
-
-//given two sets of data measuring the same variable at different times, find the global range
-globalRange = function(set, t1, t2) {
-
-    var globalMax = obj.max([ obj.max(set[t1]), obj.max(set[t2]) ]),
-        globalMin = obj.min([ obj.min(set[t1]), obj.min(set[t2]) ]);
-
-    return Math.abs(globalMax-globalMin);
 }
 
 // END MISC /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
