@@ -96,7 +96,7 @@
 }
 
 #output-view-container, #output-summary-container {
-  width: 77.5vw;
+  width: 77.5vw; /* aspect ratio of #output-view-container is 2.5:1 */
   margin-left: 0.25vw;
 }
 
@@ -119,18 +119,22 @@
 }
 
 #output-summary-table {
-  width: 65.625vw;
+  width: 65.66vw;
   font-family: Arial;
   font-size: 0.65vw;
   background-color: #9999ff;
 }
 
 #trade-summary-heading {
-  width: 16.625vw;
+  width: 18.1925vw;
 }
 
-#option-price-heading, #option-iv-heading, .greek-headings {
-  width: 7vw;
+#option-price-heading, #option-iv-heading {
+  width: 5.89vw; /* width x 2 = 11.78vw */
+}
+
+.greek-headings {
+  width: 7.1375vw; /* width x 5 = 35.6875vw */
 }
 
 .trade-summary-group, .option-iv-group, .option-rho-group {
