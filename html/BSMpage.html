@@ -31,9 +31,9 @@
                 <pre>THE BLACK-SCHOLES-MERTON MODEL:   European-style equity options with continuously-payable dividends</pre>
             </h1>
 
-            <div id="app-container">
-                <div id="initial-params-container">
-                    <div id="initial-params-sub-container">
+            <div id="app-container" class="general-group">
+                <div id="initial-params-container" class="general-group">
+                    <div id="initial-params-sub-container" class="general-group">
                         <form>    
                             <div id="num-legs-align-helper" class="align-helper">Number of legs in the trade :</div>
 
@@ -53,61 +53,61 @@
                         <form>
                             <div id="fees-align-helper" class="align-helper">Total commissions and fees per contract :</div>
 
-                            <input type="number" id="fees-field" min="0" step=".01" value="1.50" />
+                            <input type="number" id="fees-field" class="general-group" min="0" step=".01" value="1.50" />
                         </form>
                     </div>
 
-                    <button id="continue-button-1" type="button" onclick="initialParams.validate()">Continue</button>
+                    <button id="continue-button-1" class="buttons general-group" type="button" onclick="initialParams.validate()">Continue</button>
                 </div>
 
-                <div id="final-params-container">
-                    <div id="trade-legs-params-container"></div>
+                <div id="final-params-container" class="general-group">
+                    <div id="trade-legs-params-container" class="general-group"></div>
 
-                    <div id="current-price-container">
-                        <button id="return-button-1" type="button" onclick="finalParams.destroy()">Return</button>
+                    <div id="current-price-container" class="general-group">
+                        <button id="return-button-1" class="buttons general-group" type="button" onclick="finalParams.destroy()">Return</button>
                         
                         <form id="current-price-form">
                             <div id="current-price-align-helper" class="align-helper">Current price of the underlying stock :</div>
 
-                            <input type="number" id="current-price-field" min=".01" step=".01" value="100.25" />
+                            <input type="number" id="current-price-field" class="general-group" min=".01" step=".01" value="100.25" />
                         </form>
 
-                        <button id="calculate-button-1" type="button" onclick="finalParams.validate()">Calculate</button>
+                        <button id="calculate-button-1" class="buttons general-group" type="button" onclick="finalParams.validate()">Calculate</button>
                     </div>
                 </div>
 
-                <div id="output-container">
-                    <div id="output-sub-container-1">
+                <div id="output-container" class="general-group">
+                    <div id="output-sub-container-1" class="general-group">
                         <div id="output-view-form">
                             <input type="radio" id="output-view-radio-1" name="output-view-radio" value="1" checked />
-                            <label class="radio output-view" for="output-view-radio-1">2D</label>
+                            <label class="radio output-view general-group" for="output-view-radio-1">2D</label>
 
                             <input type="radio" id="output-view-radio-2" name="output-view-radio" value="2" />
-                            <label class="radio output-view" for="output-view-radio-2">3D</label>
+                            <label class="radio output-view general-group" for="output-view-radio-2">3D</label>
                         </div>
 
                         <form id="output-data-form">
                             <input type="radio" id="output-data-radio-1" name="output-data-radio" value="1" checked />
-                            <label class="radio output-data" for="output-data-radio-1">Profit and Loss</label>
+                            <label class="radio output-data general-group" for="output-data-radio-1">Profit and Loss</label>
 
                             <input type="radio" id="output-data-radio-2" name="output-data-radio" value="2" />
-                            <label class="radio output-data" for="output-data-radio-2">Delta</label>
+                            <label class="radio output-data general-group" for="output-data-radio-2">Delta</label>
 
                             <input type="radio" id="output-data-radio-3" name="output-data-radio" value="3" />
-                            <label class="radio output-data" for="output-data-radio-3">Gamma</label>
+                            <label class="radio output-data general-group" for="output-data-radio-3">Gamma</label>
 
                             <input type="radio" id="output-data-radio-4" name="output-data-radio" value="4" />
-                            <label class="radio output-data" for="output-data-radio-4">Theta</label>
+                            <label class="radio output-data general-group" for="output-data-radio-4">Theta</label>
 
                             <input type="radio" id="output-data-radio-5" name="output-data-radio" value="5" />
-                            <label class="radio output-data" for="output-data-radio-5">Vega</label>
+                            <label class="radio output-data general-group" for="output-data-radio-5">Vega</label>
 
                             <input type="radio" id="output-data-radio-6" name="output-data-radio" value="6" />
-                            <label class="radio output-data" for="output-data-radio-6">Rho</label>
+                            <label class="radio output-data general-group" for="output-data-radio-6">Rho</label>
                         </form>
                     </div>
 
-                    <div id="output-sub-container-2">
+                    <div id="output-sub-container-2" class="general-group">
 
                         <div id="output-view-container">
                             <div id="BSM-loading-text">LOADING...</div>
@@ -115,15 +115,64 @@
 
                         <div id="output-summary-container">
                             <table id="output-summary-table">
-                                <tr>
-                                    <th id="trade-summary-heading" class="trade-summary-group">Trade Summary</th>
-                                    <th id="option-price-heading">Option Price</th>
-                                    <th id="option-iv-heading" class="option-iv-group">IV</th>
+                                <!-- table headings -->
+                                <tr id="table-headings">
+                                    <th id="trade-summary-heading" class="border-right-group">Trade Summary</th>
+                                    <th class="price-iv-headings">Option Price</th>
+                                    <th class="price-iv-headings border-right-group">IV</th>
                                     <th class="greek-headings">Delta</th>
                                     <th class="greek-headings">Gamma</th>
                                     <th class="greek-headings">Theta</th>
                                     <th class="greek-headings">Vega</th>
-                                    <th class="greek-headings option-rho-group">Rho</th>
+                                    <th class="greek-headings border-right-group">Rho</th>
+                                </tr>
+
+                                <!-- leg 1 info -->
+                                <tr>
+                                    <th id="leg-1-summary" class="summary-group border-right-group">leg 1 info here</th>
+                                    <td id="leg-1-price"></td>
+                                    <td id="leg-1-iv" class="border-right-group">IV 1 here</td>
+                                    <td id="leg-1-delta"></td>
+                                    <td id="leg-1-gamma"></td>
+                                    <td id="leg-1-theta"></td>
+                                    <td id="leg-1-vega"></td>
+                                    <td id="leg-1-rho" class="border-right-group">rho 1 here</td>
+                                </tr>
+
+                                <!-- leg 2 info -->
+                                <tr>
+                                    <th id="leg-2-summary" class="summary-group border-right-group">leg 2 info here</th>
+                                    <td id="leg-2-price"></td>
+                                    <td id="leg-2-iv" class="border-right-group">IV 2 here</td>
+                                    <td id="leg-2-delta"></td>
+                                    <td id="leg-2-gamma"></td>
+                                    <td id="leg-2-theta"></td>
+                                    <td id="leg-2-vega"></td>
+                                    <td id="leg-2-rho" class="border-right-group">rho 2 here</td>
+                                </tr>
+
+                                <!-- leg 3 info -->
+                                <tr>
+                                    <th id="leg-3-summary" class="summary-group border-right-group">leg 3 info here</th>
+                                    <td id="leg-3-price"></td>
+                                    <td id="leg-3-iv" class="border-right-group">IV 3 here</td>
+                                    <td id="leg-3-delta"></td>
+                                    <td id="leg-3-gamma"></td>
+                                    <td id="leg-3-theta"></td>
+                                    <td id="leg-3-vega"></td>
+                                    <td id="leg-3-rho" class="border-right-group">rho 3 here</td>
+                                </tr>
+
+                                <!-- leg 4 info -->
+                                <tr>
+                                    <th id="leg-4-summary" class="summary-group border-right-group">leg 4 info here</th>
+                                    <td id="leg-4-price"></td>
+                                    <td id="leg-4-iv" class="border-right-group">IV 4 here</td>
+                                    <td id="leg-4-delta"></td>
+                                    <td id="leg-4-gamma"></td>
+                                    <td id="leg-4-theta"></td>
+                                    <td id="leg-4-vega"></td>
+                                    <td id="leg-4-rho" class="border-right-group">rho 4 here</td>
                                 </tr>
                             </table>
                         </div>

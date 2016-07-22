@@ -14,21 +14,18 @@
   color: #555555;
 }
 
+.general-group {
+  overflow: hidden;
+  font-family: Century Gothic;
+  font-size: 1vw;
+}
+
 #app-container {
   height: 39vw;
   width: 92vw;
   margin-left: 3.375vw;
   padding-top: 1.5vw;
-  background-color: lightblue;
-}
-
-#app-container, #initial-params-container, #initial-params-sub-container, #final-params-container, #trade-legs-params-container, .trade-leg,
-.leg-sub-container, #current-price-container, #output-container, #output-sub-container-1, #output-sub-container-2, #continue-button-1, #return-button-1,
-#calculate-button-1, .radio.buy-sell, .radio.call-put, .radio.output-view, .radio.output-data, #fees-field, .num-contracts-field, .strike-price-field,
-.expiry-field, .div-yield-field, .risk-free-rate-field, .option-price-field, #current-price-field {
-  overflow: hidden;
-  font-family: Century Gothic;
-  font-size: 1vw;
+  background-color: lightblue; /*test*/
 }
 
 #initial-params-container {
@@ -80,7 +77,7 @@
 #output-sub-container-1, #output-sub-container-2 {
   display: inline-block;
   height: 38.5vw;
-  background-color: transparent; /*background-color: red; /*test*/
+  background-color: transparent;
 }
 
 #output-sub-container-1 {
@@ -115,29 +112,40 @@
 #output-summary-container {
   height: 5.375vw;
   margin-top: 0.375vw;
-  background-color: #fafafa;
+  background-color: red; /*test*/
 }
 
 #output-summary-table {
-  width: 65.66vw;
+  width: 65.60875vw;
   font-family: Arial;
   font-size: 0.65vw;
+  border-spacing: 0;
+}
+
+#table-headings {
+  height: 0.8875vw;
   background-color: #9999ff;
 }
 
 #trade-summary-heading {
-  width: 18.1925vw;
+  width: 18.12125vw;
 }
 
-#option-price-heading, #option-iv-heading {
-  width: 5.89vw; /* width x 2 = 11.78vw */
+.price-iv-headings {
+  width: 5.9vw; /* width x 2 = 11.8vw */
 }
 
 .greek-headings {
   width: 7.1375vw; /* width x 5 = 35.6875vw */
 }
 
-.trade-summary-group, .option-iv-group, .option-rho-group {
+.summary-group, td {
+  height: .875vw;
+  text-align: center;
+  background-color: #eeeeff;
+}
+
+.border-right-group {
   border-right: 1px solid;
 }
 
@@ -167,7 +175,7 @@ form {
   width: 18.25vw;
 }
 
-#continue-button-1, #return-button-1, #calculate-button-1 {
+.buttons {
   height: 1.75vw;
   width: 7vw;
   margin: 0;
@@ -284,8 +292,7 @@ label.radio.output-data {
   text-align: center;
 }
 
-#fees-field, .num-contracts-field, .strike-price-field, .expiry-field, .div-yield-field, .risk-free-rate-field,
-.option-price-field, #current-price-field {
+#fees-field, .num-contracts-field, .strike-price-field, .expiry-field, .div-yield-field, .risk-free-rate-field, .option-price-field, #current-price-field {
   background-color: #ddffdd;
 }
 

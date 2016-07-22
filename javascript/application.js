@@ -85,8 +85,8 @@ nav = function(properties) {
                 1: { a: {heading: "Black-Scholes-Merton", link: "../html/BSMpage.html"}, 
                    /*b: {heading: "Variance-Gamma",   link: "#"}*/ },
 
-                2: { a: {heading: "about", link: "#"},
-                     b: {heading: "more", link: "#"} }
+                2: { a: {heading: "faq", link: "#"},
+                     b: {heading: "legal", link: "#"} }
             };
 
             for(num in subHeadings) {
@@ -202,7 +202,7 @@ twoButtons = function(properties) {
 
                                        attributes: {
                                            "for": buttonArray[j][0]+"-"+"radio-"+n, 
-                                           class: "radio "+buttonArray[0][0]+"-"+buttonArray[1][0]
+                                           class: "radio "+buttonArray[0][0]+"-"+buttonArray[1][0]+" general-group"
                                        }},
                                        buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+n);
         }
@@ -241,7 +241,7 @@ numberFields = function(properties) {
         elem.create({tag: "input", attributes: {
                                        type: "number",
                                        id: idString+"-field-"+n,
-                                       class: idString+"-field",
+                                       class: idString+"-field"+" general-group",
                                        min: attr.min,
                                        step: attr.step,
                                        value: attr.value

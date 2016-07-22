@@ -62,12 +62,12 @@ finalParams = function(properties) {
         //create trade leg containers
         for(i=1; i<g.TRADE_LEGS+1; i++) {
 
-            elem.create({tag: "div", attributes: {id: "leg-"+i, class: "trade-leg"}}, "trade-legs-params-container");
+            elem.create({tag: "div", attributes: {id: "leg-"+i, class: "trade-leg general-group"}}, "trade-legs-params-container");
 
             //sub-containers and logic
             for(j=1; j<6; j++) {
 
-                elem.create({tag: "div", attributes: {id: "leg-sub-container-"+j+"-"+i, class: "leg-sub-container"}}, "leg-"+i);
+                elem.create({tag: "div", attributes: {id: "leg-sub-container-"+j+"-"+i, class: "leg-sub-container general-group"}}, "leg-"+i);
 
                 //hide leg-sub-containers 2 through 4 when g.TRADE_LEGS is greater than 1
                 if(j>1 && j<5) {
