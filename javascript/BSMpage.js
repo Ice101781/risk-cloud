@@ -34,7 +34,7 @@ initialParams = function(properties) {
                 //remove initial params and create elements needed to specify final params; transitions
                 finalParams.create(function() {
 
-                    elem.ease("out", "initial-params-container", 0.25, 12.5);
+                    elem.ease("out", "initial-params-container", 0.25, 11);
                     elem.fade("out", "initial-params-container", 0.02);
                     elem.fade("in", "final-params-container", 0.02);
                 });
@@ -144,28 +144,28 @@ finalParams = function(properties) {
                 case 1:
                     parent.width = 47 + 'vw';
                     parent.marginLeft = 22.5 + 'vw';
-                    child1.marginLeft = 11.25 + 'vw';
+                    child1.marginLeft = 12.25 + 'vw';
                     child2.marginLeft = 1.925 + 'vw';
                     break;
 
                 case 2:
                     parent.width = 47 + 'vw';
                     parent.marginLeft = 22.5 + 'vw';
-                    child1.marginLeft = 0 + 'vw';
+                    child1.marginLeft = 1 + 'vw';
                     child2.marginLeft = 1.925 + 'vw';
                     break;
 
                 case 3:
                     parent.width = 70 + 'vw';
                     parent.marginLeft = 11 + 'vw';
-                    child1.marginLeft = 0.2625 + 'vw';
+                    child1.marginLeft = 1.2625 + 'vw';
                     child2.marginLeft = 13.5 + 'vw';
                     break;
 
                 case 4:
                     parent.width = 92 + 'vw';
                     parent.marginLeft = 0 + 'vw';
-                    child1.marginLeft = 0 + 'vw';
+                    child1.marginLeft = 1 + 'vw';
                     child2.marginLeft = 24.5 + 'vw';
                     break;
             }
@@ -191,7 +191,7 @@ finalParams = function(properties) {
             elem.select("current-price-field").value = 100.25;
         });
 
-        elem.ease("in", "initial-params-container", 0.25, 12.5);
+        elem.ease("in", "initial-params-container", 0.25, 11);
         elem.fade("in", "initial-params-container", 0.02);
     },
 

@@ -67,10 +67,10 @@ html {
 
 .nav-sub-container {
   overflow: hidden;
+  position: absolute;
   height: 0;
   width: 99vw;
-  position: absolute;
-  border-top: 0.2vw solid #555555;
+  border-top: 0.125vw solid #555555;
 }
 
 .nav-sub-menu {
@@ -102,4 +102,3 @@ html {
   font-size: 0.9vw;
   color: black;
 }
-

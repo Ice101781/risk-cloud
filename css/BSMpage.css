@@ -1,7 +1,7 @@
 ﻿.model-heading {
   margin: 0;
-  margin-top: 1.5vw;
-  margin-bottom: 0.5vw;
+  margin-top: 1vw;
+  margin-bottom: 0.75vw;
   padding: 0;
 }
 
@@ -21,15 +21,15 @@
 }
 
 #app-container {
-  height: 39vw;
+  height: 39.75vw;
   width: 92vw;
   margin-left: 3.375vw;
-  padding-top: 1.5vw;
+  padding-top: 1vw;
   background-color: lightblue; /*test*/
 }
 
 #initial-params-container {
-  height: 12.5vw;
+  height: 11vw;
   width: 35vw;
   margin-left: 28.5vw;
   background-color: #a1a1a1;
@@ -38,7 +38,7 @@
 #initial-params-sub-container {
   width: 32vw;
   margin-left: 1.5vw;
-  margin-top: 1.5vw;
+  margin-top: 1vw;
   padding-bottom: 0.125vw;
   background-color: #fafafa;
 }
@@ -50,13 +50,12 @@
 }
 
 #trade-legs-params-container {
-  padding-left: 1vw;
-  padding-top: 1.5vw;
+  padding-top: 1vw;
 }
 
 .trade-leg {
   display: inline-block;
-  height: 25.25vw;
+  height: 25.75vw;
   width: 20vw;
   margin-left: 1.25vw;
   margin-right: 1.25vw;
@@ -68,7 +67,7 @@
 }
 
 #output-container {
-  height: 38.5vw;
+  height: 39.375vw;
   width: 92vw;
   background-color: #a1a1a1;
   opacity: 0;
@@ -76,16 +75,18 @@
 
 #output-sub-container-1, #output-sub-container-2 {
   display: inline-block;
-  height: 38.5vw;
+  height: 39.375vw;
   background-color: transparent;
 }
 
 #output-sub-container-1 {
   width: 13.125vw;
+  background-color: green; /*test*/
 }
 
 #output-sub-container-2 {
   width: 78vw;
+  background-color: yellow; /*test*/
 }
 
 #output-view-container, #BSM-loading-text {
@@ -110,7 +111,7 @@
 }
 
 #output-summary-container {
-  height: 5.375vw;
+  height: 6.25vw;
   margin-top: 0.375vw;
   background-color: red; /*test*/
 }
@@ -123,7 +124,7 @@
 }
 
 #table-headings {
-  height: 0.8875vw;
+  height: 1vw;
   background-color: #9999ff;
 }
 
@@ -140,9 +141,16 @@
 }
 
 .summary-group, td {
-  height: .875vw;
+  height: 0.9vw;
   text-align: center;
   background-color: #eeeeff;
+  border-bottom: 1px solid #c5c5c5;
+}
+
+.totals-group {
+  height: 1vw;
+  background-color: #d8d8d8;
+  border-bottom: none;
 }
 
 .border-right-group {
@@ -185,7 +193,7 @@ form {
 
 #continue-button-1 {
   margin-left: 14vw;
-  margin-top: 1.5vw;
+  margin-top: 1vw;
 }
 
 #calculate-button-1 {
