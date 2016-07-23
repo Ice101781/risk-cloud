@@ -269,7 +269,7 @@ finalParams = function(properties) {
                     elem.select("leg-sub-container-4-1").removeEventListener("click", rfrVis);
                 }
 
-                //capture user-defined final parameters
+                //capture user-defined final parameters, write some info to elements of the trade summary table
                 for(i=1; i<g.TRADE_LEGS+1; i++) {
 
                     g.LONG_SHORT[i]    = +elem.select("input[name=buy-sell-radio-"+i+"]:checked").value;
@@ -301,10 +301,41 @@ finalParams = function(properties) {
                     } else {
                         g.RISK_FREE[i] = elem.select("risk-free-rate-field-"+i).value/100;
                     }
+
+
+                    //write trade summary and option price info to elements of the trade summary table
+                    (function(n) {
+
+                        var element  = "leg-" + n + "-",
+                            buy_sell = g.LONG_SHORT[n]    == 1 ? "BUY &nbsp&nbsp" : "SELL &nbsp&nbsp",
+                            color    = g.LONG_SHORT[n]    == 1 ? "rgb(0,175,0)"   : "rgb(200,0,0)",
+                            call_put = g.CONTRACT_TYPE[n] == 1 ? "&nbsp CALL"     : "&nbsp PUT",
+                            exp      = " &nbsp&nbsp" + g.EXPIRY[n] + " DTE";
+
+                        //trade summary
+                        elem.select(element+"summary").innerHTML = buy_sell + g.NUM_CONTRACTS[n] + " x " + g.STRIKE_PRICE[n] + call_put + exp;
+                        elem.select(element+"summary").style.color = color;
+                        elem.select(element+"summary").style.borderRightColor = "rgb(0,0,0)";
+
+                        //option price
+                        elem.select(element+"price").innerHTML = "$"+g.OPTION_PRICE[i].toFixed(2);
+                        elem.select(element+"price").style.color = color;
+                    })(i);
                 }
 
+                //capture the user-defined current price of the underlying stock
                 g.STOCK_PRICE = +(elem.select("current-price-field").value/1).toFixed(2);
 
+                //write option price total to its trade summary table element
+                (function() {
+
+                    var price = 0;
+
+                    for(i=1; i<g.TRADE_LEGS+1; i++) { price += g.LONG_SHORT[i]*g.NUM_CONTRACTS[i]*g.OPTION_PRICE[i] }
+
+                    elem.select("price-total").innerHTML = "$"+Math.abs(price).toFixed(2);
+                    elem.select("price-total").style.color = Math.sign(price) == 1 ? "rgb(0,150,0)" : "rgb(175,0,0)";
+                })();
 
                 //transitions, calculate and display output
                 elem.ease("out", "final-params-container", 0.5, 32);
