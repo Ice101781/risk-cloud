@@ -54,7 +54,7 @@ BSM = function(properties) {
                     bsmPrice = type*((S*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*T))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*T)));
 
                     //return a value if threshold condition is met
-                    if(Math.abs(optPrice-bsmPrice) <= Math.pow(10,-2)) { return +volEst.toFixed(6) }
+                    if(Math.abs(optPrice-bsmPrice) <= Math.pow(10,-2)) { return volEst }
 
                     //next estimate for implied volatility
                     volEst += (optPrice-bsmPrice)/bsmVega;
@@ -77,9 +77,9 @@ BSM = function(properties) {
                 for(j=0; j<maxIter; j++) {
 
                     //local loop variables
-                    var volMid = (volLow+volHigh)/2,
-                        d1     = (Math.log(S/K)+((r-D+(Math.pow(volMid,2)/2))*T))/(volMid*Math.sqrt(T)),
-                        d2     = d1-(volMid*Math.sqrt(T));
+                    var volEst = (volLow+volHigh)/2,
+                        d1     = (Math.log(S/K)+((r-D+(Math.pow(volEst,2)/2))*T))/(volEst*Math.sqrt(T)),
+                        d2     = d1-(volEst*Math.sqrt(T));
 
                     //option price based on current estimate for implied volatility
                     bsmPrice = type*((S*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*T))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*T)));
@@ -88,16 +88,16 @@ BSM = function(properties) {
                     switch(Math.sign(optPrice-bsmPrice)) {
 
                         case 1:
-                            volLow = volMid;
+                            volLow  = volEst;
                             break;
 
                         case -1:
-                            volHigh = volMid;
+                            volHigh = volEst;
                             break;
                     }
 
                     //return a value if threshold condition is met
-                    if(Math.abs(volLow-volHigh) <= Math.pow(10,-6)) { return +volMid.toFixed(6) }
+                    if(Math.abs(volLow-volHigh) <= Math.pow(10,-6)) { return volEst }
                 }
         }
     },
@@ -202,21 +202,21 @@ BSM = function(properties) {
                 obj.reset(BSM);
 
                 //calculate new values with some basic handling for the edge case at expiry, tau = 0
-                if(j!=obj.min(g.EXPIRY)) { BSM.calc(j, sRange[k]) } else { BSM.calc((j-1)+(1415/1440), sRange[k]) }
+                if(j!=obj.min(g.EXPIRY)) { BSM.calc(j, sRange[k]) } else { BSM.calc((j-1)+(1430/1440), sRange[k]) }
 
-                //store current 'greek' values for the trade summary to the global object
-                if(j==0 && k==num/2) { 
+                //store current 'greek' values (for use in the trade summary table) to the global object
+                if(j==0 && k==num/2) {
 
                     ['delta','gamma','theta','vega','rho'].forEach(function(greek) { for(n in BSM[greek]) { g[greek.toUpperCase()][n] = BSM[greek][n] } });
                 }
 
                 //store values across time and stock price for graphing
                 g.PROFITLOSS_DATA[j][sRange[k].toFixed(2)] = +(obj.sum(BSM.price)-origPrice).toFixed(2); //NEED TO ADD FEES HERE
-                g.DELTA_DATA[j][sRange[k].toFixed(2)]      = +(obj.sum(BSM.delta)).toFixed(2);
-                g.GAMMA_DATA[j][sRange[k].toFixed(2)]      = +(obj.sum(BSM.gamma)).toFixed(2);
-                g.THETA_DATA[j][sRange[k].toFixed(2)]      = +(obj.sum(BSM.theta)).toFixed(2);
-                g.VEGA_DATA[j][sRange[k].toFixed(2)]       = +(obj.sum(BSM.vega)).toFixed(2);
-                g.RHO_DATA[j][sRange[k].toFixed(2)]        = +(obj.sum(BSM.rho)).toFixed(2);
+                g.DELTA_DATA     [j][sRange[k].toFixed(2)] = +(obj.sum(BSM.delta)).toFixed(2);
+                g.GAMMA_DATA     [j][sRange[k].toFixed(2)] = +(obj.sum(BSM.gamma)).toFixed(2);
+                g.THETA_DATA     [j][sRange[k].toFixed(2)] = +(obj.sum(BSM.theta)).toFixed(2);
+                g.VEGA_DATA      [j][sRange[k].toFixed(2)] = +(obj.sum(BSM.vega)).toFixed(2);
+                g.RHO_DATA       [j][sRange[k].toFixed(2)] = +(obj.sum(BSM.rho)).toFixed(2);
             }
         }
 

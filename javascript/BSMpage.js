@@ -28,8 +28,8 @@ initialParams = function(properties) {
 
             default:
                 //capture initial user-defined parameters
-                g.TRADE_LEGS = +elem.select("input[name=num-legs-radio]:checked").value;
-                g.CONTRACT_FEES = +(elem.select("fees-field").value/1).toFixed(2);
+                g.TRADE_LEGS    = +elem.select("input[name=num-legs-radio]:checked").value;
+                g.CONTRACT_FEES = +elem.select("fees-field").value;
 
                 //remove initial params and create elements needed to specify final params; transitions
                 finalParams.create(function() {
@@ -58,6 +58,45 @@ finalParams = function(properties) {
 }({
 
     create: function(callback) {
+
+        //adaptive sizing and positioning for final-params-container and two of its children
+        (function() {
+
+            var parent = elem.select("final-params-container").style,
+                child1 = elem.select("trade-legs-params-container").style;
+                child2 = elem.select("return-button-1").style;
+
+            switch(g.TRADE_LEGS) {
+
+                case 1:
+                    parent.width = 47 + 'vw';
+                    parent.marginLeft = 22.5 + 'vw';
+                    child1.marginLeft = 12.25 + 'vw';
+                    child2.marginLeft = 1.925 + 'vw';
+                    break;
+
+                case 2:
+                    parent.width = 47 + 'vw';
+                    parent.marginLeft = 22.5 + 'vw';
+                    child1.marginLeft = 1 + 'vw';
+                    child2.marginLeft = 1.925 + 'vw';
+                    break;
+
+                case 3:
+                    parent.width = 70 + 'vw';
+                    parent.marginLeft = 11 + 'vw';
+                    child1.marginLeft = 1.2625 + 'vw';
+                    child2.marginLeft = 13.5 + 'vw';
+                    break;
+
+                case 4:
+                    parent.width = 92 + 'vw';
+                    parent.marginLeft = 0 + 'vw';
+                    child1.marginLeft = 1 + 'vw';
+                    child2.marginLeft = 24.5 + 'vw';
+                    break;
+            }
+        })();
 
         //create trade leg containers
         for(i=1; i<g.TRADE_LEGS+1; i++) {
@@ -132,45 +171,6 @@ finalParams = function(properties) {
             elem.select("risk-free-rate-field-1").addEventListener("click", function(e) {e.stopPropagation()});
         }
 
-        //adaptive sizing and positioning for final-params-container and two of its children
-        (function() {
-
-            var parent = elem.select("final-params-container").style,
-                child1 = elem.select("trade-legs-params-container").style;
-                child2 = elem.select("return-button-1").style;
-
-            switch(g.TRADE_LEGS) {
-
-                case 1:
-                    parent.width = 47 + 'vw';
-                    parent.marginLeft = 22.5 + 'vw';
-                    child1.marginLeft = 12.25 + 'vw';
-                    child2.marginLeft = 1.925 + 'vw';
-                    break;
-
-                case 2:
-                    parent.width = 47 + 'vw';
-                    parent.marginLeft = 22.5 + 'vw';
-                    child1.marginLeft = 1 + 'vw';
-                    child2.marginLeft = 1.925 + 'vw';
-                    break;
-
-                case 3:
-                    parent.width = 70 + 'vw';
-                    parent.marginLeft = 11 + 'vw';
-                    child1.marginLeft = 1.2625 + 'vw';
-                    child2.marginLeft = 13.5 + 'vw';
-                    break;
-
-                case 4:
-                    parent.width = 92 + 'vw';
-                    parent.marginLeft = 0 + 'vw';
-                    child1.marginLeft = 1 + 'vw';
-                    child2.marginLeft = 24.5 + 'vw';
-                    break;
-            }
-        })();
-
         //transition animation callback
         if(typeof callback === 'function') { callback() }
     },
@@ -224,36 +224,27 @@ finalParams = function(properties) {
         switch(false) {
 
             case numContractsFieldsCond[obj.size(numContractsFieldsCond)]:
-                inputErrorMsg("num-contracts-field-"+obj.size(numContractsFieldsCond),
-                              "Please enter a whole number greater than or equal to 1 for the number of contracts in this trade leg.");
+                inputErrorMsg("num-contracts-field-"+obj.size(numContractsFieldsCond), "Please enter a whole number greater than or equal to 1 for the number of contracts in this trade leg.");
                 break;
 
             case strikePriceFieldsCond[obj.size(strikePriceFieldsCond)]:
-                inputErrorMsg("strike-price-field-"+obj.size(strikePriceFieldsCond),
-                              "Please enter a number greater than 0 for the strike price in this trade leg.");
+                inputErrorMsg("strike-price-field-"+obj.size(strikePriceFieldsCond), "Please enter a number greater than 0 for the strike price in this trade leg.");
                 break;
 
             case expiryFieldsCond[obj.size(expiryFieldsCond)]:
-                inputErrorMsg("expiry-field-"+obj.size(expiryFieldsCond),
-                              "Please enter a whole number greater than or equal to 1, and less than or equal to 183, for the number "+
-                              "of calendar days to expiry in this trade leg.");
+                inputErrorMsg("expiry-field-"+obj.size(expiryFieldsCond), "Please enter a whole number greater than or equal to 1, and less than or equal to 183, for the number of calendar days to expiry in this trade leg.");
                 break;
 
             case divYieldFieldsCond[obj.size(divYieldFieldsCond)]:
-                inputErrorMsg("div-yield-field-"+obj.size(divYieldFieldsCond),
-                              "Please enter a number greater than or equal to 0, and less than or equal to 100, for the dividend yield "+
-                              "percentage in this trade leg.");
+                inputErrorMsg("div-yield-field-"+obj.size(divYieldFieldsCond), "Please enter a number greater than or equal to 0, and less than or equal to 100, for the dividend yield percentage in this trade leg.");
                 break;
 
             case riskFreeFieldsCond[obj.size(riskFreeFieldsCond)]:
-                inputErrorMsg("risk-free-rate-field-"+obj.size(riskFreeFieldsCond),
-                              "Please enter a number greater than or equal to 0, and less than or equal to 25, for the risk-free rate "+
-                              "percentage in this trade leg.");
+                inputErrorMsg("risk-free-rate-field-"+obj.size(riskFreeFieldsCond), "Please enter a number greater than or equal to 0, and less than or equal to 25, for the risk-free rate percentage in this trade leg.");
                 break;
 
             case optionPriceFieldsCond[obj.size(optionPriceFieldsCond)]:
-                inputErrorMsg("option-price-field-"+obj.size(optionPriceFieldsCond),
-                              "Please enter a number greater than 0 for the option price in this trade leg.");
+                inputErrorMsg("option-price-field-"+obj.size(optionPriceFieldsCond), "Please enter a number greater than 0 for the option price in this trade leg.");
                 break;
 
             case stockPriceFieldCond:
@@ -275,8 +266,8 @@ finalParams = function(properties) {
                     g.LONG_SHORT[i]    = +elem.select("input[name=buy-sell-radio-"+i+"]:checked").value;
                     g.CONTRACT_TYPE[i] = +elem.select("input[name=call-put-radio-"+i+"]:checked").value;
                     g.NUM_CONTRACTS[i] = +elem.select("num-contracts-field-"+i).value;
-                    g.STRIKE_PRICE[i]  = +(elem.select("strike-price-field-"+i).value/1).toFixed(2);
-                    g.OPTION_PRICE[i]  = +(elem.select("option-price-field-"+i).value/1).toFixed(3);
+                    g.STRIKE_PRICE[i]  = +elem.select("strike-price-field-"+i).value;
+                    g.OPTION_PRICE[i]  = +elem.select("option-price-field-"+i).value;
 
                     //on multi-leg trades, take the value of certain parameters in the first trade leg unless the user specifies otherwise
                     if(elem.select('leg-sub-container-2-1').getAttribute("data-clicked") == "false") {
@@ -306,6 +297,7 @@ finalParams = function(properties) {
                     //write trade summary and option price info to elements of the trade summary table
                     (function(n) {
 
+                        //local vars
                         var element  = "leg-" + n + "-",
                             buy_sell = g.LONG_SHORT[n]    == 1 ? "BUY &nbsp&nbsp" : "SELL &nbsp&nbsp",
                             color    = g.LONG_SHORT[n]    == 1 ? "rgb(0,175,0)"   : "rgb(200,0,0)",
@@ -318,13 +310,10 @@ finalParams = function(properties) {
                         elem.select(element+"summary").style.borderRightColor = "rgb(0,0,0)";
 
                         //option price
-                        elem.select(element+"price").innerHTML = "$"+g.OPTION_PRICE[i].toFixed(2);
+                        elem.select(element+"price").innerHTML = "$" + g.OPTION_PRICE[i];
                         elem.select(element+"price").style.color = color;
                     })(i);
                 }
-
-                //capture the user-defined current price of the underlying stock
-                g.STOCK_PRICE = +(elem.select("current-price-field").value/1).toFixed(2);
 
                 //write option price total to its trade summary table element
                 (function() {
@@ -333,9 +322,12 @@ finalParams = function(properties) {
 
                     for(i=1; i<g.TRADE_LEGS+1; i++) { price += g.LONG_SHORT[i]*g.NUM_CONTRACTS[i]*g.OPTION_PRICE[i] }
 
-                    elem.select("price-total").innerHTML = "$"+Math.abs(price).toFixed(2);
+                    elem.select("price-total").innerHTML = "$" + Math.abs(price).toFixed(2);
                     elem.select("price-total").style.color = Math.sign(price) == 1 ? "rgb(0,150,0)" : "rgb(175,0,0)";
                 })();
+
+                //capture the user-defined current price of the underlying stock
+                g.STOCK_PRICE = +elem.select("current-price-field").value;
 
                 //transitions, calculate and display output
                 elem.ease("out", "final-params-container", 0.5, 32);

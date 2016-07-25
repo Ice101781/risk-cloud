@@ -85,6 +85,7 @@ visuals = function(properties) {
 			plane2.position.set(w/2*(1-scalar), h/2*(1-scalar*numH/(numH-1)), zDist);
 			camera.add(plane1, plane2);
 
+
 			//ADD HORIZONTAL GRIDLINES AND VERTICAL AXIS LABELS
 			for(var i=0; i<numH; i++) {
 
@@ -145,6 +146,7 @@ visuals = function(properties) {
 				//add gridline and label to the scene
 				camera.add(lines.yaxis[i], labels.yaxis.mesh[i]);
 			}
+
 
 			//ADD VERTICAL TICK MARKS AND DOTTED LINES, AND HORIZONTAL AXIS LABELS
 			for(var i=0; i<numV; i++) {
@@ -274,6 +276,7 @@ visuals = function(properties) {
 				camera.add(lines.xaxis.tick[i], lines.xaxis.dots[i], labels.xaxis.mesh[i]);
 			}
 
+
 			//DATA
 			for(t in dataSets) {
 
@@ -298,6 +301,36 @@ visuals = function(properties) {
 				//add the point cloud to the scene
 				camera.add(cloud[t]);
 			}
+
+
+			//write IV and 'greeks' info, including relevant totals, to elements of the trade summary table
+			(function() {
+
+				for(i=1; i<g.TRADE_LEGS+1; i++) {
+
+					//local loop vars
+					var element = "leg-" + i + "-";
+
+					//IV
+					elem.select(element+"iv").innerHTML = Math.round(g.IMPLIED_VOL[i]*10000)/100 + "%";
+                    elem.select(element+"iv").style.color = g.LONG_SHORT[i] == 1 ? "rgb(0,175,0)" : "rgb(200,0,0)";
+                    elem.select(element+"iv").style.borderRightColor = "rgb(0,0,0)";
+
+                    //'greeks'
+                    elem.select(element+"delta").innerHTML = g.DELTA[i].toFixed(2);
+                    elem.select(element+"gamma").innerHTML = g.GAMMA[i].toFixed(2);
+                    elem.select(element+"theta").innerHTML = g.THETA[i].toFixed(2);
+                    elem.select(element+"vega").innerHTML  = g.VEGA[i].toFixed(2);
+                    elem.select(element+"rho").innerHTML   = g.RHO[i].toFixed(2);
+				}
+
+				//'greeks' totals
+				elem.select("delta-total").innerHTML = obj.sum(g.DELTA).toFixed(2);
+				elem.select("gamma-total").innerHTML = obj.sum(g.GAMMA).toFixed(2);
+				elem.select("theta-total").innerHTML = obj.sum(g.THETA).toFixed(2);
+				elem.select("vega-total").innerHTML  = obj.sum(g.VEGA).toFixed(2);
+				elem.select("rho-total").innerHTML   = obj.sum(g.RHO).toFixed(2);
+			})();
 		}
 
 
