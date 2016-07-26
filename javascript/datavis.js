@@ -28,7 +28,21 @@ visuals = function(properties) {
 			light    = new THREE.AmbientLight(0xffffff),
 			mouse    = {x: 0, y: 0};
 
-		//set params and attach the renderer to the container when available
+		//local vars for the 2D view
+		var w       = 1,
+			h       = 0.4, //container aspect is 2.5:1
+			scalar  = 0.925,
+			zDist   = -h/(2*Math.tan((VFOVdeg*Math.PI/180)/2)),
+			numH    = 25,
+		    numV    = 7,
+        	canvasW = 2*Math.floor(width*(1-(1.01)*scalar)), //THE MULTIPLIER FIXES BLURRY TEXT - IS IT RELATED TO THE 'devicePixelRatio' PROPERTY?
+        	canvasH = 2*Math.floor(height*(0.6)*scalar/(numH-1)), //AND HERE AS WELL
+	        xPos    = canvasW/2,
+	        yPos    = canvasH/2,
+	        gRange,
+	        dataSets;
+
+		//set renderer params and attach when the container is available
 		if(elem.select("output-view-container") != null) {
 
 			renderer.setSize(width,height);
@@ -51,40 +65,85 @@ visuals = function(properties) {
 		scene.add(light, camera);
 
 
+		//GRAPH DATA
+		showGraphData = function() {
+
+			//local vars
+			switch(+elem.select("input[name=output-data-radio]:checked").value) {
+
+				case 1:
+					var data = g.PROFITLOSS_DATA;
+					break;
+
+				case 2:
+					var data = g.DELTA_DATA;
+					break;
+
+				case 3:
+					var data = g.GAMMA_DATA;
+					break;
+
+				case 4:
+					var data = g.THETA_DATA;
+					break;
+
+				case 5:
+					var data = g.VEGA_DATA;
+					break;
+
+				case 6:
+					var data = g.RHO_DATA;
+					break;
+			}
+
+	       	gRange   = obj.range(data[0], data[obj.min(g.EXPIRY)]) !== 0 ? obj.range(data[0], data[obj.min(g.EXPIRY)]) : 1;
+			dataSets = { T: data[obj.min(g.EXPIRY)], 0: data[0] };
+
+			var	cloud = { T: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/500, color: 0xff0000})),
+						  0: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/500, color: 0x0000ff})) };
+
+			for(t in dataSets) {
+
+				//loop variable
+				var k=0;
+
+				//add vertices (as vectors) to the point cloud geometries
+				for(val in dataSets[t]) {
+
+					cloud[t].geometry.vertices.push(new THREE.Vector3(
+
+						w*(scalar*(k/(obj.size(dataSets[0])-1)-1)+0.5), //x-coordinate
+
+						h/2*(scalar*(dataSets[t][val]/gRange-numH/(numH-1))+1), //y-coordinate
+
+						zDist+0.00001 //z-coordinate - place points just in front of the grid and the background
+					));
+
+					k++;
+				}
+
+				//add the point cloud to the scene
+				camera.add(cloud[t]);
+			}
+		}
+
+
 		//THE 2D VIEW
 		show2DView = function() {
 
 			//LOCAL VARS
-			var //general and background
-				w      = 1,
-				h      = 0.4, //container aspect is 2.5:1
-				scalar = 0.925,
-				zDist  = -h/(2*Math.tan((VFOVdeg*Math.PI/180)/2)),
+			var //background
 				plane1 = new THREE.Mesh(new THREE.PlaneGeometry(w, h, 1, 1), new THREE.MeshBasicMaterial({color: 0x888888})),
 				plane2 = new THREE.Mesh(new THREE.PlaneGeometry(w*scalar, h*scalar, 1, 1), new THREE.MeshBasicMaterial({color: 0x333333})),
 
 				//gridlines and labels
-				numH    = 25,
-				numV    = 7,
-        		canvasW = 2*Math.floor(width*(1-(1.01)*scalar)), //THE MULTIPLIER FIXES BLURRY TEXT - IS IT RELATED TO THE 'devicePixelRatio' PROPERTY?
-        		canvasH = 2*Math.floor(height*(0.6)*scalar/(numH-1)), //AND HERE AS WELL
-	        	xPos    = canvasW/2,
-	        	yPos    = canvasH/2,
 	        	lines   = { xaxis: {tick: {}, ext: {}, dots: {}}, yaxis: {} },
-				labels  = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} },
-
-	   	     	//data
-	        	data     = g.PROFITLOSS_DATA,
-	        	gRange   = obj.range(data[0], data[obj.min(g.EXPIRY)]) !== 0 ? obj.range(data[0], data[obj.min(g.EXPIRY)]) : 1,
-				dataSets = { T: data[obj.min(g.EXPIRY)], 0: data[0] },
-				cloud    = { T: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/500, color: 0xff0000})),
-						     0: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/500, color: 0x0000ff})) };
+				labels  = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} };
 
 			//position the background
 			plane1.position.set(0, 0, zDist);
 			plane2.position.set(w/2*(1-scalar), h/2*(1-scalar*numH/(numH-1)), zDist);
 			camera.add(plane1, plane2);
-
 
 			//ADD HORIZONTAL GRIDLINES AND VERTICAL AXIS LABELS
 			for(var i=0; i<numH; i++) {
@@ -146,7 +205,6 @@ visuals = function(properties) {
 				//add gridline and label to the scene
 				camera.add(lines.yaxis[i], labels.yaxis.mesh[i]);
 			}
-
 
 			//ADD VERTICAL TICK MARKS AND DOTTED LINES, AND HORIZONTAL AXIS LABELS
 			for(var i=0; i<numV; i++) {
@@ -275,66 +333,40 @@ visuals = function(properties) {
 				//add tick marks, dotted lines and labels to the scene
 				camera.add(lines.xaxis.tick[i], lines.xaxis.dots[i], labels.xaxis.mesh[i]);
 			}
-
-
-			//DATA
-			for(t in dataSets) {
-
-				//loop variable
-				var k=0;
-
-				//add vertices (as vectors) to the point cloud geometries
-				for(val in dataSets[t]) {
-
-					cloud[t].geometry.vertices.push(new THREE.Vector3(
-
-						w*(scalar*(k/(obj.size(dataSets[0])-1)-1)+0.5), //x-coordinate
-
-						h/2*(scalar*(dataSets[t][val]/gRange-numH/(numH-1))+1), //y-coordinate
-
-						zDist+0.00001 //z-coordinate - place points just in front of the grid and the background
-					));
-
-					k++;
-				}
-
-				//add the point cloud to the scene
-				camera.add(cloud[t]);
-			}
-
-
-			//write IV and 'greeks' info, including relevant totals, to elements of the trade summary table
-			(function() {
-
-				for(i=1; i<g.TRADE_LEGS+1; i++) {
-
-					//local loop vars
-					var element = "leg-" + i + "-";
-
-					//IV
-					elem.select(element+"iv").innerHTML = Math.round(g.IMPLIED_VOL[i]*10000)/100 + "%";
-                    elem.select(element+"iv").style.color = g.LONG_SHORT[i] == 1 ? "rgb(0,175,0)" : "rgb(200,0,0)";
-                    elem.select(element+"iv").style.borderRightColor = "rgb(0,0,0)";
-
-                    //'greeks'
-                    elem.select(element+"delta").innerHTML = g.DELTA[i].toFixed(2);
-                    elem.select(element+"gamma").innerHTML = g.GAMMA[i].toFixed(2);
-                    elem.select(element+"theta").innerHTML = g.THETA[i].toFixed(2);
-                    elem.select(element+"vega").innerHTML  = g.VEGA[i].toFixed(2);
-                    elem.select(element+"rho").innerHTML   = g.RHO[i].toFixed(2);
-				}
-
-				//'greeks' totals
-				elem.select("delta-total").innerHTML = obj.sum(g.DELTA).toFixed(2);
-				elem.select("gamma-total").innerHTML = obj.sum(g.GAMMA).toFixed(2);
-				elem.select("theta-total").innerHTML = obj.sum(g.THETA).toFixed(2);
-				elem.select("vega-total").innerHTML  = obj.sum(g.VEGA).toFixed(2);
-				elem.select("rho-total").innerHTML   = obj.sum(g.RHO).toFixed(2);
-			})();
 		}
 
 
-		//animation
+		//WRITE IV AND 'GREEKS' INFO/TOTALS TO THE TRADE SUMMARY TABLE
+		showTableData = function() {
+
+			for(i=1; i<g.TRADE_LEGS+1; i++) {
+
+				//local loop vars
+				var element = "leg-" + i + "-";
+
+				//IV
+				elem.select(element+"iv").innerHTML = Math.round(g.IMPLIED_VOL[i]*10000)/100 + "%";
+                elem.select(element+"iv").style.color = g.LONG_SHORT[i] == 1 ? "rgb(0,175,0)" : "rgb(200,0,0)";
+                elem.select(element+"iv").style.borderRightColor = "rgb(0,0,0)";
+
+                //'greeks'
+                elem.select(element+"delta").innerHTML = g.DELTA[i].toFixed(2);
+                elem.select(element+"gamma").innerHTML = g.GAMMA[i].toFixed(2);
+                elem.select(element+"theta").innerHTML = g.THETA[i].toFixed(2);
+                elem.select(element+"vega").innerHTML  = g.VEGA[i].toFixed(2);
+                elem.select(element+"rho").innerHTML   = g.RHO[i].toFixed(2);
+			}
+
+			//'greeks' totals
+			elem.select("delta-total").innerHTML = obj.sum(g.DELTA).toFixed(2);
+			elem.select("gamma-total").innerHTML = obj.sum(g.GAMMA).toFixed(2);
+			elem.select("theta-total").innerHTML = obj.sum(g.THETA).toFixed(2);
+			elem.select("vega-total").innerHTML  = obj.sum(g.VEGA).toFixed(2);
+			elem.select("rho-total").innerHTML   = obj.sum(g.RHO).toFixed(2);
+		}
+
+
+		//ANIMATION
 		render = function() {
 
 			renderer.render(scene, camera);
@@ -343,7 +375,9 @@ visuals = function(properties) {
 		}
 
 		render();
+		showGraphData();
 		show2DView();
+		showTableData();
 		//console.log();
 	}
 })

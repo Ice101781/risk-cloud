@@ -202,7 +202,7 @@ BSM = function(properties) {
                 obj.reset(BSM);
 
                 //calculate new values with some basic handling for the edge case at expiry, tau = 0
-                if(j!=obj.min(g.EXPIRY)) { BSM.calc(j, sRange[k]) } else { BSM.calc((j-1)+(1430/1440), sRange[k]) }
+                if(j!=obj.min(g.EXPIRY)) { BSM.calc(j, sRange[k]) } else { BSM.calc((j-1)+(720/1440), sRange[k]) }
 
                 //store current 'greek' values (for use in the trade summary table) to the global object
                 if(j==0 && k==num/2) {
