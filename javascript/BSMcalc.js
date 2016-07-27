@@ -107,18 +107,16 @@ BSM = function(properties) {
     sRangeVol: function() {
 
         //local vars
-        var eKeys      = [],
-            kDists     = {},
-            kDistsKeys = [],
-            vols       = {};
+        var kDists = {},
+            vols   = {};
 
-        eKeys = obj.filterKeys(g.EXPIRY, function(time) { return time == obj.min(g.EXPIRY) }); //keys of nearest expirys
+        var eKeys = obj.filterKeys(g.EXPIRY, function(time) { return time == obj.min(g.EXPIRY) }); //keys of nearest expirys
 
-        for(i=0; i<eKeys.length; i++) { kDists[eKeys[i]] = Math.abs(g.STRIKE_PRICE[eKeys[i]]-g.STOCK_PRICE) } //distances from strikes to the stock price
+        for(i=0; i<eKeys.length; i++) { kDists[eKeys[i]] = Math.abs(g.STRIKE_PRICE[eKeys[i]]-g.STOCK_PRICE) } //distances from filtered strikes to the stock price
 
-        kDistsKeys = obj.filterKeys(kDists, function(dist) { return dist == obj.min(kDists) }); //keys of strikes 'nearest-to-the-money'
+        var kDistsKeys = obj.filterKeys(kDists, function(dist) { return dist == obj.min(kDists) }); //keys of filtered strikes 'nearest-to-the-money'
 
-        for(j=0; j<kDistsKeys.length; j++) { vols[kDistsKeys[j]] = g.IMPLIED_VOL[kDistsKeys[j]] } //IV's of the options at the desired strikes
+        for(j=0; j<kDistsKeys.length; j++) { vols[kDistsKeys[j]] = g.IMPLIED_VOL[kDistsKeys[j]] } //IV's of the options at the filtered strikes
 
         //return a simple average of the IV's adjusted for the nearest trade horizon
         return obj.avg(vols)*Math.sqrt(obj.min(g.EXPIRY)/365);
@@ -142,18 +140,18 @@ BSM = function(properties) {
                 d2    = d1-(vol*Math.sqrt(tau));
 
             //price
-            this.price[i] = Math.round((signN*type*((S*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*tau))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*tau))))*10000)/100;
+            this.price[i] = signN*type*((S*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*tau))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*tau)));
 
             //greeks
-            this.delta[i] = Math.round((signN*type*Math.pow(Math.E,-D*tau)*math.LOGISTIC(type*d1))*10000)/100;
+            this.delta[i] = signN*type*Math.pow(Math.E,-D*tau)*math.LOGISTIC(type*d1);
 
-            this.gamma[i] = Math.round((signN*(Math.pow(Math.E,-D*tau)*math.NORM(d1))/(S*vol*Math.sqrt(tau)))*10000)/100;
+            this.gamma[i] = tau !== 0 ? signN*(Math.pow(Math.E,-D*tau)*math.NORM(d1))/(S*vol*Math.sqrt(tau)) : 0;
 
-            this.theta[i] = Math.round((signN*((S*Math.pow(Math.E,-D*tau)*(D*type*math.LOGISTIC(type*d1)))-(K*Math.pow(Math.E,-r*tau)*((r*type*math.LOGISTIC(type*d2))+((vol*math.NORM(d2))/(2*Math.sqrt(tau))))))/365)*10000)/100;
+            this.theta[i] = tau !== 0 ? signN*((S*Math.pow(Math.E,-D*tau)*(D*type*math.LOGISTIC(type*d1)))-(K*Math.pow(Math.E,-r*tau)*((r*type*math.LOGISTIC(type*d2))+((vol*math.NORM(d2))/(2*Math.sqrt(tau))))))/365 : 0;
 
-            this.vega[i]  = Math.round((signN*(S*Math.pow(Math.E,-D*tau)*math.NORM(d1)*Math.sqrt(tau)))*100)/100;
+            this.vega[i]  = signN*S*Math.pow(Math.E,-D*tau)*math.NORM(d1)*Math.sqrt(tau);
 
-            this.rho[i]   = Math.round((signN*(type*K*tau*Math.pow(Math.E,-r*tau)*math.LOGISTIC(type*d2)))*100)/100;
+            this.rho[i]   = signN*type*K*tau*Math.pow(Math.E,-r*tau)*math.LOGISTIC(type*d2);
         }
     },
 
@@ -202,8 +200,8 @@ BSM = function(properties) {
                 //clear old values
                 obj.reset(BSM);
 
-                //calculate new values with some basic handling for the edge case at expiry, tau = 0
-                if(j!=obj.min(g.EXPIRY)) { BSM.calc(j, sRange[k]) } else { BSM.calc((j-1)+(720/1440), sRange[k]) }
+                //calculate new values
+                BSM.calc(j, sRange[k]);
 
                 //store current 'greek' values (for use in the trade summary table) to the global object
                 if(j==0 && k==num/2) {
@@ -212,10 +210,10 @@ BSM = function(properties) {
                 }
 
                 //store values across time and stock price for graphing
-                g.PROFITLOSS_DATA[j][sRange[k].toFixed(2)] = +(obj.sum(BSM.price)-origPrice).toFixed(2); //NEED TO ADD FEES HERE
-                g.DELTA_DATA     [j][sRange[k].toFixed(2)] = +(obj.sum(BSM.delta)).toFixed(2);
-                g.GAMMA_DATA     [j][sRange[k].toFixed(2)] = +(obj.sum(BSM.gamma)).toFixed(2);
-                g.THETA_DATA     [j][sRange[k].toFixed(2)] = +(obj.sum(BSM.theta)).toFixed(2);
+                g.PROFITLOSS_DATA[j][sRange[k].toFixed(2)] = Math.round((obj.sum(BSM.price)-origPrice)*10000)/100; //NEED TO ADD FEES HERE
+                g.DELTA_DATA     [j][sRange[k].toFixed(2)] = Math.round(obj.sum(BSM.delta)*10000)/100;
+                g.GAMMA_DATA     [j][sRange[k].toFixed(2)] = Math.round(obj.sum(BSM.gamma)*10000)/100;
+                g.THETA_DATA     [j][sRange[k].toFixed(2)] = Math.round(obj.sum(BSM.theta)*10000)/100;
                 g.VEGA_DATA      [j][sRange[k].toFixed(2)] = +(obj.sum(BSM.vega)).toFixed(2);
                 g.RHO_DATA       [j][sRange[k].toFixed(2)] = +(obj.sum(BSM.rho)).toFixed(2);
             }

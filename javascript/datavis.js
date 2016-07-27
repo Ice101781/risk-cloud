@@ -129,6 +129,9 @@ visuals = function(properties) {
 		}
 
 
+		//listen for data display change -- IS THERE A WAY TO ADD ONE LISTENER TO ALL RADIO BUTTONS IN A FORM?
+
+
 		//THE 2D VIEW
 		show2DView = function() {
 
@@ -351,17 +354,17 @@ visuals = function(properties) {
                 elem.select(element+"iv").style.borderRightColor = "rgb(0,0,0)";
 
                 //'greeks'
-                elem.select(element+"delta").innerHTML = g.DELTA[i].toFixed(2);
-                elem.select(element+"gamma").innerHTML = g.GAMMA[i].toFixed(2);
-                elem.select(element+"theta").innerHTML = g.THETA[i].toFixed(2);
+                elem.select(element+"delta").innerHTML = Math.round(g.DELTA[i]*10000)/100;
+                elem.select(element+"gamma").innerHTML = Math.round(g.GAMMA[i]*10000)/100;
+                elem.select(element+"theta").innerHTML = Math.round(g.THETA[i]*10000)/100;
                 elem.select(element+"vega").innerHTML  = g.VEGA[i].toFixed(2);
                 elem.select(element+"rho").innerHTML   = g.RHO[i].toFixed(2);
 			}
 
 			//'greeks' totals
-			elem.select("delta-total").innerHTML = obj.sum(g.DELTA).toFixed(2);
-			elem.select("gamma-total").innerHTML = obj.sum(g.GAMMA).toFixed(2);
-			elem.select("theta-total").innerHTML = obj.sum(g.THETA).toFixed(2);
+			elem.select("delta-total").innerHTML = Math.round(obj.sum(g.DELTA)*10000)/100;
+			elem.select("gamma-total").innerHTML = Math.round(obj.sum(g.GAMMA)*10000)/100;
+			elem.select("theta-total").innerHTML = Math.round(obj.sum(g.THETA)*10000)/100;
 			elem.select("vega-total").innerHTML  = obj.sum(g.VEGA).toFixed(2);
 			elem.select("rho-total").innerHTML   = obj.sum(g.RHO).toFixed(2);
 		}
