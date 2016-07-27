@@ -179,13 +179,14 @@ twoButtons = function(properties) {
     return self;  
 }({
 
-    create: function(buttonArray, appendId, n) {
+    create: function(buttonArray, n) {
 
+        //radio form
         elem.create({tag: "form", attributes: {
                                       id:    buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+n,
                                       class: buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form"
                                   }},
-                                  appendId+n);
+                                  "leg-sub-container-1-"+n);
 
         //radio buttons
         for(var j=0; j<2; j++) {
@@ -234,9 +235,48 @@ numberFields = function(properties) {
     return self;  
 }({
 
-    create: function(idString, content, attr, appendId, n) {
-    
-        elem.create({tag: "form", content: content, attributes: {id: idString+"-form-"+n, class: idString+"-form"}}, appendId+n);
+    create: function(idString, n) {
+
+        switch(idString) {
+
+            case "num-contracts":
+                var content = "no. of contracts :",
+                    attr    = {min:"1", step:"1", value:"1"},
+                    subNum  = "1-";
+                break;
+
+            case "strike-price":
+                var content = "exercise price :",
+                    attr    = {min:".01", step:".01", value:"100"},
+                    subNum  = "1-";
+                break;
+
+            case "expiry":
+                var content = "calendar days to expiry :",
+                    attr    = {min:"1", step:"1", value:"30"},
+                    subNum  = "2-";
+                break;
+
+            case "div-yield":
+                var content = "dividend yield % :",
+                    attr    = {min:"0", step:".01", value:"0"},
+                    subNum  = "3-";
+                break;
+
+            case "risk-free-rate":
+                var content = "risk-free rate % :",
+                    attr    = {min:"0", step:".01", value:"0.25"},
+                    subNum  = "4-";
+                break;
+
+            case "option-price":
+                var content = "option price :",
+                    attr    = {min:".01", step:".01", value:"1.25"},
+                    subNum  = "5-";
+                break;
+        }
+
+        elem.create({tag: "form", content: content, attributes: {id: idString+"-form-"+n, class: idString+"-form"}}, "leg-sub-container-"+subNum+n);
 
         elem.create({tag: "input", attributes: {
                                        type: "number",

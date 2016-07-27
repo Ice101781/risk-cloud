@@ -39,8 +39,9 @@ visuals = function(properties) {
         	canvasH = 2*Math.floor(height*(0.6)*scalar/(numH-1)), //AND HERE AS WELL
 	        xPos    = canvasW/2,
 	        yPos    = canvasH/2,
+	        data,
 	        gRange,
-	        dataSets;
+	        clouds = [];
 
 		//set renderer params and attach when the container is available
 		if(elem.select("output-view-container") != null) {
@@ -72,59 +73,59 @@ visuals = function(properties) {
 			switch(+elem.select("input[name=output-data-radio]:checked").value) {
 
 				case 1:
-					var data = g.PROFITLOSS_DATA;
+					data = g.PROFITLOSS_DATA;
 					break;
 
 				case 2:
-					var data = g.DELTA_DATA;
+					data = g.DELTA_DATA;
 					break;
 
 				case 3:
-					var data = g.GAMMA_DATA;
+					data = g.GAMMA_DATA;
 					break;
 
 				case 4:
-					var data = g.THETA_DATA;
+					data = g.THETA_DATA;
 					break;
 
 				case 5:
-					var data = g.VEGA_DATA;
+					data = g.VEGA_DATA;
 					break;
 
 				case 6:
-					var data = g.RHO_DATA;
+					data = g.RHO_DATA;
 					break;
 			}
 
-	       	gRange   = obj.range(data[0], data[obj.min(g.EXPIRY)]) !== 0 ? obj.range(data[0], data[obj.min(g.EXPIRY)]) : 1;
-			dataSets = { T: data[obj.min(g.EXPIRY)], 0: data[0] };
+			//global range of the data
+	       	gRange = obj.range(data[0], data[obj.min(g.EXPIRY)]) !== 0 ? obj.range(data[0], data[obj.min(g.EXPIRY)]) : 1;
 
-			var	cloud = { T: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/500, color: 0xff0000})),
-						  0: new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/500, color: 0x0000ff})) };
+	       	//point cloud objects
+	       	[ 0x0000ff, 0xff0000 ].forEach(function(col, t) { clouds[t] = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/500, color: col})) });
 
-			for(t in dataSets) {
+			//push vertices to the point cloud geometries
+			[ data[0], data[obj.min(g.EXPIRY)] ].forEach(function(set, t) {
 
 				//loop variable
 				var k=0;
 
-				//add vertices (as vectors) to the point cloud geometries
-				for(val in dataSets[t]) {
+				for(val in set) {
 
-					cloud[t].geometry.vertices.push(new THREE.Vector3(
+					clouds[t].geometry.vertices.push(new THREE.Vector3(
 
-						w*(scalar*(k/(obj.size(dataSets[0])-1)-1)+0.5), //x-coordinate
+						w*(scalar*(k/(obj.size(data[0])-1)-1)+0.5), //x-coordinate
 
-						h/2*(scalar*(dataSets[t][val]/gRange-numH/(numH-1))+1), //y-coordinate
+						h/2*(scalar*(set[val]/gRange-numH/(numH-1))+1), //y-coordinate
 
-						zDist+0.00001 //z-coordinate - place points just in front of the grid and the background
+						zDist+0.00001 //z-coordinate (points placed slightly in front of the grid and background)
 					));
 
 					k++;
 				}
 
 				//add the point cloud to the scene
-				camera.add(cloud[t]);
-			}
+				camera.add(clouds[t]);
+			});
 		}
 
 
@@ -140,13 +141,13 @@ visuals = function(properties) {
 	        	lines   = { xaxis: {tick: {}, ext: {}, dots: {}}, yaxis: {} },
 				labels  = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} };
 
-			//position the background
+			//position the background and add it to the scene
 			plane1.position.set(0, 0, zDist);
 			plane2.position.set(w/2*(1-scalar), h/2*(1-scalar*numH/(numH-1)), zDist);
 			camera.add(plane1, plane2);
 
 			//ADD HORIZONTAL GRIDLINES AND VERTICAL AXIS LABELS
-			for(var i=0; i<numH; i++) {
+			for(i=0; i<numH; i++) {
 
 				//gridlines
 				var gridlineGeom = new THREE.Geometry();
@@ -207,7 +208,7 @@ visuals = function(properties) {
 			}
 
 			//ADD VERTICAL TICK MARKS AND DOTTED LINES, AND HORIZONTAL AXIS LABELS
-			for(var i=0; i<numV; i++) {
+			for(i=0; i<numV; i++) {
 
 				//tick marks
 				var tickGeom = new THREE.Geometry();
@@ -234,8 +235,8 @@ visuals = function(properties) {
 				}
 
 				//add vertices (as vectors) to the dotted line geometries
-				for(var j=0; j<(4*numH-6); j++) {
-				
+				for(j=0; j<(4*numH-6); j++) {
+
 					lines.xaxis.dots[i].geometry.vertices.push(new THREE.Vector3(w*(scalar*(i/6-1)+0.5), h*(scalar*(0.25*(j+1)/(numH-1)-1)+0.5), zDist));
 				}
 
@@ -256,10 +257,10 @@ visuals = function(properties) {
 				labels.xaxis.context[i].textBaseline = 'middle';
 
 				//set label values from -3 to +3 implied standard deviations
-				switch((g.STOCKRANGE_LENGTH-1)%(numV-1)) {
+				switch((g.STOCKRANGE_LENGTH-1) % (numV-1)) {
 
 					case 0:
-						var labelText = '$'+Object.keys(dataSets[0])[(g.STOCKRANGE_LENGTH-1)/(numV-1)*i];
+						var labelText = '$'+Object.keys(data[0])[(g.STOCKRANGE_LENGTH-1)/(numV-1)*i];
 						break;
 
 					default:
@@ -268,12 +269,12 @@ visuals = function(properties) {
 							//the case where the fractional part of the remainder is < 0.5
 							case Math.round((g.STOCKRANGE_LENGTH-1)/(numV-1)):
 								//Thanks to Michael Wunder for his help with this
-								var labelText = '$'+Object.keys(dataSets[0])[Math.floor((g.STOCKRANGE_LENGTH-1)/(numV-1))*i+Math.floor((i+1)/3)];
+								var labelText = '$'+Object.keys(data[0])[Math.floor((g.STOCKRANGE_LENGTH-1)/(numV-1))*i+Math.floor((i+1)/3)];
 								break;
 
 							//the case where the fractional part of the remainder is >= 0.5
 							default:
-								var labelText = '$'+Object.keys(dataSets[0])[Math.ceil((g.STOCKRANGE_LENGTH-1)/(numV-1))*i-Math.floor((i+1)/3)];
+								var labelText = '$'+Object.keys(data[0])[Math.ceil((g.STOCKRANGE_LENGTH-1)/(numV-1))*i-Math.floor((i+1)/3)];
 								break;
 						}
 						break;

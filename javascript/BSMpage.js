@@ -127,48 +127,28 @@ finalParams = function(properties) {
                 }
             }
 
-            //buy-sell radios
-            twoButtons.create([["buy","1"],["sell","-1"]], "leg-sub-container-1-", i);
+            //sub-container input radios and text fields
+            (function(n) {
 
-            //call-put radios
-            twoButtons.create([["call","1"],["put","-1"]], "leg-sub-container-1-", i);
+                //buy-sell & call-put radios
+                [ [["buy","1"],["sell","-1"]], [["call","1"],["put","-1"]] ].forEach(function(array) { twoButtons.create(array, n) });
 
-            //number of contracts fields
-            numberFields.create("num-contracts", "no. of contracts :", {min:"1", step:"1", value:"1"}, "leg-sub-container-1-", i);
+                //text fields
+                ["num-contracts", "strike-price", "expiry", "div-yield", "risk-free-rate", "option-price"].forEach(function(element) { numberFields.create(element, n) });
 
-            //strike prices
-            numberFields.create("strike-price", "exercise price :", {min:".01", step:".01", value:"100"}, "leg-sub-container-1-", i);
-
-            //calendar times to expiry
-            numberFields.create("expiry", "calendar days to expiry :", {min:"1", step:"1", value:"30"}, "leg-sub-container-2-", i);
-
-            //dividend % fields
-            numberFields.create("div-yield", "dividend yield % :", {min:"0", step:".01", value:"0"}, "leg-sub-container-3-", i);
-
-            //risk-free rates
-            numberFields.create("risk-free-rate", "risk-free rate % :", {min:"0", step:".01", value:"0.25"}, "leg-sub-container-4-", i);
-
-            //option prices
-            numberFields.create("option-price", "option price :", {min:".01", step:".01", value:"1.25"}, "leg-sub-container-5-", i);
+            })(i);
         }
 
         //some more logic needed to apply certain trade parameters to all legs on multi-leg trades
         if(g.TRADE_LEGS>1) {
 
-            //on click, toggle visibility of some sub-containers 
-            elem.select("leg-sub-container-2-1").addEventListener("click",
-                                            expVis = function() {numberFields.visible("leg-sub-container-2", 2.725, 'expiry')});
-
-            elem.select("leg-sub-container-3-1").addEventListener("click",
-                                            divVis = function() {numberFields.visible("leg-sub-container-3", 2.725, 'div-yield')});
-
-            elem.select("leg-sub-container-4-1").addEventListener("click",
-                                            rfrVis = function() {numberFields.visible("leg-sub-container-4", 2.725, 'risk-free-rate')});
+            //on click, toggle visibility of some sub-containers
+            elem.select("leg-sub-container-2-1").addEventListener("click", expVis = function() {numberFields.visible("leg-sub-container-2", 2.725, 'expiry')});
+            elem.select("leg-sub-container-3-1").addEventListener("click", divVis = function() {numberFields.visible("leg-sub-container-3", 2.725, 'div-yield')});
+            elem.select("leg-sub-container-4-1").addEventListener("click", rfrVis = function() {numberFields.visible("leg-sub-container-4", 2.725, 'risk-free-rate')});
 
             //prevent a field element click from triggering a sub-container event
-            elem.select("expiry-field-1").addEventListener("click", function(e) {e.stopPropagation()});
-            elem.select("div-yield-field-1").addEventListener("click", function(e) {e.stopPropagation()});
-            elem.select("risk-free-rate-field-1").addEventListener("click", function(e) {e.stopPropagation()});
+            ["expiry-field-1", "div-yield-field-1", "risk-free-rate-field-1"].forEach(function(element) { elem.select(element).addEventListener("click", function(e) { e.stopPropagation() }) });
         }
 
         //transition animation callback

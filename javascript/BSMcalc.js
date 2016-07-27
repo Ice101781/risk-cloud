@@ -177,6 +177,7 @@ BSM = function(properties) {
 
         //delete any duplicate prices in the stock price array
         sRange = array.unique(sRange);
+
         //store the new array's length to the global object
         g.STOCKRANGE_LENGTH = sRange.length;
 
