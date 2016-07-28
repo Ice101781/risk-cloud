@@ -272,63 +272,63 @@ elem = function(properties) {
 // MATH /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 math = function(properties) {
-	
-	var self = function() { return };
+    
+    var self = function() { return };
 
-	for(prop in properties) { self[prop] = properties[prop] }
+    for(prop in properties) { self[prop] = properties[prop] }
 
-	return self;
+    return self;
 }({
 
-	//Compute integrals numerically using Simpson's rule
-	INTEGRAL: function(leftBound, rightBound, numSubIntervals, expression) { // <--- THIS FUNCTION NOT CURRENTLY IN USE
+    //Compute integrals numerically using Simpson's rule
+    INTEGRAL: function(leftBound, rightBound, numSubIntervals, expression) { // <--- THIS FUNCTION NOT CURRENTLY IN USE
 
-		var a = leftBound,
-        	b = rightBound,
-        	n = numSubIntervals,
-        	f = expression;
+        var a = leftBound,
+            b = rightBound,
+            n = numSubIntervals,
+            f = expression;
 
-    	if(n % 2 == 0) {
+        if(n % 2 == 0) {
 
-        	var sum1 = 0,
-            	sum2 = 0;
+            var sum1 = 0,
+                sum2 = 0;
 
-        	for(var i=1; i<(n/2); i++) { sum1 += f(((((n/2)-i)*a)+(i*b))/(n/2)) }				
+            for(var i=1; i<(n/2); i++) { sum1 += f(((((n/2)-i)*a)+(i*b))/(n/2)) }               
 
-        	for(var i=1; i<(n/2)+1; i++) { sum2 += f((((((n+1)/2)-i)*a)+((i-(1/2))*b))/(n/2)) }
+            for(var i=1; i<(n/2)+1; i++) { sum2 += f((((((n+1)/2)-i)*a)+((i-(1/2))*b))/(n/2)) }
 
-        	return ((b-a)/(3*n))*(f(a)+(2*sum1)+(4*sum2)+f(b));
+            return ((b-a)/(3*n))*(f(a)+(2*sum1)+(4*sum2)+f(b));
 
-    	} else {
+        } else {
 
             //some basic error handling
-        	return "The number of sub-intervals, 'n', must be even.";
-    	}
-	},
+            return "The number of sub-intervals, 'n', must be even.";
+        }
+    },
 
 
-	//Standard Normal Distribution PDF
-	NORM: function(x) {
+    //Standard Normal Distribution PDF
+    NORM: function(x) {
 
-    	return (1/Math.sqrt(2*Math.PI))*Math.pow(Math.E,(-1/2)*Math.pow(x,2));
-	},
+        return (1/Math.sqrt(2*Math.PI))*Math.pow(Math.E,(-1/2)*Math.pow(x,2));
+    },
 
 
-	//Cumulative Standard Normal Distribution functions
-	CUSTNORM: function(z, n) { // <--- THIS FUNCTION NOT CURRENTLY IN USE
+    //Cumulative Standard Normal Distribution functions
+    CUSTNORM: function(z, n) { // <--- THIS FUNCTION NOT CURRENTLY IN USE
 
         //this method is far slower than the logistic approximation below; n >= 200 is necessary for reasonable accuracy in most trade setups
-    	switch(b<0) {
+        switch(b<0) {
 
-        	case true:
-            	return (1/2)-this.INTEGRAL(z, 0, n, this.NORM);
-            	break;
+            case true:
+                return (1/2)-this.INTEGRAL(z, 0, n, this.NORM);
+                break;
 
-        	case false:
-            	return (1/2)+this.INTEGRAL(0, z, n, this.NORM);
-            	break;
-    	}
-	},
+            case false:
+                return (1/2)+this.INTEGRAL(0, z, n, this.NORM);
+                break;
+        }
+    },
 
     //Logistic approximation - thanks to http://http://www.jiem.org/index.php/jiem/article/viewFile/60/27 for this
     LOGISTIC: function(z) {

@@ -360,10 +360,6 @@ classInputCheck = function(element, indexMax) {
                     case val == Math.floor(val):
                         obj[i] = false;
                         return obj;
-
-                    default:
-                        obj[i] = true;
-                        break;
                 }
                 break;
 
@@ -375,10 +371,6 @@ classInputCheck = function(element, indexMax) {
                     case val > 0:
                         obj[i] = false;
                         return obj;
-
-                    default:
-                        obj[i] = true;
-                        break;
                 }
                 break;
 
@@ -392,10 +384,6 @@ classInputCheck = function(element, indexMax) {
                     case val == Math.floor(val):
                         obj[i] = false;
                         return obj;
-
-                    default:
-                        obj[i] = true;
-                        break;
                 }
                 break;
 
@@ -405,10 +393,6 @@ classInputCheck = function(element, indexMax) {
                     case val >= 0 && val <= 100:
                         obj[i] = false;
                         return obj;
-
-                    default:
-                        obj[i] = true;
-                        break;
                 }
                 break;
 
@@ -418,11 +402,11 @@ classInputCheck = function(element, indexMax) {
                     case val >= 0 && val <= 25:
                         obj[i] = false;
                         return obj;
-
-                    default:
-                        obj[i] = true;
-                        break;
                 }
+                break;
+
+            default:
+                obj[i] = true;
                 break;
         }
     }
