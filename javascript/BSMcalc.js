@@ -118,8 +118,7 @@ BSM = function(properties) {
 
         for(j=0; j<kDistsKeys.length; j++) { vols[kDistsKeys[j]] = g.IMPLIED_VOL[kDistsKeys[j]] } //IV's of the options at the filtered strikes
 
-        //return a simple average of the IV's adjusted for the nearest trade horizon
-        return obj.avg(vols)*Math.sqrt(obj.min(g.EXPIRY)/365);
+        return obj.avg(vols)*Math.sqrt(obj.min(g.EXPIRY)/365); //average of the IV's adjusted for the nearest trade horizon
     },
 
 
@@ -140,18 +139,18 @@ BSM = function(properties) {
                 d2    = d1-(vol*Math.sqrt(tau));
 
             //price
-            this.price[i] = signN*type*((S*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*tau))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*tau)));
+            this.price[i] = +(signN*type*((S*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*tau))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*tau)))*100).toFixed(2);
 
             //greeks
-            this.delta[i] = signN*type*Math.pow(Math.E,-D*tau)*math.LOGISTIC(type*d1);
+            this.delta[i] = +(signN*type*Math.pow(Math.E,-D*tau)*math.LOGISTIC(type*d1)*100).toFixed(2);
 
-            this.gamma[i] = tau !== 0 ? signN*(Math.pow(Math.E,-D*tau)*math.NORM(d1))/(S*vol*Math.sqrt(tau)) : 0;
+            this.gamma[i] = tau !== 0 ? +(signN*(Math.pow(Math.E,-D*tau)*math.NORM(d1))/(S*vol*Math.sqrt(tau))*100).toFixed(2) : 0;
 
-            this.theta[i] = tau !== 0 ? signN*((S*Math.pow(Math.E,-D*tau)*(D*type*math.LOGISTIC(type*d1)))-(K*Math.pow(Math.E,-r*tau)*((r*type*math.LOGISTIC(type*d2))+((vol*math.NORM(d2))/(2*Math.sqrt(tau))))))/365 : 0;
+            this.theta[i] = tau !== 0 ? +(signN*((S*Math.pow(Math.E,-D*tau)*(D*type*math.LOGISTIC(type*d1)))-(K*Math.pow(Math.E,-r*tau)*((r*type*math.LOGISTIC(type*d2))+((vol*math.NORM(d2))/(2*Math.sqrt(tau))))))/3.65).toFixed(2) : 0;
 
-            this.vega[i]  = signN*S*Math.pow(Math.E,-D*tau)*math.NORM(d1)*Math.sqrt(tau);
+            this.vega[i]  = +(signN*S*Math.pow(Math.E,-D*tau)*math.NORM(d1)*Math.sqrt(tau)).toFixed(2);
 
-            this.rho[i]   = signN*type*K*tau*Math.pow(Math.E,-r*tau)*math.LOGISTIC(type*d2);
+            this.rho[i]   = +(signN*type*K*tau*Math.pow(Math.E,-r*tau)*math.LOGISTIC(type*d2)).toFixed(2);
         }
     },
 
@@ -162,7 +161,9 @@ BSM = function(properties) {
         //local variables
         var num    = 500,
             sRange = [],
-            vol;
+            vol,
+            origPrice,
+            greeksArray = ['delta','gamma','theta','vega','rho'];
 
         //calculate and store the IV's of each leg to the global object
         for(i=1; i<g.TRADE_LEGS+1; i++) { g.IMPLIED_VOL[i] = BSM.impVol(i, g.STOCK_PRICE, 'Newton-Raphson') || BSM.impVol(i, g.STOCK_PRICE, 'Bisection') }
@@ -183,17 +184,14 @@ BSM = function(properties) {
         BSM.calc(0, g.STOCK_PRICE);
 
         //store the current price of the trade
-        var origPrice = obj.sum(BSM.price);
+        origPrice = obj.sum(BSM.price);
 
-        //objects for profit/loss and greeks data
-        for(j=0; j<=obj.min(g.EXPIRY); j++) {
+        for(j=0; j<obj.min(g.EXPIRY)+1; j++) {
 
+            //declare objects for profit/loss and greeks data
             g.PROFITLOSS_DATA[j] = {};
-            g.DELTA_DATA[j]      = {};
-            g.GAMMA_DATA[j]      = {};
-            g.THETA_DATA[j]      = {};
-            g.VEGA_DATA[j]       = {};
-            g.RHO_DATA[j]        = {};
+
+            greeksArray.forEach(function(greek) { g[greek.toUpperCase()+'_DATA'][j] = {} });
 
             for(k=0; k<g.STOCKRANGE_LENGTH; k++) {
 
@@ -203,29 +201,23 @@ BSM = function(properties) {
                 //calculate new values
                 BSM.calc(j, sRange[k]);
 
-                //store current 'greek' values (for use in the trade summary table) to the global object
-                if(j==0 && k==num/2) {
+                //store values across time and stock price
+                g.PROFITLOSS_DATA[j][sRange[k].toFixed(2)] = +(obj.sum(BSM.price)-origPrice).toFixed(2); //NEED TO ADD FEES HERE
 
-                    ['delta','gamma','theta','vega','rho'].forEach(function(greek) { for(n in BSM[greek]) { g[greek.toUpperCase()][n] = BSM[greek][n] } });
-                }
+                greeksArray.forEach(function(greek) { g[greek.toUpperCase()+'_DATA'][j][sRange[k].toFixed(2)] = +(obj.sum(BSM[greek])).toFixed(2) });
 
-                //store values across time and stock price for graphing
-                g.PROFITLOSS_DATA[j][sRange[k].toFixed(2)] = Math.round((obj.sum(BSM.price)-origPrice)*10000)/100; //NEED TO ADD FEES HERE
-                g.DELTA_DATA     [j][sRange[k].toFixed(2)] = Math.round(obj.sum(BSM.delta)*10000)/100;
-                g.GAMMA_DATA     [j][sRange[k].toFixed(2)] = Math.round(obj.sum(BSM.gamma)*10000)/100;
-                g.THETA_DATA     [j][sRange[k].toFixed(2)] = Math.round(obj.sum(BSM.theta)*10000)/100;
-                g.VEGA_DATA      [j][sRange[k].toFixed(2)] = +(obj.sum(BSM.vega)).toFixed(2);
-                g.RHO_DATA       [j][sRange[k].toFixed(2)] = +(obj.sum(BSM.rho)).toFixed(2);
+                //store current 'greek' values to the global object (for use in the trade summary table)
+                if(j==0 && k==num/2) { greeksArray.forEach(function(greek) { for(n in BSM[greek]) { g[greek.toUpperCase()][n] = BSM[greek][n] } }) }
             }
         }
 
-        //clear values
+        //clear values after last calculation
         obj.reset(BSM);
-
-        //data visualization callback
-        if(typeof callback === 'function') { callback() }
 
         //display the global object in the console
         console.log(g);
+
+        //data visualization callback
+        if(typeof callback === 'function') { callback() }
     }
 })

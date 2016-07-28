@@ -169,7 +169,7 @@ idStringsObject = function(stringArray, indexMax) {
 }
 
 
-//A class of forms for radios with two buttons; on create, the default button may be selected based on a string condition
+//A class of forms for radios with two buttons
 twoButtons = function(properties) {
 
     var self = function() { return };
@@ -333,7 +333,7 @@ numberFields = function(properties) {
 })
 
 
-//Determine whether text input form conditions are met for a class of elements; return an object with boolean values
+//Determine whether text input form conditions are met for a class of elements
 classInputCheck = function(element, indexMax) {
 
     var obj = {};

@@ -32,20 +32,21 @@ obj = function(properties) {
     //Object size - thanks to 'James Coglan' on stackoverflow.com for this
     size: function(obj) {
 
-        var s = 0;
+        var card = 0;
 
-        for(key in obj) { if(obj.hasOwnProperty(key)) {s++} }
+        for(key in obj) { if(obj.hasOwnProperty(key)) { card++ } }
 
-        return s;
+        return card;
     },
 
 
-    //Object values total - thanks to 'Sirko' on stackoverflow.com for this
+    //Object values sum
     sum: function(obj) {
 
-        //some basic error handling
+        //some basic error handling, else round values if parameters provided
         for(key in obj) { if(typeof obj[key] !== 'number') { return "The 'obj.sum()' method requires all object values to be numbers." } }
 
+        //thanks to 'Sirko' on stackoverflow.com for this
         return Object.keys(obj).reduce(function(s,key) { return s + obj[key] }, 0);
     },
 

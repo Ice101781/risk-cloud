@@ -232,14 +232,6 @@ finalParams = function(properties) {
                 break;
 
             default:
-                //remove event listeners from sub-containers in the first trade leg
-                if(g.TRADE_LEGS>1) {
-
-                    elem.select("leg-sub-container-2-1").removeEventListener("click", expVis);
-                    elem.select("leg-sub-container-3-1").removeEventListener("click", divVis);
-                    elem.select("leg-sub-container-4-1").removeEventListener("click", rfrVis);
-                }
-
                 //capture user-defined final parameters, write some info to elements of the trade summary table
                 for(i=1; i<g.TRADE_LEGS+1; i++) {
 
@@ -290,7 +282,7 @@ finalParams = function(properties) {
                         elem.select(element+"summary").style.borderRightColor = "rgb(0,0,0)";
 
                         //option price
-                        elem.select(element+"price").innerHTML = "$" + g.OPTION_PRICE[i];
+                        elem.select(element+"price").innerHTML = "$" + g.OPTION_PRICE[n].toFixed(2);
                         elem.select(element+"price").style.color = color;
                     })(i);
                 }
@@ -300,7 +292,7 @@ finalParams = function(properties) {
 
                     var price = 0;
 
-                    for(i=1; i<g.TRADE_LEGS+1; i++) { price += g.LONG_SHORT[i]*g.NUM_CONTRACTS[i]*g.OPTION_PRICE[i] }
+                    for(i=1; i<g.TRADE_LEGS+1; i++) { price += g.LONG_SHORT[i]*g.NUM_CONTRACTS[i]*g.OPTION_PRICE[i].toFixed(2) }
 
                     elem.select("price-total").innerHTML = "$" + Math.abs(price).toFixed(2);
                     elem.select("price-total").style.color = Math.sign(price) == 1 ? "rgb(0,150,0)" : "rgb(175,0,0)";

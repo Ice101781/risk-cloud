@@ -54,8 +54,8 @@ visuals = function(properties) {
 		//re-size the renderer if the window size is changed
 		window.addEventListener('resize', function onWindowResize() {
 
-			var width  = elem.select("output-view-container").offsetWidth,
-				height = elem.select("output-view-container").offsetHeight;
+			width  = elem.select("output-view-container").offsetWidth,
+			height = elem.select("output-view-container").offsetHeight;
 
   			renderer.setSize(width,height);
   			camera.aspect = (width/height);
@@ -98,7 +98,20 @@ visuals = function(properties) {
 			}
 
 			//global range of the data
-	       	gRange = obj.range(data[0], data[obj.min(g.EXPIRY)]) !== 0 ? obj.range(data[0], data[obj.min(g.EXPIRY)]) : 1;
+	       	switch(data) {
+
+	       		case g.GAMMA_DATA:
+	       		/* fall-through */
+	       		case g.THETA_DATA:
+	       			var r  = obj.range(data[0], data[obj.min(g.EXPIRY)-1]);
+	       			gRange = r !== 0 ? r : 1;
+	       			break;
+
+	       		default:
+	       			var r  = obj.range(data[0], data[obj.min(g.EXPIRY)]);
+	       			gRange = r !== 0 ? r : 1;
+	       			break;
+	       	}
 
 	       	//point cloud objects
 	       	[ 0x0000ff, 0xff0000 ].forEach(function(col, t) { clouds[t] = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/500, color: col})) });
@@ -130,6 +143,7 @@ visuals = function(properties) {
 
 
 		//listen for data display change -- IS THERE A WAY TO ADD ONE LISTENER TO ALL RADIO BUTTONS IN A FORM?
+		elem.select("output-data-radio-1").addEventListener("click", function() { console.log('click!') });
 
 
 		//THE 2D VIEW
@@ -346,27 +360,20 @@ visuals = function(properties) {
 			for(i=1; i<g.TRADE_LEGS+1; i++) {
 
 				//local loop vars
-				var element = "leg-" + i + "-";
+				var element     = "leg-" + i + "-",
+					greeksArray = ['delta','gamma','theta','vega','rho']; 
 
 				//IV
-				elem.select(element+"iv").innerHTML = Math.round(g.IMPLIED_VOL[i]*10000)/100 + "%";
+				elem.select(element+"iv").innerHTML = (g.IMPLIED_VOL[i]*Math.pow(10,2)).toFixed(2) + "%";
                 elem.select(element+"iv").style.color = g.LONG_SHORT[i] == 1 ? "rgb(0,175,0)" : "rgb(200,0,0)";
                 elem.select(element+"iv").style.borderRightColor = "rgb(0,0,0)";
 
                 //'greeks'
-                elem.select(element+"delta").innerHTML = Math.round(g.DELTA[i]*10000)/100;
-                elem.select(element+"gamma").innerHTML = Math.round(g.GAMMA[i]*10000)/100;
-                elem.select(element+"theta").innerHTML = Math.round(g.THETA[i]*10000)/100;
-                elem.select(element+"vega").innerHTML  = g.VEGA[i].toFixed(2);
-                elem.select(element+"rho").innerHTML   = g.RHO[i].toFixed(2);
+                greeksArray.forEach(function(greek) { elem.select(element+greek).innerHTML = g[greek.toUpperCase()][i].toFixed(2) });
 			}
 
 			//'greeks' totals
-			elem.select("delta-total").innerHTML = Math.round(obj.sum(g.DELTA)*10000)/100;
-			elem.select("gamma-total").innerHTML = Math.round(obj.sum(g.GAMMA)*10000)/100;
-			elem.select("theta-total").innerHTML = Math.round(obj.sum(g.THETA)*10000)/100;
-			elem.select("vega-total").innerHTML  = obj.sum(g.VEGA).toFixed(2);
-			elem.select("rho-total").innerHTML   = obj.sum(g.RHO).toFixed(2);
+			greeksArray.forEach(function(greek) { elem.select(greek+"-total").innerHTML = obj.sum(g[greek.toUpperCase()]).toFixed(2) });
 		}
 
 
