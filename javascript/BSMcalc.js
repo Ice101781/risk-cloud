@@ -135,7 +135,8 @@ BSM = function(properties) {
                 D     = g.DIV_YIELD[i],
                 r     = g.RISK_FREE[i],
                 vol   = g.IMPLIED_VOL[i],
-                d1    = (Math.log(S/K)+((r-D+(Math.pow(vol,2)/2))*tau))/(vol*Math.sqrt(tau)),
+                log$  = tau == 0 && S == K ? Math.log(S/(K+Math.pow(1,-10))) : Math.log(S/K), //hack necessary because of 'NaN' issue at edge case
+                d1    = (log$+((r-D+(Math.pow(vol,2)/2))*tau))/(vol*Math.sqrt(tau)),
                 d2    = d1-(vol*Math.sqrt(tau));
 
             //price
