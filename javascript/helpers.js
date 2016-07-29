@@ -70,12 +70,23 @@ obj = function(properties) {
     },
 
 
-    //Given two sets, find the global range of the values
+    //Given two sets, define a range of values depending on the signs of the max and min of the merged set
     range: function(set1, set2) {
 
-        var all = array.merge(set1, set2);
+        //local vars
+        var all = array.merge(set1, set2),
+            max = this.max(all),
+            min = this.min(all);
 
-        return Math.abs(this.max(all)-this.min(all));
+        if(Math.sign(max) == 1 && Math.sign(min) == 1) {
+
+            return max;
+
+        } else if(Math.sign(max) == -1 && Math.sign(min) == -1) {
+
+            return Math.abs(min);
+
+        } else { return max - min }
     },
 
 

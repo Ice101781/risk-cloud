@@ -97,7 +97,7 @@ BSM = function(properties) {
                     }
 
                     //return a value if threshold condition is met
-                    if(Math.abs(volLow-volHigh) <= Math.pow(10,-6)) { return volEst }
+                    if(Math.abs(volLow-volHigh) <= Math.pow(10,-10)) { return volEst }
                 }
         }
     },
@@ -208,7 +208,7 @@ BSM = function(properties) {
                 greeksArray.forEach(function(greek) { g[greek.toUpperCase()+'_DATA'][j][sRange[k].toFixed(2)] = +(obj.sum(BSM[greek])).toFixed(2) });
 
                 //store current 'greek' values to the global object (for use in the trade summary table)
-                if(j==0 && k==num/2) { greeksArray.forEach(function(greek) { for(n in BSM[greek]) { g[greek.toUpperCase()][n] = BSM[greek][n] } }) }
+                if(j==0 && k==(g.STOCKRANGE_LENGTH-1)/2) { greeksArray.forEach(function(greek) { for(n in BSM[greek]) { g[greek.toUpperCase()][n] = BSM[greek][n] } }) }
             }
         }
 

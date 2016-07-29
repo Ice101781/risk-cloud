@@ -25,7 +25,7 @@
   width: 92vw;
   margin-left: 3.375vw;
   padding-top: 1vw;
-  background-color: lightblue; /*test*/
+  background-color: transparent; /*test*/
 }
 
 #initial-params-container {
@@ -81,12 +81,12 @@
 
 #output-sub-container-1 {
   width: 13.125vw;
-  background-color: green; /*test*/
+  background-color: transparent; /*test*/
 }
 
 #output-sub-container-2 {
   width: 78vw;
-  background-color: yellow; /*test*/
+  background-color: transparent; /*test*/
 }
 
 #output-view-container, #BSM-loading-text {
@@ -113,7 +113,7 @@
 #output-summary-container {
   height: 6.5vw;
   margin-top: 0.375vw;
-  background-color: red; /*test*/
+  background-color: transparent; /*test*/
 }
 
 #output-summary-table {

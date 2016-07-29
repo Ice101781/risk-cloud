@@ -40,8 +40,9 @@ visuals = function(properties) {
             xPos    = canvasW/2,
             yPos    = canvasH/2,
             data,
-            gRange,
-            clouds = [];
+            range,
+            clouds  = [],
+            labels  = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} };
 
         //set renderer params and attach when the container is available
         if(elem.select("output-view-container") != null) {
@@ -97,19 +98,19 @@ visuals = function(properties) {
                     break;
             }
 
-            //global range of the data
+            //range of the data; use '(r+1)' to ensure all data is contained within the graph area
             switch(data) {
 
                 case g.GAMMA_DATA:
                 /* fall-through */
                 case g.THETA_DATA:
                     var r  = obj.range(data[0], data[obj.min(g.EXPIRY)-1]);
-                    gRange = r !== 0 ? r : 1;
+                    range = r !== 0 ? (r+1) : 1;
                     break;
 
                 default:
                     var r  = obj.range(data[0], data[obj.min(g.EXPIRY)]);
-                    gRange = r !== 0 ? r : 1;
+                    range = r !== 0 ? (r+1) : 1;
                     break;
             }
 
@@ -128,7 +129,7 @@ visuals = function(properties) {
 
                         w*(scalar*(k/(obj.size(data[0])-1)-1)+0.5), //x-coordinate
 
-                        h/2*(scalar*(set[val]/gRange-numH/(numH-1))+1), //y-coordinate
+                        h/2*(scalar*(set[val]/range-numH/(numH-1))+1), //y-coordinate
 
                         zDist+0.00001 //z-coordinate (points placed slightly in front of the grid and background)
                     ));
@@ -142,10 +143,6 @@ visuals = function(properties) {
         }
 
 
-        //listen for data display change -- IS THERE A WAY TO ADD ONE LISTENER TO ALL RADIO BUTTONS IN A FORM?
-        elem.select("output-data-radio-1").addEventListener("click", function() { console.log('click!') });
-
-
         //THE 2D VIEW
         show2DView = function() {
 
@@ -154,9 +151,8 @@ visuals = function(properties) {
                 plane1 = new THREE.Mesh(new THREE.PlaneGeometry(w, h, 1, 1), new THREE.MeshBasicMaterial({color: 0x888888})),
                 plane2 = new THREE.Mesh(new THREE.PlaneGeometry(w*scalar, h*scalar, 1, 1), new THREE.MeshBasicMaterial({color: 0x333333})),
 
-                //gridlines and labels
-                lines   = { xaxis: {tick: {}, ext: {}, dots: {}}, yaxis: {} },
-                labels  = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} };
+                //gridlines
+                lines  = { xaxis: {tick: {}, ext: {}, dots: {}}, yaxis: {} };
 
             //position the background and add it to the scene
             plane1.position.set(0, 0, zDist);
@@ -191,8 +187,7 @@ visuals = function(properties) {
                 labels.yaxis.context[i].textAlign = 'center';
                 labels.yaxis.context[i].textBaseline = 'middle';
 
-
-                //set color and value of the x-axis as well as all other gridline values
+                //set color of and value at the x-axis as well as all other values
                 switch(i) {
 
                     case (numH-1)/2:
@@ -202,14 +197,14 @@ visuals = function(properties) {
 
                     //ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
                     default:
-                        labels.yaxis.context[i].fillText((gRange*(1-2*i/(numH-1))).toFixed(2), xPos, yPos);
+                        labels.yaxis.context[i].fillText((range*(1-2*i/(numH-1))).toFixed(2), xPos, yPos);
                         break;
                 }
 
                 //set canvas as texture and specify texture parameters
                 labels.yaxis.texture[i] = new THREE.Texture(labels.yaxis.canvas[i]);
                 labels.yaxis.texture[i].minFilter = THREE.LinearFilter; //WHAT DOES THIS ACTUALLY DO?
-                labels.yaxis.texture[i].needsUpdate = true; //AND THIS?
+                labels.yaxis.texture[i].needsUpdate = true;
 
                 //create label mesh and map canvas texture to it
                 labels.yaxis.mesh[i] = new THREE.Mesh(
@@ -241,7 +236,7 @@ visuals = function(properties) {
 
                     //make the book-ends larger and brighter
                     case 0:
-                        /* fall-through */
+                    /* fall-through */
                     case 6:
                         lines.xaxis.dots[i] = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.5*w*scalar/500, color: 0xffff00}));
                         break;
@@ -302,7 +297,7 @@ visuals = function(properties) {
                 //set canvas as texture and specify texture parameters
                 labels.xaxis.texture[i] = new THREE.Texture(labels.xaxis.canvas[i]);
                 labels.xaxis.texture[i].minFilter = THREE.LinearFilter; //WHAT DOES THIS ACTUALLY DO?
-                labels.xaxis.texture[i].needsUpdate = true; //AND THIS?
+                labels.xaxis.texture[i].needsUpdate = true;
 
                 //create label mesh and map canvas texture to it
                 labels.xaxis.mesh[i] = new THREE.Mesh(
@@ -374,6 +369,46 @@ visuals = function(properties) {
 
             //'greeks' totals
             greeksArray.forEach(function(greek) { elem.select(greek+"-total").innerHTML = obj.sum(g[greek.toUpperCase()]).toFixed(2) });
+        }
+
+
+        //listen for 'output-data-form' click, change graph display accordingly
+        for(i=1; i<7; i++) {
+
+            (function(n) {
+
+                elem.select("output-data-radio-"+n).addEventListener('click', function() {
+
+                    //remove the old point clouds
+                    camera.remove(clouds[0], clouds[1]);
+
+                    //draw the new ones
+                    showGraphData();
+
+                    //set y-axis label values
+                    for(j=0; j<numH; j++) { 
+
+                        //clear the old labels
+                        labels.yaxis.context[j].clearRect(0, 0, canvasW, canvasH);
+
+                        //set value at the x-axis as well as all other values
+                        switch(j) {
+
+                            case (numH-1)/2:
+                                labels.yaxis.context[j].fillText('0', xPos, yPos);
+                                break;
+
+                            //ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
+                            default:
+                                labels.yaxis.context[j].fillText((range*(1-2*j/(numH-1))).toFixed(2), xPos, yPos);
+                                break;
+                        }
+
+                        //update the texture
+                        labels.yaxis.texture[j].needsUpdate = true;
+                    }
+                });
+            })(i);
         }
 
 

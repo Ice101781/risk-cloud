@@ -20,7 +20,8 @@ html {
 }
 
 #icon {
-  width: 7vw;
+  height: 2.5vw;
+  width: 6.25vw; /* aspect is 2.5:1 */
 }
 
 #header-main {
@@ -47,9 +48,9 @@ html {
 .nav-list-item-link {
   margin: 0;
   padding: 0;
-  padding-left: 2vw;
+  padding-left: 1.75vw;
   padding-right: 0.0625vw;
-  padding-top: 1.0625vw;
+  padding-top: 1.25vw;
   font-size: 1.0625vw;
   color: #555555;
 }
