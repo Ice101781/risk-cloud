@@ -25,8 +25,7 @@ visuals = function(properties) {
             phi      = 0,
             theta    = 0,
             radius   = 0,
-            light    = new THREE.AmbientLight(0xffffff),
-            mouse    = {x: 0, y: 0};
+            light    = new THREE.AmbientLight(0xffffff);
 
         //local vars for the 2D view
         var w       = 1,
@@ -37,8 +36,6 @@ visuals = function(properties) {
             numV    = 7,
             canvasW = 2*Math.floor(width*(1-(1.01)*scalar)), //THE MULTIPLIER FIXES BLURRY TEXT - IS IT RELATED TO THE 'devicePixelRatio' PROPERTY?
             canvasH = 2*Math.floor(height*(0.6)*scalar/(numH-1)), //AND HERE AS WELL
-            xPos    = canvasW/2,
-            yPos    = canvasH/2,
             data,
             range,
             clouds  = [],
@@ -68,7 +65,7 @@ visuals = function(properties) {
 
 
         //GRAPH DATA
-        showGraphData = function() {
+        addGraphData = function() {
 
             //local vars
             switch(+elem.select("input[name=output-data-radio]:checked").value) {
@@ -104,37 +101,32 @@ visuals = function(properties) {
                 case g.GAMMA_DATA:
                 /* fall-through */
                 case g.THETA_DATA:
-                    var r  = obj.range(data[0], data[obj.min(g.EXPIRY)-1]);
-                    range = r !== 0 ? (r+1) : 1;
+                    var r  = obj.range(data[0], data[obj.min(g.EXPIRY)-0.5]);
+                    range  = r !== 0 ? (r+1) : 1;
                     break;
 
                 default:
                     var r  = obj.range(data[0], data[obj.min(g.EXPIRY)]);
-                    range = r !== 0 ? (r+1) : 1;
+                    range  = r !== 0 ? (r+1) : 1;
                     break;
             }
 
             //point cloud objects
-            [ 0x0000ff, 0xff0000 ].forEach(function(col, t) { clouds[t] = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 1.75*w*scalar/500, color: col})) });
+            [0xaa00ff, 0xff0000, 0x0000ff].forEach(function(col, t) { clouds[t] = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 0.0035*w*scalar, color: col})) });
 
             //push vertices to the point cloud geometries
-            [ data[0], data[obj.min(g.EXPIRY)] ].forEach(function(set, t) {
-
-                //loop variable
-                var k=0;
+            [data[obj.min(g.EXPIRY)-0.5], data[obj.min(g.EXPIRY)], data[0]].forEach(function(set, t) {
 
                 for(val in set) {
 
                     clouds[t].geometry.vertices.push(new THREE.Vector3(
 
-                        w*(scalar*(k/(obj.size(data[0])-1)-1)+0.5), //x-coordinate
+                        w*(scalar*(Object.keys(set).indexOf(val)/(obj.size(set)-1)-1)+0.5), //x-coordinate
 
-                        h/2*(scalar*(set[val]/range-numH/(numH-1))+1), //y-coordinate
+                        h/2*(scalar*(set[val]/range-numH/(numH-1))+1),                      //y-coordinate
 
-                        zDist+0.00001 //z-coordinate (points placed slightly in front of the grid and background)
+                        zDist+0.00001                                                       //z-coordinate (points placed slightly in front of the grid and background)
                     ));
-
-                    k++;
                 }
 
                 //add the point cloud to the scene
@@ -143,23 +135,103 @@ visuals = function(properties) {
         }
 
 
+        //LISTEN FOR GRAPH DATA DISPLAY CHANGE
+        addGraphDataChangeListener = function() {
+
+            for(i=1; i<7; i++) {
+
+                (function(n) {
+
+                    elem.select("output-data-radio-"+n).addEventListener('click', function() {
+
+                        //remove the old point clouds
+                        camera.remove(clouds[0], clouds[1], clouds[2]);
+
+                        //draw the new ones
+                        addGraphData();
+
+                        //set y-axis label values
+                        for(j=0; j<numH; j++) { 
+
+                            //clear the old labels
+                            labels.yaxis.context[j].clearRect(0, 0, canvasW, canvasH);
+
+                            //set value at the x-axis as well as all other values
+                            switch(j) {
+
+                                case (numH-1)/2:
+                                    labels.yaxis.context[j].fillText('0', canvasW/2, canvasH/2);
+                                    break;
+
+                                //ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
+                                default:
+                                    labels.yaxis.context[j].fillText((range*(1-2*j/(numH-1))).toFixed(2), canvasW/2, canvasH/2);
+                                    break;
+                            }
+
+                            //update the texture
+                            labels.yaxis.texture[j].needsUpdate = true;
+                        }
+                    });
+                })(i);
+            }
+        }
+
+
         //THE 2D VIEW
-        show2DView = function() {
+        add2DView = function() {
 
-            //LOCAL VARS
-            var //background
-                plane1 = new THREE.Mesh(new THREE.PlaneGeometry(w, h, 1, 1), new THREE.MeshBasicMaterial({color: 0x888888})),
+            //local vars for the background and gridlines
+            var plane1 = new THREE.Mesh(new THREE.PlaneGeometry(w, h, 1, 1), new THREE.MeshBasicMaterial({color: 0x888888})),
                 plane2 = new THREE.Mesh(new THREE.PlaneGeometry(w*scalar, h*scalar, 1, 1), new THREE.MeshBasicMaterial({color: 0x333333})),
-
-                //gridlines
                 lines  = { xaxis: {tick: {}, ext: {}, dots: {}}, yaxis: {} };
+
+
+            //label canvases, contexts, etc.
+            addLabelCanvases = function(axis, n) {
+
+                var p = axis == 'yaxis' ? 1: 0.75;
+
+                //create the canvas
+                labels[axis].canvas[n]        = document.createElement('canvas');
+                labels[axis].canvas[n].width  = canvasW*p;
+                labels[axis].canvas[n].height = canvasH;
+
+                //get context, paint the canvas background
+                labels[axis].context[n]           = labels[axis].canvas[n].getContext('2d');
+                labels[axis].context[n].fillStyle = '#888888';
+                labels[axis].context[n].fillRect(0, 0, canvasW*p, canvasH);
+
+                //set color, font and alignment for the text
+                labels[axis].context[n].fillStyle    = 'black';
+                labels[axis].context[n].font         = (canvasH-1)+'px Arial';
+                labels[axis].context[n].textAlign    = 'center';
+                labels[axis].context[n].textBaseline = 'middle';
+            }
+
+            //label textures, meshes, etc.
+            addLabelMeshes = function(axis, n) {
+
+                var p = axis == 'yaxis' ? 1 : 0.75;
+
+                //set canvas as texture and specify texture parameters
+                labels[axis].texture[n]             = new THREE.Texture(labels[axis].canvas[n]);
+                labels[axis].texture[n].minFilter   = THREE.LinearFilter; //WHAT DOES THIS ACTUALLY DO?
+                labels[axis].texture[n].needsUpdate = true;
+
+                //create label mesh and map canvas texture to it
+                labels[axis].mesh[n] = new THREE.Mesh(
+                                           new THREE.PlaneGeometry(w*(1-(1.01)*scalar)*p, h*(0.6)*scalar/(numH-1), 1, 1),
+                                           new THREE.MeshBasicMaterial({map: labels[axis].texture[n]})
+                                       );
+            }
 
             //position the background and add it to the scene
             plane1.position.set(0, 0, zDist);
             plane2.position.set(w/2*(1-scalar), h/2*(1-scalar*numH/(numH-1)), zDist);
             camera.add(plane1, plane2);
 
-            //ADD HORIZONTAL GRIDLINES AND VERTICAL AXIS LABELS
+            //add horizontal gridlines and vertical axis labels
             for(i=0; i<numH; i++) {
 
                 //gridlines
@@ -171,46 +243,23 @@ visuals = function(properties) {
 
                 lines.yaxis[i] = new THREE.Line(gridlineGeom, new THREE.LineBasicMaterial({color: 0x444444}));
 
-                //labels - create the canvas
-                labels.yaxis.canvas[i] = document.createElement('canvas');
-                labels.yaxis.canvas[i].width  = canvasW;
-                labels.yaxis.canvas[i].height = canvasH;
-
-                //get context, paint the canvas background
-                labels.yaxis.context[i] = labels.yaxis.canvas[i].getContext('2d');
-                labels.yaxis.context[i].fillStyle = '#888888';
-                labels.yaxis.context[i].fillRect(0, 0, canvasW, canvasH);
-
-                //set color, font and alignment for the label text
-                labels.yaxis.context[i].fillStyle = 'black';
-                labels.yaxis.context[i].font = (canvasH-1)+'px Arial';
-                labels.yaxis.context[i].textAlign = 'center';
-                labels.yaxis.context[i].textBaseline = 'middle';
+                addLabelCanvases('yaxis', i);
 
                 //set color of and value at the x-axis as well as all other values
                 switch(i) {
 
                     case (numH-1)/2:
                         lines.yaxis[i].material.color.setHex(0x777777);
-                        labels.yaxis.context[i].fillText('0', xPos, yPos);
+                        labels.yaxis.context[i].fillText('0', canvasW/2, canvasH/2);
                         break;
 
                     //ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
                     default:
-                        labels.yaxis.context[i].fillText((range*(1-2*i/(numH-1))).toFixed(2), xPos, yPos);
+                        labels.yaxis.context[i].fillText((range*(1-2*i/(numH-1))).toFixed(2), canvasW/2, canvasH/2);
                         break;
                 }
 
-                //set canvas as texture and specify texture parameters
-                labels.yaxis.texture[i] = new THREE.Texture(labels.yaxis.canvas[i]);
-                labels.yaxis.texture[i].minFilter = THREE.LinearFilter; //WHAT DOES THIS ACTUALLY DO?
-                labels.yaxis.texture[i].needsUpdate = true;
-
-                //create label mesh and map canvas texture to it
-                labels.yaxis.mesh[i] = new THREE.Mesh(
-                                           new THREE.PlaneGeometry(w*(1-(1.01)*scalar), h*(0.6)*scalar/(numH-1), 1, 1),
-                                           new THREE.MeshBasicMaterial({map: labels.yaxis.texture[i]})
-                                       );
+                addLabelMeshes('yaxis', i);
 
                 //set label position
                 labels.yaxis.mesh[i].position.set(-w/2*(1.01)*scalar, h/2*(1-scalar*((2*i+1+(0.6)/4)/(numH-1)-(0.002))), zDist);
@@ -219,7 +268,8 @@ visuals = function(properties) {
                 camera.add(lines.yaxis[i], labels.yaxis.mesh[i]);
             }
 
-            //ADD VERTICAL TICK MARKS AND DOTTED LINES, AND HORIZONTAL AXIS LABELS
+
+            //add vertical tick marks and dotted lines as well as horizontal axis labels
             for(i=0; i<numV; i++) {
 
                 //tick marks
@@ -252,21 +302,7 @@ visuals = function(properties) {
                     lines.xaxis.dots[i].geometry.vertices.push(new THREE.Vector3(w*(scalar*(i/6-1)+0.5), h*(scalar*(0.25*(j+1)/(numH-1)-1)+0.5), zDist));
                 }
 
-                //labels - create the canvas
-                labels.xaxis.canvas[i] = document.createElement('canvas');
-                labels.xaxis.canvas[i].width  = canvasW*0.75;
-                labels.xaxis.canvas[i].height = canvasH;
-
-                //get context, paint the canvas background
-                labels.xaxis.context[i] = labels.xaxis.canvas[i].getContext('2d');
-                labels.xaxis.context[i].fillStyle = '#888888';
-                labels.xaxis.context[i].fillRect(0, 0, canvasW, canvasH);
-
-                //set color, font and alignment for the label text
-                labels.xaxis.context[i].fillStyle = 'black';
-                labels.xaxis.context[i].font = (canvasH-1)+'px Arial';
-                labels.xaxis.context[i].textAlign = 'center';
-                labels.xaxis.context[i].textBaseline = 'middle';
+                addLabelCanvases('xaxis', i);
 
                 //set label values from -3 to +3 implied standard deviations
                 switch((g.STOCKRANGE_LENGTH-1) % (numV-1)) {
@@ -292,18 +328,9 @@ visuals = function(properties) {
                         break;
                 }
 
-                labels.xaxis.context[i].fillText(labelText, xPos*0.75, yPos);
+                labels.xaxis.context[i].fillText(labelText, canvasW/2*0.75, canvasH/2);
 
-                //set canvas as texture and specify texture parameters
-                labels.xaxis.texture[i] = new THREE.Texture(labels.xaxis.canvas[i]);
-                labels.xaxis.texture[i].minFilter = THREE.LinearFilter; //WHAT DOES THIS ACTUALLY DO?
-                labels.xaxis.texture[i].needsUpdate = true;
-
-                //create label mesh and map canvas texture to it
-                labels.xaxis.mesh[i] = new THREE.Mesh(
-                                           new THREE.PlaneGeometry(w*(1-(1.01)*scalar)*0.75, h*(0.6)*scalar/(numH-1), 1, 1),
-                                           new THREE.MeshBasicMaterial({map: labels.xaxis.texture[i]})
-                                       );
+                addLabelMeshes('xaxis', i);
 
                 //set label position; at book-ends: bump in label and extend tick mark
                 switch(i) {
@@ -350,12 +377,12 @@ visuals = function(properties) {
 
 
         //WRITE IV AND 'GREEKS' INFO/TOTALS TO THE TRADE SUMMARY TABLE
-        showTableData = function() {
+        addTableData = function() {
 
             for(i=1; i<g.TRADE_LEGS+1; i++) {
 
                 //local loop vars
-                var element     = "leg-" + i + "-",
+                var element     = "leg-"+i+"-",
                     greeksArray = ['delta','gamma','theta','vega','rho']; 
 
                 //IV
@@ -372,46 +399,6 @@ visuals = function(properties) {
         }
 
 
-        //listen for 'output-data-form' click, change graph display accordingly
-        for(i=1; i<7; i++) {
-
-            (function(n) {
-
-                elem.select("output-data-radio-"+n).addEventListener('click', function() {
-
-                    //remove the old point clouds
-                    camera.remove(clouds[0], clouds[1]);
-
-                    //draw the new ones
-                    showGraphData();
-
-                    //set y-axis label values
-                    for(j=0; j<numH; j++) { 
-
-                        //clear the old labels
-                        labels.yaxis.context[j].clearRect(0, 0, canvasW, canvasH);
-
-                        //set value at the x-axis as well as all other values
-                        switch(j) {
-
-                            case (numH-1)/2:
-                                labels.yaxis.context[j].fillText('0', xPos, yPos);
-                                break;
-
-                            //ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
-                            default:
-                                labels.yaxis.context[j].fillText((range*(1-2*j/(numH-1))).toFixed(2), xPos, yPos);
-                                break;
-                        }
-
-                        //update the texture
-                        labels.yaxis.texture[j].needsUpdate = true;
-                    }
-                });
-            })(i);
-        }
-
-
         //ANIMATION
         render = function() {
 
@@ -421,9 +408,10 @@ visuals = function(properties) {
         }
 
         render();
-        showGraphData();
-        show2DView();
-        showTableData();
+        addGraphData();
+        addGraphDataChangeListener();
+        add2DView();
+        addTableData();
         //console.log();
     }
 })

@@ -1,6 +1,5 @@
 ﻿<!DOCTYPE html>
     <html lang="en-US">
-
         <head>
             <meta charset="UTF-8" />
             <link rel="stylesheet" href="../css/application.css" />
@@ -33,88 +32,91 @@
 
             <div id="app-container" class="general-group">
                 <div id="initial-params-container" class="general-group">
-                    <div id="initial-params-sub-container" class="general-group">
-                        <form>    
-                            <div id="num-legs-align-helper" class="align-helper">Number of legs in the trade :</div>
+                    <form id="num-legs-form">
+                        <div id="num-legs-align-helper" class="general-group align-helper">Number of legs in the trade :</div>
 
-                            <input type="radio" id="num-legs-radio-1" name="num-legs-radio" value="1" />
-                            <label class="radio" for="num-legs-radio-1">1</label>
+                        <input type="radio" id="num-legs-radio-1" name="num-legs-radio" value="1" />
+                        <label class="general-group radio num-legs" for="num-legs-radio-1">1</label>
 
-                            <input type="radio" id="num-legs-radio-2" name="num-legs-radio" value="2" checked/>
-                            <label class="radio" for="num-legs-radio-2">2</label>
+                        <input type="radio" id="num-legs-radio-2" name="num-legs-radio" value="2" checked />
+                        <label class="general-group radio num-legs" for="num-legs-radio-2">2</label>
 
-                            <input type="radio" id="num-legs-radio-3" name="num-legs-radio" value="3" />
-                            <label class="radio" for="num-legs-radio-3">3</label>
+                        <input type="radio" id="num-legs-radio-3" name="num-legs-radio" value="3" />
+                        <label class="general-group radio num-legs" for="num-legs-radio-3">3</label>
 
-                            <input type="radio" id="num-legs-radio-4" name="num-legs-radio" value="4" />
-                            <label class="radio" for="num-legs-radio-4">4</label>
-                        </form>
+                        <input type="radio" id="num-legs-radio-4" name="num-legs-radio" value="4" />
+                        <label class="general-group radio num-legs" for="num-legs-radio-4">4</label>
+                    </form>
 
-                        <form>
-                            <div id="fees-align-helper" class="align-helper">Total commissions and fees per contract :</div>
+                    <form id="fees-form">
+                        <div id="fees-align-helper" class="align-helper">Total commissions and fees per contract :</div>
 
-                            <input type="number" id="fees-field" class="general-group" min="0" step=".01" value="1.50" />
-                        </form>
-                    </div>
+                        <input type="number" id="fees-field" class="general-group all-fields" min="0" step=".01" value="1.50" />
+                    </form>
 
-                    <button id="continue-button-1" class="buttons general-group" type="button" onclick="initialParams.validate()">Continue</button>
+                    <button id="continue-button-1" class="general-group buttons" type="button" onclick="initialParams.validate()">Continue</button>
                 </div>
 
                 <div id="final-params-container" class="general-group">
                     <div id="trade-legs-params-container" class="general-group"></div>
 
-                    <div id="current-price-container" class="general-group">
-                        <button id="return-button-1" class="buttons general-group" type="button" onclick="finalParams.destroy()">Return</button>
-                        
-                        <form id="current-price-form">
-                            <div id="current-price-align-helper" class="align-helper">Current price of the underlying stock :</div>
+                    <button id="return-button-1" class="general-group buttons" type="button" onclick="finalParams.destroy()">Return</button>
 
-                            <input type="number" id="current-price-field" class="general-group" min=".01" step=".01" value="100.25" />
-                        </form>
+                    <form id="current-price-form">
+                        <div id="current-price-align-helper" class="align-helper">Current price of the underlying stock :</div>
 
-                        <button id="calculate-button-1" class="buttons general-group" type="button" onclick="finalParams.validate()">Calculate</button>
-                    </div>
+                        <input type="number" id="current-price-field" class="general-group all-fields" min=".01" step=".01" value="100.25" />
+                    </form>
+
+                    <button id="calculate-button-1" class="general-group buttons" type="button" onclick="finalParams.validate()">Calculate</button>
                 </div>
 
                 <div id="output-container" class="general-group">
                     <div id="output-sub-container-1" class="general-group">
-                        <div id="output-view-form">
+                        <div id="output-view-form" class="general-group output-forms">
                             <input type="radio" id="output-view-radio-1" name="output-view-radio" value="1" checked />
-                            <label class="radio output-view general-group" for="output-view-radio-1">2D</label>
+                            <label class="general-group radio output-view" for="output-view-radio-1">2D</label>
 
                             <input type="radio" id="output-view-radio-2" name="output-view-radio" value="2" />
-                            <label class="radio output-view general-group" for="output-view-radio-2">3D</label>
+                            <label class="general-group radio output-view" for="output-view-radio-2">3D</label>
                         </div>
 
-                        <form id="output-data-form">
+                        <form id="output-data-form" class="general-group output-forms">
                             <input type="radio" id="output-data-radio-1" name="output-data-radio" value="1" checked />
-                            <label class="radio output-data general-group" for="output-data-radio-1">Profit and Loss</label>
+                            <label class="general-group radio output-data" for="output-data-radio-1">Profit and Loss</label>
 
                             <input type="radio" id="output-data-radio-2" name="output-data-radio" value="2" />
-                            <label class="radio output-data general-group" for="output-data-radio-2">Delta</label>
+                            <label class="general-group radio output-data" for="output-data-radio-2">Delta</label>
 
                             <input type="radio" id="output-data-radio-3" name="output-data-radio" value="3" />
-                            <label class="radio output-data general-group" for="output-data-radio-3">Gamma</label>
+                            <label class="general-group radio output-data" for="output-data-radio-3">Gamma</label>
 
                             <input type="radio" id="output-data-radio-4" name="output-data-radio" value="4" />
-                            <label class="radio output-data general-group" for="output-data-radio-4">Theta</label>
+                            <label class="general-group radio output-data" for="output-data-radio-4">Theta</label>
 
                             <input type="radio" id="output-data-radio-5" name="output-data-radio" value="5" />
-                            <label class="radio output-data general-group" for="output-data-radio-5">Vega</label>
+                            <label class="general-group radio output-data" for="output-data-radio-5">Vega</label>
 
                             <input type="radio" id="output-data-radio-6" name="output-data-radio" value="6" />
-                            <label class="radio output-data general-group" for="output-data-radio-6">Rho</label>
+                            <label class="general-group radio output-data" for="output-data-radio-6">Rho</label>
+                        </form>
+
+                        <form id="output-time-form" class="general-group output-forms">
+                            <div id="output-time-align-helper" class="general-group">days until expiry :</div>
+
+                            <input type="number" id="output-time-field" class="general-group all-fields" min="1" step="1" />
+
+                            <button id="output-time-button" class="general-group buttons" type="button" onClick="">Go</button> 
                         </form>
                     </div>
 
                     <div id="output-sub-container-2" class="general-group">
-
                         <div id="output-view-container">
                             <div id="BSM-loading-text">LOADING...</div>
                         </div>
 
                         <div id="output-summary-container" class="general-group">
-                            <table id="output-summary-table">
+                            <table id="output-summary-table" class="general-group">
                                 <!-- table headings -->
                                 <tr id="table-headings">
                                     <th id="trade-summary-heading" class="border-right-group">Trade Summary</th>
@@ -194,5 +196,4 @@
 
             <script>window.onload = function() { document.getElementById("loadScreen").style.display = "none" }</script>
         </body>
-
     </html>

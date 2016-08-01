@@ -28,10 +28,10 @@ BSM = function(properties) {
         var type     = g.CONTRACT_TYPE[leg],
             n        = g.NUM_CONTRACTS[leg],
             K        = g.STRIKE_PRICE[leg],
+            optPrice = g.OPTION_PRICE[leg],
             T        = g.EXPIRY[leg]/365,
             D        = g.DIV_YIELD[leg],
             r        = g.RISK_FREE[leg],
-            optPrice = g.OPTION_PRICE[leg],
             bsmPrice = 0;
 
         switch(method) {
@@ -40,8 +40,8 @@ BSM = function(properties) {
             case 'Newton-Raphson':
 
                 //case-specific local vars
-                var volEst   = 0.2,
-                    maxIter  = 15;
+                var volEst  = 0.2,
+                    maxIter = 15;
 
                 for(j=0; j<maxIter; j++) {
 
@@ -70,9 +70,9 @@ BSM = function(properties) {
                 console.log('The Newton-Raphson method did not converge for leg '+leg+'. Now implementing the Bisection method...');
 
                 //case-specific local vars
-                var volLow   = 0.01,
-                    volHigh  = 2,
-                    maxIter  = 50;
+                var volLow  = 0.01,
+                    volHigh = 2,
+                    maxIter = 50;
 
                 for(j=0; j<maxIter; j++) {
 
@@ -103,25 +103,6 @@ BSM = function(properties) {
     },
 
 
-    //Determine a single IV which will be used to build the stock price space
-    sRangeVol: function() {
-
-        //local vars
-        var kDists = {},
-            vols   = {};
-
-        var eKeys = obj.filterKeys(g.EXPIRY, function(time) { return time == obj.min(g.EXPIRY) }); //keys of nearest expirys
-
-        for(i=0; i<eKeys.length; i++) { kDists[eKeys[i]] = Math.abs(g.STRIKE_PRICE[eKeys[i]]-g.STOCK_PRICE) } //distances from filtered strikes to the stock price
-
-        var kDistsKeys = obj.filterKeys(kDists, function(dist) { return dist == obj.min(kDists) }); //keys of filtered strikes 'nearest-to-the-money'
-
-        for(j=0; j<kDistsKeys.length; j++) { vols[kDistsKeys[j]] = g.IMPLIED_VOL[kDistsKeys[j]] } //IV's of the options at the filtered strikes
-
-        return obj.avg(vols)*Math.sqrt(obj.min(g.EXPIRY)/365); //average of the IV's adjusted for the nearest trade horizon
-    },
-
-
     //Option price and greeks for the overall trade relative to a given time and stock price
     calc: function(t, S) {
 
@@ -135,8 +116,7 @@ BSM = function(properties) {
                 D     = g.DIV_YIELD[i],
                 r     = g.RISK_FREE[i],
                 vol   = g.IMPLIED_VOL[i],
-                log$  = tau == 0 && S == K ? Math.log(S/(K+Math.pow(1,-10))) : Math.log(S/K), //hack necessary because of 'NaN' issue at edge case
-                d1    = (log$+((r-D+(Math.pow(vol,2)/2))*tau))/(vol*Math.sqrt(tau)),
+                d1    = tau == 0 && S == K ? Infinity : (Math.log(S/K)+((r-D+(Math.pow(vol,2)/2))*tau))/(vol*Math.sqrt(tau)),
                 d2    = d1-(vol*Math.sqrt(tau));
 
             //price
@@ -160,57 +140,104 @@ BSM = function(properties) {
     data: function(callback) {
 
         //local variables
-        var num    = 500,
-            sRange = [],
-            vol,
-            origPrice,
+        var sPrices = [],
+            tradeCost,
             greeksArray = ['delta','gamma','theta','vega','rho'];
 
-        //calculate and store the IV's of each leg to the global object
-        for(i=1; i<g.TRADE_LEGS+1; i++) { g.IMPLIED_VOL[i] = BSM.impVol(i, g.STOCK_PRICE, 'Newton-Raphson') || BSM.impVol(i, g.STOCK_PRICE, 'Bisection') }
 
-        //stock price space IV
-        vol = BSM.sRangeVol();
+        //Calculate the implied volatility for each trade leg and store it to the global object
+        getImpliedVols = function() {
 
-        //create the stock price space using a range of -3 to +3 vols
-        for(i=0; i<num+1; i++) { sRange.push(+(g.STOCK_PRICE*(1-(3*vol)*(1-(2*i/num)))).toFixed(2)) } //ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
+            for(i=1; i<g.TRADE_LEGS+1; i++) {
 
-        //delete any duplicate prices in the stock price array
-        sRange = array.unique(sRange);
+                g.IMPLIED_VOL[i] = BSM.impVol(i, g.STOCK_PRICE, 'Newton-Raphson') || BSM.impVol(i, g.STOCK_PRICE, 'Bisection');
+            }
+        }
 
-        //store the new array's length to the global object
-        g.STOCKRANGE_LENGTH = sRange.length;
+        //Create the stock price space
+        getStockSpace = function() {
 
-        //calculate current trade values
-        BSM.calc(0, g.STOCK_PRICE);
+            //local vars
+            var kDists = {},
+                vols   = {},
+                n      = 500,
+                v;
 
-        //store the current price of the trade
-        origPrice = obj.sum(BSM.price);
+            //determine a standard deviation for use in generating the range of stock prices in the space
+                //keys of nearest expirys
+                var eKeys = obj.filterKeys(g.EXPIRY, function(time) { return time == obj.min(g.EXPIRY) });
 
-        for(j=0; j<obj.min(g.EXPIRY)+1; j++) {
+                //distances from filtered strikes to the stock price
+                for(i=0; i<eKeys.length; i++) { kDists[eKeys[i]] = Math.abs(g.STRIKE_PRICE[eKeys[i]]-g.STOCK_PRICE) }
 
-            //declare objects for profit/loss and greeks data
-            g.PROFITLOSS_DATA[j] = {};
+                //keys of filtered strikes 'nearest-to-the-money'
+                var kDistsKeys = obj.filterKeys(kDists, function(dist) { return dist == obj.min(kDists) });
 
-            greeksArray.forEach(function(greek) { g[greek.toUpperCase()+'_DATA'][j] = {} });
+                //IV's of the options at the filtered strikes
+                for(j=0; j<kDistsKeys.length; j++) { vols[kDistsKeys[j]] = g.IMPLIED_VOL[kDistsKeys[j]] }
 
-            for(k=0; k<g.STOCKRANGE_LENGTH; k++) {
+                //stock price space IV (average of the IV's adjusted for the nearest trade horizon)
+                v = obj.avg(vols)*Math.sqrt(obj.min(g.EXPIRY)/365);
+
+
+            //create the array of stock prices using a range of -3 to +3 vols
+            for(i=0; i<n+1; i++) { sPrices.push(+(g.STOCK_PRICE*(1-(3*v)*(1-(2*i/n)))).toFixed(2)) } //ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
+
+            //delete any duplicate prices in the stock price array
+            sPrices = array.unique(sPrices);
+
+            //store the new array's length to the global object
+            g.STOCKRANGE_LENGTH = sPrices.length;
+        }
+
+        getStockSpaceData = function(t) {
+
+            for(s=0; s<g.STOCKRANGE_LENGTH; s++) {
 
                 //clear old values
                 obj.reset(BSM);
 
                 //calculate new values
-                BSM.calc(j, sRange[k]);
+                BSM.calc(t, sPrices[s]);
 
                 //store values across time and stock price
-                g.PROFITLOSS_DATA[j][sRange[k].toFixed(2)] = +(obj.sum(BSM.price)-origPrice).toFixed(2); //NEED TO ADD FEES HERE
+                g.PROFITLOSS_DATA[t][sPrices[s].toFixed(2)] = +(obj.sum(BSM.price)-tradeCost).toFixed(2); //NEED TO ADD FEES HERE
 
-                greeksArray.forEach(function(greek) { g[greek.toUpperCase()+'_DATA'][j][sRange[k].toFixed(2)] = +(obj.sum(BSM[greek])).toFixed(2) });
+                greeksArray.forEach(function(greek) { g[greek.toUpperCase()+'_DATA'][t][sPrices[s].toFixed(2)] = +(obj.sum(BSM[greek])).toFixed(2) });
 
                 //store current 'greek' values to the global object (for use in the trade summary table)
-                if(j==0 && k==(g.STOCKRANGE_LENGTH-1)/2) { greeksArray.forEach(function(greek) { for(n in BSM[greek]) { g[greek.toUpperCase()][n] = BSM[greek][n] } }) }
+                if(t == 0 && s == (g.STOCKRANGE_LENGTH-1)/2) {
+
+                    greeksArray.forEach(function(greek) { for(n in BSM[greek]) { g[greek.toUpperCase()][n] = BSM[greek][n] } });
+                }
             }
         }
+
+        getTimeSpaceData = function(start, end) {
+
+            for(t=start; t<=end; t++) {
+
+                //declare objects for profit/loss and greeks data storage, get data for current day
+                g.PROFITLOSS_DATA[t] = {};
+
+                greeksArray.forEach(function(greek) { g[greek.toUpperCase()+'_DATA'][t] = {} });
+
+                getStockSpaceData(t);
+            }
+        }
+
+        getImpliedVols();
+        getStockSpace();
+
+        //calculate current trade values
+        BSM.calc(0, g.STOCK_PRICE);
+
+        //store the current price of the trade
+        tradeCost = obj.sum(BSM.price);
+
+        getTimeSpaceData(0, obj.min(g.EXPIRY)-1);
+        getTimeSpaceData(obj.min(g.EXPIRY)-0.5, obj.min(g.EXPIRY)-0.5);
+        getTimeSpaceData(obj.min(g.EXPIRY), obj.min(g.EXPIRY));
 
         //clear values after last calculation
         obj.reset(BSM);

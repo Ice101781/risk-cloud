@@ -1,8 +1,9 @@
-﻿.model-heading {
+﻿/* HEADING, GENERAL ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+.model-heading {
   margin: 0;
-  margin-top: 1vw;
-  margin-bottom: 0.75vw;
   padding: 0;
+  margin-top: 2vw;
+  margin-bottom: 0.5vw;
 }
 
 .model-heading > pre {
@@ -19,7 +20,10 @@
   font-family: Century Gothic;
   font-size: 1vw;
 }
+/* END HEADING, GENERAL ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
+
+/* CONTAINERS /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 #app-container {
   height: 39.75vw;
   width: 92vw;
@@ -29,48 +33,39 @@
 }
 
 #initial-params-container {
-  height: 11vw;
-  width: 35vw;
-  margin-left: 28.5vw;
-  background-color: #a1a1a1;
-}
-
-#initial-params-sub-container {
+  height: 13vw;
   width: 32vw;
-  margin-left: 1.5vw;
-  margin-top: 1vw;
-  padding-bottom: 0.125vw;
-  background-color: #fafafa;
+  margin-left: 30vw;
+  background-color: #a6a6a6;
 }
 
 #final-params-container {
-  height: 32vw;
-  background-color: #a1a1a1;
   opacity: 0;
-}
-
-#trade-legs-params-container {
-  padding-top: 1vw;
+  height: 35vw;
+  background-color: #a6a6a6;
 }
 
 .trade-leg {
   display: inline-block;
-  height: 25.75vw;
+  height: 29.5vw;
   width: 20vw;
   margin-left: 1.25vw;
   margin-right: 1.25vw;
+  margin-bottom: 0.25vw;
+  padding-top: 1vw;
 }
 
 .leg-sub-container {
+  height: 2.725vw;
   margin-bottom: 0.5vw;
   background-color: #fafafa;
 }
 
 #output-container {
+  opacity: 0;
   height: 39.375vw;
   width: 92vw;
-  background-color: #a1a1a1;
-  opacity: 0;
+  background-color: #a6a6a6;
 }
 
 #output-sub-container-1, #output-sub-container-2 {
@@ -81,12 +76,10 @@
 
 #output-sub-container-1 {
   width: 13.125vw;
-  background-color: transparent; /*test*/
 }
 
 #output-sub-container-2 {
   width: 78vw;
-  background-color: transparent; /*test*/
 }
 
 #output-view-container, #BSM-loading-text {
@@ -99,7 +92,7 @@
 }
 
 #BSM-loading-text {
-  line-height: 31vw;
+  line-height: 32vw;
   text-align: center;
   font-size: 1.75vw;
   color: #9999ff;
@@ -157,49 +150,72 @@
   border-right: 1px solid;
 }
 
-form {
-  padding: 0.625vw;
-}
-
 .align-helper {
   display: inline-block;
   text-align: left;
-  font-weight: bold;
-  color: #555555;
 }
 
 #num-legs-align-helper {
-  width: 13.75vw;
-  margin-left: 0.8125vw;
-  margin-top: 0.5vw;
+  width: 13.125vw;
+  margin-left: 0.25vw;
+  padding-bottom: 0.1875vw;
+  font-size: 0.95vw;
 }
 
 #fees-align-helper {
-  width: 20.125vw;
-  margin-left: 0.9375vw;
+  width: 19.5vw;
+  margin-left: 0.375vw;
+  padding-top: 0.375vw;
+  font-size: 0.95vw;
 }
 
 #current-price-align-helper {
+  height: 1.5vw;
   width: 18.25vw;
+  padding-top: 0.25vw;
+  font-size: 0.95vw;
 }
 
+#output-time-align-helper {
+  font-size: 0.9vw;
+}
+/* END CONTAINERS /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+
+/* BUTTONS ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 .buttons {
   height: 1.75vw;
-  width: 7vw;
   margin: 0;
   padding: 0;
   text-align: center;
+  border: none;
 }
 
 #continue-button-1 {
-  margin-left: 14vw;
-  margin-top: 1vw;
+  width: 7vw;
+  margin-left: 12.5vw;
+  margin-top: 2.75vw;
+}
+
+#return-button-1 {
+  width: 7vw;
+  margin-right: 1.5vw;
 }
 
 #calculate-button-1 {
-  margin-left: 1.45vw;
+  width: 7vw;
+  margin-left: 1.5vw;
 }
 
+#output-time-button {
+  width: 2.75vw;
+  margin-left: 0.75vw;
+  font-size: 0.9vw;
+}
+/* END BUTTONS ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+
+/* FORMS //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 input[type=radio] {
   display: none;
 }
@@ -218,16 +234,16 @@ input[type=radio] + .radio {
   color: #333333;
 }
 
-input[name=num-legs-radio] + .radio {
-  width: 1.25vw;
-  margin-left: 1.1875vw;
-}
-
 input[type=radio]:checked + .radio {
   color: #ff5555;
 }
 
-label.radio.buy-sell, label.radio.call-put {
+label.radio.num-legs {
+  width: 1.25vw;
+  margin-left: 1.1875vw;
+}
+
+label.radio.trade-leg-radios {
   width: 5vw;
 }
 
@@ -245,7 +261,7 @@ label.radio.output-data {
   padding-bottom: 0.625vw;
 }
 
-.buy-sell-form, .call-put-form {
+.trade-leg-radio-forms {
   margin: 0;
   padding: 0;
   padding-left: 1.5vw;
@@ -253,9 +269,10 @@ label.radio.output-data {
   padding-bottom: 0.25vw;
 }
 
-.num-contracts-form, .strike-price-form, .expiry-form, .div-yield-form, .risk-free-rate-form, .option-price-form {
+.trade-leg-field-forms {
   display: inline-block;
-  width: 18.75vw;
+  height: 1.75vw;
+  width: 19vw;
   margin: 0;
   padding: 0;
   padding-left: 1.125vw;
@@ -263,52 +280,77 @@ label.radio.output-data {
   padding-bottom: 0.5vw;
 }
 
-.num-contracts-form, .strike-price-form {
-  margin-left: 1.875vw;
-}
-
-#current-price-form {
+#num-legs-form, #fees-form, #current-price-form {
   display: inline-block;
-  margin-left: 1.5vw;
-  margin-top: 0.75vw;
+  height: 2vw;
+  margin: 0;
+  padding: 0.5vw;
   background-color: #fafafa;
 }
 
-#output-view-form, #output-data-form {
+#num-legs-form, #fees-form {
+  width: 29vw;
+  margin-left: 1vw;
+  margin-top: 0.875vw;
+}
+
+#num-legs-form {
+  padding-top: 0.75vw;
+}
+
+#current-price-form {
+  padding-left: 1vw;
+  padding-right: 1vw;
+}
+
+.output-forms {
   display: inline-block;
   width: 12vw;
   margin: 0;
   padding: 0;
   margin-left: 0.875vw;
-  margin-top: 1vw;
   padding-top: 0.5vw;
   background-color: #fafafa;
 }
 
 #output-view-form {
   height: 2.25vw;
+  margin-top: 1vw;
 }
 
 #output-data-form {
   height: 21.125vw;
+  margin-top: 0.8375vw;
+}
+
+#output-time-form {
+  height: 4vw;
+  margin-top: 0.8375vw;
+  text-align: center;
+}
+/* END FORMS //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+
+/* FIELDS /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+.all-fields {
+  display: inline-block;
+  margin: 0;
+  padding: 0.125vw;
+  text-align: center;
+  background-color: #ddffdd;
+  border: none;
+}
+
+.small-fields {
+  height: 1.5vw;
+  width: 4vw;
+  padding-left: 0.75vw;
 }
 
 #fees-field, #current-price-field {
   height: 1.75vw;
   width: 5vw;
   padding-left: 0.5vw;
-  text-align: center;
-}
-
-#fees-field, .num-contracts-field, .strike-price-field, .expiry-field, .div-yield-field, .risk-free-rate-field, .option-price-field, #current-price-field {
-  background-color: #ddffdd;
-}
-
-.num-contracts-field, .strike-price-field, .expiry-field, .div-yield-field, .risk-free-rate-field, .option-price-field {
-  height: 1.5vw;
-  width: 4vw;
-  padding-left: 0.75vw;
-  text-align: center;
 }
 
 #fees-field {
@@ -316,11 +358,15 @@ label.radio.output-data {
 }
 
 .num-contracts-field {
-  margin-left: 0.9375vw;
+  margin-left: 4.625vw;
 }
 
 .strike-price-field {
-  margin-left: 1.875vw;
+  margin-left: 5.5625vw;
+}
+
+.option-price-field {
+  margin-left: 6.4375vw;
 }
 
 .expiry-field {
@@ -328,17 +374,21 @@ label.radio.output-data {
 }
 
 .div-yield-field {
-  margin-left: 4.375vw;
+  margin-left: 4.5vw;
 }
 
 .risk-free-rate-field {
-  margin-left: 5.25vw;
-}
-
-.option-price-field {
-  margin-left: 6.3125vw;
+  margin-left: 5.4375vw;
 }
 
 #current-price-field {
   margin-left: 0.25vw;
 }
+
+#output-time-field {
+  height: 1.5vw;
+  width: 4.5vw;
+  margin-top: 0.5vw;
+  padding-left: 0.5vw;
+}
+/* END FIELDS /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/

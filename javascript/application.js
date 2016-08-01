@@ -10,10 +10,10 @@ var g = {
     CONTRACT_TYPE : {},
     NUM_CONTRACTS : {},
     STRIKE_PRICE : {},
+    OPTION_PRICE : {},
     EXPIRY : {},
     DIV_YIELD : {},
     RISK_FREE : {},
-    OPTION_PRICE : {},
 
     //application output
     STOCKRANGE_LENGTH: 0,
@@ -83,9 +83,9 @@ nav = function(properties) {
             var subHeadings = {   
 
                 1: { a: {heading: "Black-Scholes-Merton", link: "../html/BSMpage.html"}, 
-                   /*b: {heading: "Variance-Gamma",   link: "#"}*/ },
+                   /*b: {heading: "Variance-Gamma",       link: "#"                   }*/ },
 
-                2: { a: {heading: "faq", link: "#"},
+                2: { a: {heading: "faq",   link: "#"},
                      b: {heading: "legal", link: "#"} }
             };
 
@@ -114,7 +114,7 @@ nav = function(properties) {
 
         //local parameters
         var otherIndex = (index == "1") ? "2" : "1",
-            inc = 0.25,
+            inc        = 0.25,
             maxHeight  = 4.5;
 
         //close the other sub-menu if it's open
@@ -153,7 +153,10 @@ idStringsObject = function(stringArray, indexMax) {
     switch(stringArray.length) {
 
         case 1:
-            for(var i=1; i<indexMax+1; i++) { obj[i] = stringArray[0]+"-"+i }
+            for(var i=1; i<indexMax+1; i++) {
+
+                obj[i] = stringArray[0]+"-"+i;
+            }
             break;
 
         case 2:
@@ -169,7 +172,6 @@ idStringsObject = function(stringArray, indexMax) {
 }
 
 
-//A class of forms for radios with two buttons
 twoButtons = function(properties) {
 
     var self = function() { return };
@@ -184,7 +186,7 @@ twoButtons = function(properties) {
         //radio form
         elem.create({tag: "form", attributes: {
                                       id:    buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+n,
-                                      class: buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form"
+                                      class: "general-group trade-leg-radio-forms"
                                   }},
                                   "leg-sub-container-1-"+n);
 
@@ -203,12 +205,12 @@ twoButtons = function(properties) {
 
                                        attributes: {
                                            "for": buttonArray[j][0]+"-"+"radio-"+n, 
-                                           class: "radio "+buttonArray[0][0]+"-"+buttonArray[1][0]+" general-group"
+                                           class: "general-group radio trade-leg-radios"
                                        }},
                                        buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+n);
         }
 
-        //some default settings to save time during common trade setups
+        //default settings to save time during common trade setups
         switch(buttonArray[0][0]) {
 
             case "buy":
@@ -225,7 +227,6 @@ twoButtons = function(properties) {
 })
 
 
-//A class of forms for text-number fields
 numberFields = function(properties) {
 
     var self = function() { return };
@@ -242,46 +243,50 @@ numberFields = function(properties) {
             case "num-contracts":
                 var content = "no. of contracts :",
                     attr    = {min:"1", step:"1", value:"1"},
-                    subNum  = "1-";
+                    subNum  = 2;
                 break;
 
             case "strike-price":
                 var content = "exercise price :",
                     attr    = {min:".01", step:".01", value:"100"},
-                    subNum  = "1-";
-                break;
-
-            case "expiry":
-                var content = "calendar days to expiry :",
-                    attr    = {min:"1", step:"1", value:"30"},
-                    subNum  = "2-";
-                break;
-
-            case "div-yield":
-                var content = "dividend yield % :",
-                    attr    = {min:"0", step:".01", value:"0"},
-                    subNum  = "3-";
-                break;
-
-            case "risk-free-rate":
-                var content = "risk-free rate % :",
-                    attr    = {min:"0", step:".01", value:"0.25"},
-                    subNum  = "4-";
+                    subNum  = 3;
                 break;
 
             case "option-price":
                 var content = "option price :",
                     attr    = {min:".01", step:".01", value:"1.25"},
-                    subNum  = "5-";
+                    subNum  = 4;
+                break;
+
+            case "expiry":
+                var content = "calendar days to expiry :",
+                    attr    = {min:"1", step:"1", value:"30"},
+                    subNum  = 5;
+                break;
+
+            case "div-yield":
+                var content = "dividend yield % :",
+                    attr    = {min:"0", step:".01", value:"0"},
+                    subNum  = 6;
+                break;
+
+            case "risk-free-rate":
+                var content = "risk-free rate % :",
+                    attr    = {min:"0", step:".01", value:"0.25"},
+                    subNum  = 7;
                 break;
         }
 
-        elem.create({tag: "form", content: content, attributes: {id: idString+"-form-"+n, class: idString+"-form"}}, "leg-sub-container-"+subNum+n);
+        elem.create({tag: "form", content: content, attributes: {
+                                                        id: idString+"-form-"+n,
+                                                        class: "general group trade-leg-field-forms "+idString+"-form"
+                                                    }},
+                                                    "leg-sub-container-"+subNum+"-"+n);
 
         elem.create({tag: "input", attributes: {
                                        type: "number",
                                        id: idString+"-field-"+n,
-                                       class: idString+"-field"+" general-group",
+                                       class: "general-group all-fields small-fields "+idString+"-field",
                                        min: attr.min,
                                        step: attr.step,
                                        value: attr.value
@@ -364,7 +369,7 @@ classInputCheck = function(element, indexMax) {
                 break;
 
             case "strike-price-field":
-                /* fall-through */
+            /* fall-through */
             case "option-price-field":
                 switch(false) {
 
@@ -418,9 +423,9 @@ classInputCheck = function(element, indexMax) {
 //Some basic error message handling for text form input
 inputErrorMsg = function(element, msg) {
 
-    elem.select(element).style.borderColor = '#ff0000';
+    elem.select(element).style.border = '1px solid #ff0000';
     alert(msg);
-    elem.select(element).style.borderColor = '#d8d8d8';
+    elem.select(element).style.border = 'none';
 }
 
 // END MISC /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
