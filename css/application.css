@@ -6,6 +6,7 @@ html {
 .body {
   margin: 0.5vw;
   padding: 0;
+  text-align: center;
 }
 
 #loadScreen {
@@ -19,14 +20,18 @@ html {
   z-index: 99;
 }
 
+#header-main {
+  display: inline-block;
+  height: 2vw;
+  width: 99vw;
+  padding-bottom: 0.25vw;
+}
+
 #icon {
   height: 1.875vw;
   width: 5vw; /* aspect ratio is 4:1.5 */
-}
-
-#header-main {
-  width: 99vw;
-  padding-bottom: 0.2vw;
+  position: relative;
+  right: 42.75vw;
 }
 
 #nav-menu, .nav-sub-menu {
@@ -36,33 +41,35 @@ html {
 }
 
 #nav-menu {
-  float: right;
+  display: inline-block;
+  position: relative;
+  left: 42.75vw;
+}
+
+.nav-list-item, .nav-sub-list-item {
+  margin: 0;
+  padding: 0;
 }
 
 .nav-list-item {
-  margin: 0;
-  padding: 0;
-  float: left;
-}
-
-.nav-list-item-link {
-  margin: 0;
-  padding: 0;
-  padding-left: 1.75vw;
-  padding-right: 0.0625vw;
-  padding-top: 0.875vw;
-  font-size: 1vw;
-  color: #555555;
+  display: inline-block;
+  padding-left: 1.5vw;
 }
 
 .nav-list-item-link, .nav-sub-list-item-link {
-  display: inline-block;
+  margin: 0;
+  padding: 0;
   font-family: Arial;
   text-decoration: none;
 }
 
 .nav-list-item-link:hover, .nav-sub-list-item-link:hover {
   color: #ff5555;
+}
+
+.nav-list-item-link {
+  font-size: 1vw;
+  color: #555555;
 }
 
 .nav-sub-container {
@@ -88,17 +95,14 @@ html {
 }
 
 .nav-sub-list-item {
-  margin: 0;
-  padding: 0;
+  padding-right: 0.5vw;
+  padding-top: 0.25vw;
+  padding-bottom: 0.25vw;
   text-align: right;
   background-color: #d8d8d8;
 }
 
 .nav-sub-list-item-link {
-  margin: 0;
-  padding-right: 0.5vw;
-  padding-top: 0.25vw;
-  padding-bottom: 0.25vw;
   font-size: 0.75vw;
   color: black;
 }

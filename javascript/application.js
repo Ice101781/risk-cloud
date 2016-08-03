@@ -5,7 +5,6 @@ var g = {
     //user input
     TRADE_LEGS : 0,
     CONTRACT_FEES : 0,
-    STOCK_PRICE : 0,
     LONG_SHORT : {},
     CONTRACT_TYPE : {},
     NUM_CONTRACTS : {},
@@ -14,6 +13,7 @@ var g = {
     EXPIRY : {},
     DIV_YIELD : {},
     RISK_FREE : {},
+    STOCK_PRICE : 0,
 
     //application output
     STOCKRANGE_LENGTH: 0,
@@ -112,10 +112,10 @@ nav = function(properties) {
 
     anim: function(index) {
 
-        //local parameters
+        //local vars
         var otherIndex = (index == "1") ? "2" : "1",
             inc        = 0.25,
-            maxHeight  = 4.5;
+            maxHeight  = 4;
 
         //close the other sub-menu if it's open
         if(elem.select("nav-sub-container-"+otherIndex).getAttribute("data-open") == "true") {
@@ -145,22 +145,23 @@ nav = function(properties) {
 
 // MISC /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//Return an object with with numbered id strings; current support for arrays with up to 2 id string types
-idStringsObject = function(stringArray, indexMax) {
+//Return an object with with numbered id strings
+idStringsObject = function(stringArray) {
 
-    var obj = {};
+    var iMax = stringArray[0] != "num-legs-radio" ? g.TRADE_LEGS : 4,
+        obj  = {};
 
     switch(stringArray.length) {
 
         case 1:
-            for(var i=1; i<indexMax+1; i++) {
+            for(var i=1; i<iMax+1; i++) {
 
                 obj[i] = stringArray[0]+"-"+i;
             }
             break;
 
         case 2:
-            for(var i=1; i<indexMax+1; i++) {
+            for(var i=1; i<iMax+1; i++) {
 
                 obj[2*i-1] = stringArray[0]+"-"+i;
                 obj[2*i]   = stringArray[1]+"-"+i;
@@ -277,11 +278,16 @@ numberFields = function(properties) {
                 break;
         }
 
-        elem.create({tag: "form", content: content, attributes: {
-                                                        id: idString+"-form-"+n,
-                                                        class: "general group trade-leg-field-forms "+idString+"-form"
-                                                    }},
-                                                    "leg-sub-container-"+subNum+"-"+n);
+        elem.create({tag: "form", attributes: {
+                                    id: idString+"-form-"+n,
+                                    class: "general group trade-leg-field-forms "+idString+"-form"
+                                    }},
+                                    "leg-sub-container-"+subNum+"-"+n);
+
+        elem.create({tag: "div", content: content, attributes: {
+                                                       class: "trade-leg-align-helpers align-helper"
+                                                       }},
+                                                       idString+"-form-"+n);
 
         elem.create({tag: "input", attributes: {
                                        type: "number",
@@ -339,11 +345,11 @@ numberFields = function(properties) {
 
 
 //Determine whether text input form conditions are met for a class of elements
-classInputCheck = function(element, indexMax) {
+classInputCheck = function(element) {
 
     var obj = {};
 
-    for(i=1; i<indexMax+1; i++) {
+    for(i=1; i<g.TRADE_LEGS+1; i++) {
 
         var val = elem.select(element+"-"+i).value;
 
@@ -365,6 +371,10 @@ classInputCheck = function(element, indexMax) {
                     case val == Math.floor(val):
                         obj[i] = false;
                         return obj;
+
+                    default:
+                        obj[i] = true;
+                        break;
                 }
                 break;
 
@@ -376,6 +386,10 @@ classInputCheck = function(element, indexMax) {
                     case val > 0:
                         obj[i] = false;
                         return obj;
+
+                    default:
+                        obj[i] = true;
+                        break;
                 }
                 break;
 
@@ -389,6 +403,10 @@ classInputCheck = function(element, indexMax) {
                     case val == Math.floor(val):
                         obj[i] = false;
                         return obj;
+
+                    default:
+                        obj[i] = true;
+                        break;
                 }
                 break;
 
@@ -398,6 +416,10 @@ classInputCheck = function(element, indexMax) {
                     case val >= 0 && val <= 100:
                         obj[i] = false;
                         return obj;
+
+                    default:
+                        obj[i] = true;
+                        break;
                 }
                 break;
 
@@ -407,11 +429,11 @@ classInputCheck = function(element, indexMax) {
                     case val >= 0 && val <= 25:
                         obj[i] = false;
                         return obj;
-                }
-                break;
 
-            default:
-                obj[i] = true;
+                    default:
+                        obj[i] = true;
+                        break;
+                }
                 break;
         }
     }
@@ -423,9 +445,9 @@ classInputCheck = function(element, indexMax) {
 //Some basic error message handling for text form input
 inputErrorMsg = function(element, msg) {
 
-    elem.select(element).style.border = '1px solid #ff0000';
+    elem.select(element).style.borderColor = '#ff0000';
     alert(msg);
-    elem.select(element).style.border = 'none';
+    elem.select(element).style.borderColor = '#ddffdd';
 }
 
 // END MISC /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
