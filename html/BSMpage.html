@@ -11,7 +11,7 @@
             <title>Option Trade Analytics | Black-Scholes-Merton Model | Risk Cloud</title>
             <link rel="stylesheet" href="../css/BSMpage.css" />
             <script src="../javascript/BSMpage.js"></script>
-            <script src="../javascript/BSMcalc.js"></script>
+            <script src="../javascript/BSM.js"></script>
         </head>
 
         <body class="body">
@@ -79,35 +79,35 @@
                     <div id="output-sub-container" class="general-group">
                         <div id="output-sub-container-1" class="general-group">
                             <div id="output-view-form" class="general-group output-forms">
-                                <input type="radio" id="output-view-radio-1" name="output-view-radio" value="1" checked />
+                                <input type="radio" id="output-view-radio-1" name="output-view-radio" value="2D" checked />
                                 <label class="general-group radio output-view" for="output-view-radio-1">2D</label>
 
-                                <input type="radio" id="output-view-radio-2" name="output-view-radio" value="2" />
+                                <input type="radio" id="output-view-radio-2" name="output-view-radio" value="3D" />
                                 <label class="general-group radio output-view" for="output-view-radio-2">3D</label>
                             </div>
 
                             <form id="output-data-form" class="general-group output-forms">
-                                <input type="radio" id="output-data-radio-1" name="output-data-radio" value="1" checked />
+                                <input type="radio" id="output-data-radio-1" name="output-data-radio" value="0" checked />
                                 <label class="general-group radio output-data" for="output-data-radio-1">Profit and Loss</label>
 
-                                <input type="radio" id="output-data-radio-2" name="output-data-radio" value="2" />
+                                <input type="radio" id="output-data-radio-2" name="output-data-radio" value="1" />
                                 <label class="general-group radio output-data" for="output-data-radio-2">Delta</label>
 
-                                <input type="radio" id="output-data-radio-3" name="output-data-radio" value="3" />
+                                <input type="radio" id="output-data-radio-3" name="output-data-radio" value="2" />
                                 <label class="general-group radio output-data" for="output-data-radio-3">Gamma</label>
 
-                                <input type="radio" id="output-data-radio-4" name="output-data-radio" value="4" />
+                                <input type="radio" id="output-data-radio-4" name="output-data-radio" value="3" />
                                 <label class="general-group radio output-data" for="output-data-radio-4">Theta</label>
 
-                                <input type="radio" id="output-data-radio-5" name="output-data-radio" value="5" />
+                                <input type="radio" id="output-data-radio-5" name="output-data-radio" value="4" />
                                 <label class="general-group radio output-data" for="output-data-radio-5">Vega</label>
 
-                                <input type="radio" id="output-data-radio-6" name="output-data-radio" value="6" />
+                                <input type="radio" id="output-data-radio-6" name="output-data-radio" value="5" />
                                 <label class="general-group radio output-data" for="output-data-radio-6">Rho</label>
                             </form>
 
                             <form id="output-time-form" class="general-group output-forms">
-                                <div id="output-time-align-helper" class="general-group">days to expiry:</div>
+                                <div id="output-time-align-helper" class="general-group">Days to expiry:</div>
 
                                 <input type="number" id="output-time-field" class="general-group all-fields" min="1" step="1" />
 
@@ -116,9 +116,7 @@
                         </div>
 
                         <div id="output-sub-container-2" class="general-group">
-                            <div id="output-view-container">
-                                <div id="BSM-loading-text">LOADING...</div>
-                            </div>
+                            <div id="output-view-container"></div>
 
                             <div id="output-summary-container" class="general-group">
                                 <table id="output-summary-table" class="general-group">

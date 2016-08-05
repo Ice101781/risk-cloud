@@ -2,7 +2,7 @@
 .model-heading {
   margin: 0;
   padding: 0;
-  margin-top: 2vw;
+  margin-top: 1.75vw;
   margin-bottom: 0.5vw;
   text-align: center;
 }
@@ -32,14 +32,14 @@
 #initial-params-container {
   height: 24vw;
   margin-top: 0.5vw;
-  background-color: transparent; /*lightblue test*/
+  background-color: transparent; /*lightblue; test*/
 }
 
 #initial-params-sub-container {
   display: inline-block;
   height: 13vw;
-  width: 32vw;
-  margin-top: 4vw;
+  width: 30vw;
+  margin-top: 3vw;
   background-color: #a6a6a6;
 }
 
@@ -59,7 +59,6 @@
 
 #trade-legs-params-container {
   padding-top: 1.25vw;
-  padding-bottom: 0.25vw;
 }
 
 .trade-leg {
@@ -94,26 +93,26 @@
 }
 
 #output-sub-container-1 {
-  width: 13.875vw;
+  width: 12.5vw;
 }
 
 #output-sub-container-2 {
-  width: 78.5vw;
+  width: 78.25vw;
 }
 
-#output-view-container, #BSM-loading-text {
+#output-view-container, .loading-text {
   height: 31vw;
 }
 
-#output-view-container, #output-summary-container {
-  width: 77.5vw; /* aspect ratio of #output-view-container is 2.5:1 */
-}
-
-#BSM-loading-text {
+.loading-text {
   line-height: 32vw;
   text-align: center;
   font-size: 1.75vw;
   color: #9999ff;
+}
+
+#output-view-container, #output-summary-container {
+  width: 77.5vw; /* aspect ratio of #output-view-container is 2.5:1 */
 }
 
 #output-view-container {
@@ -177,13 +176,13 @@
 }
 
 #num-legs-align-helper {
-  width: 17vw;
+  width: 15vw;
   padding-bottom: 0.1875vw;
   font-size: 0.95vw;
 }
 
 #fees-align-helper {
-  width: 22.25vw;
+  width: 20.25vw;
   padding-top: 0.375vw;
   font-size: 0.95vw;
 }
@@ -196,12 +195,12 @@
 }
 
 .trade-leg-align-helpers {
-  width: 13.5vw;
+  width: 13vw;
 }
 
 #output-time-align-helper {
-  width: 11.5vw;
-  margin-left: 0.25vw;
+  width: 10.5vw;
+  margin-left: 0.30625vw;
   font-size: 0.9vw;
 }
 /* END ALIGNMENT HELPERS //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
@@ -212,12 +211,12 @@
   margin: 0;
   padding: 0;
   margin-left: 1vw;
-  margin-right: 1vw;
   border: none;
 }
 
 #continue-button-1, #return-button-1, #calculate-button-1 {
   width: 7vw;
+  margin-right: 1vw;
 }
 
 #output-time-button {
@@ -297,7 +296,7 @@ label.radio.output-data {
 }
 
 #num-legs-form, #fees-form {
-  width: 29vw;
+  width: 27vw;
   margin-top: 0.875vw;
 }
 
@@ -311,12 +310,12 @@ label.radio.output-data {
 }
 
 #current-price-form {
-  margin-top: 1vw;
+  margin-top: 1.25vw;
 }
 
 .output-forms {
   display: inline-block;
-  width: 12vw;
+  width: 11vw;
   margin: 0;
   padding: 0;
   padding-top: 0.5vw;
@@ -363,8 +362,7 @@ label.radio.output-data {
 
 #output-time-field {
   height: 1.5vw;
-  width: 4.5vw;
-  margin-left: 1vw;
+  width: 4vw;
   margin-top: 0.5vw;
   padding-left: 0.5vw;
 }

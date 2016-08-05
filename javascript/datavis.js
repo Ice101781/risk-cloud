@@ -9,9 +9,6 @@ visuals = function(properties) {
 
     init: function() {
 
-        //remove the loading text
-        elem.destroyChildren("output-view-container", ['BSM-loading-text']);
-
         //local vars for the 2D and 3D views 
         var width    = elem.select("output-view-container").offsetWidth,
             height   = elem.select("output-view-container").offsetHeight,
@@ -37,8 +34,9 @@ visuals = function(properties) {
             canvasW = 2*Math.floor(width*(1-(1.01)*scalar)), //THE MULTIPLIER FIXES BLURRY TEXT - IS IT RELATED TO THE 'devicePixelRatio' PROPERTY?
             canvasH = 2*Math.floor(height*(0.6)*scalar/(numH-1)), //AND HERE AS WELL
             data,
+            index,
             range,
-            clouds  = [],
+            clouds  = {},
             labels  = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} };
 
         //set renderer params and attach when the container is available
@@ -63,123 +61,19 @@ visuals = function(properties) {
         camera.position.set(radius*Math.sin(phi)*Math.cos(theta), radius*Math.sin(phi)*Math.sin(theta), radius*Math.cos(phi));
         scene.add(light, camera);
 
+        // HELPERS //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        //GRAPH DATA
-        addGraphData = function() {
+        //ANIMATION
+        render = function() {
 
-            //local vars
-            switch(+elem.select("input[name=output-data-radio]:checked").value) {
-
-                case 1:
-                    data = g.PROFITLOSS_DATA;
-                    break;
-
-                case 2:
-                    data = g.DELTA_DATA;
-                    break;
-
-                case 3:
-                    data = g.GAMMA_DATA;
-                    break;
-
-                case 4:
-                    data = g.THETA_DATA;
-                    break;
-
-                case 5:
-                    data = g.VEGA_DATA;
-                    break;
-
-                case 6:
-                    data = g.RHO_DATA;
-                    break;
-            }
-
-            //range of the data; use '(r+1)' to ensure all data is contained within the graph area
-            switch(data) {
-
-                case g.GAMMA_DATA:
-                /* fall-through */
-                case g.THETA_DATA:
-                    var r  = obj.range(data[0], data[obj.min(g.EXPIRY)-0.5]);
-                    range  = r !== 0 ? (r+1) : 1;
-                    break;
-
-                default:
-                    var r  = obj.range(data[0], data[obj.min(g.EXPIRY)]);
-                    range  = r !== 0 ? (r+1) : 1;
-                    break;
-            }
-
-            //point cloud objects
-            [0xaa00ff, 0xff0000, 0x0000ff].forEach(function(col, t) { clouds[t] = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({size: 0.0035*w*scalar, color: col})) });
-
-            //push vertices to the point cloud geometries
-            [data[obj.min(g.EXPIRY)-0.5], data[obj.min(g.EXPIRY)], data[0]].forEach(function(set, t) {
-
-                for(val in set) {
-
-                    clouds[t].geometry.vertices.push(new THREE.Vector3(
-
-                        w*(scalar*(Object.keys(set).indexOf(val)/(obj.size(set)-1)-1)+0.5), //x-coordinate
-
-                        h/2*(scalar*(set[val]/range-numH/(numH-1))+1),                      //y-coordinate
-
-                        zDist+0.00001                                                       //z-coordinate (points placed slightly in front of the grid and background)
-                    ));
-                }
-
-                //add the point cloud to the scene
-                camera.add(clouds[t]);
-            });
-        }
-
-
-        //LISTEN FOR GRAPH DATA DISPLAY CHANGE
-        addGraphDataChangeListener = function() {
-
-            for(i=1; i<7; i++) {
-
-                (function(n) {
-
-                    elem.select("output-data-radio-"+n).addEventListener('click', function() {
-
-                        //remove the old point clouds
-                        camera.remove(clouds[0], clouds[1], clouds[2]);
-
-                        //draw the new ones
-                        addGraphData();
-
-                        //set y-axis label values
-                        for(j=0; j<numH; j++) { 
-
-                            //clear the old labels
-                            labels.yaxis.context[j].clearRect(0, 0, canvasW, canvasH);
-
-                            //set value at the x-axis as well as all other values
-                            switch(j) {
-
-                                case (numH-1)/2:
-                                    labels.yaxis.context[j].fillText('0', canvasW/2, canvasH/2);
-                                    break;
-
-                                //ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
-                                default:
-                                    labels.yaxis.context[j].fillText((range*(1-2*j/(numH-1))).toFixed(2), canvasW/2, canvasH/2);
-                                    break;
-                            }
-
-                            //update the texture
-                            labels.yaxis.texture[j].needsUpdate = true;
-                        }
-                    });
-                })(i);
-            }
+            renderer.render(scene, camera);
+            requestAnimationFrame(render);
+            //console.log();
         }
 
 
         //THE 2D VIEW
-        add2DView = function() {
+        add2DGraphObjects = function() {
 
             //local vars for the background and gridlines
             var plane1 = new THREE.Mesh(new THREE.PlaneGeometry(w, h, 1, 1), new THREE.MeshBasicMaterial({color: 0x888888})),
@@ -308,7 +202,7 @@ visuals = function(properties) {
                 switch((g.STOCKRANGE_LENGTH-1) % (numV-1)) {
 
                     case 0:
-                        var labelText = '$'+Object.keys(data[0])[(g.STOCKRANGE_LENGTH-1)/(numV-1)*i];
+                        var labelText = '$'+Object.keys(g.PROFITLOSS_DATA[0])[(g.STOCKRANGE_LENGTH-1)/(numV-1)*i];
                         break;
 
                     default:
@@ -317,12 +211,12 @@ visuals = function(properties) {
                             //the case where the fractional part of the remainder is < 0.5
                             case Math.round((g.STOCKRANGE_LENGTH-1)/(numV-1)):
                                 //Thanks to Michael Wunder for his help with this
-                                var labelText = '$'+Object.keys(data[0])[Math.floor((g.STOCKRANGE_LENGTH-1)/(numV-1))*i+Math.floor((i+1)/3)];
+                                var labelText = '$'+Object.keys(g.PROFITLOSS_DATA[0])[Math.floor((g.STOCKRANGE_LENGTH-1)/(numV-1))*i+Math.floor((i+1)/3)];
                                 break;
 
                             //the case where the fractional part of the remainder is >= 0.5
                             default:
-                                var labelText = '$'+Object.keys(data[0])[Math.ceil((g.STOCKRANGE_LENGTH-1)/(numV-1))*i-Math.floor((i+1)/3)];
+                                var labelText = '$'+Object.keys(g.PROFITLOSS_DATA[0])[Math.ceil((g.STOCKRANGE_LENGTH-1)/(numV-1))*i-Math.floor((i+1)/3)];
                                 break;
                         }
                         break;
@@ -376,6 +270,134 @@ visuals = function(properties) {
         }
 
 
+        //GRAPH DATA
+        getGraphInfo = function(type) {
+
+            switch(type) {
+
+                case 'data':
+                    var value = +elem.select("input[name=output-data-radio]:checked").value;
+
+                    switch(value) {
+
+                        case 0:
+                            return g.PROFITLOSS_DATA;
+                        case 1:
+                            return g.DELTA_DATA;
+                        case 2:
+                            return g.GAMMA_DATA;
+                        case 3:
+                            return g.THETA_DATA;
+                        case 4:
+                            return g.VEGA_DATA;
+                        case 5:
+                            return g.RHO_DATA;
+                    }
+
+                case 'index':
+                    switch(data) {
+
+                        case g.PROFITLOSS_DATA:
+                            return 0;
+                        case g.DELTA_DATA:
+                            return 1;
+                        case g.GAMMA_DATA:
+                            return 2;
+                        case g.THETA_DATA:
+                            return 3;
+                        case g.VEGA_DATA:
+                            return 4;
+                        case g.RHO_DATA:
+                            return 5;
+                    }
+            }
+        }
+
+
+        //ADD OR REMOVE GRAPH DATA
+        graph = function(type) {
+
+            index = getGraphInfo('index');
+
+            switch(type) {
+
+                case 'add':
+                    camera.add(clouds[index][0], clouds[index][1], clouds[index][2]);
+                    break;
+
+                case 'remove':
+                    camera.remove(clouds[index][0], clouds[index][1], clouds[index][2]);
+                    break;
+            }
+        }
+
+
+        //DATA RANGE
+        getDataRange = function(data) {
+
+            switch(data) {
+
+                case g.GAMMA_DATA:
+                /* fall-through */
+                case g.THETA_DATA:
+                    var r  = obj.range(data[0], data[obj.min(g.EXPIRY)-0.5]);
+                    range  = r !== 0 ? r : 1;
+                    break;
+
+                default:
+                    var r  = obj.range(data[0], data[obj.min(g.EXPIRY)]);
+                    range  = r !== 0 ? r : 1;
+                    break;
+            }
+        }
+
+
+        //LISTEN FOR GRAPH DATA DISPLAY CHANGE
+        addGraphDataChangeListener = function() {
+
+            for(i=1; i<7; i++) {
+
+                (function(n) {
+
+                    elem.select("output-data-radio-"+n).addEventListener('click', function() {
+
+                        //remove the old point clouds
+                        graph('remove');
+
+                        //add the new ones
+                        data = getGraphInfo('data');
+                        getDataRange(data);
+
+                        graph('add');
+
+                        //change y-axis label values
+                        for(j=0; j<numH; j++) { 
+
+                            //clear the old labels
+                            labels.yaxis.context[j].clearRect(0, 0, canvasW, canvasH);
+
+                            //set value at the x-axis as well as all other values
+                            switch(j) {
+
+                                case (numH-1)/2:
+                                    labels.yaxis.context[j].fillText('0', canvasW/2, canvasH/2);
+                                    break;
+
+                                //ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
+                                default:
+                                    labels.yaxis.context[j].fillText((range*(1-2*j/(numH-1))).toFixed(2), canvasW/2, canvasH/2);
+                                    break;
+                            }
+
+                            //update the texture
+                            labels.yaxis.texture[j].needsUpdate = true;
+                        }
+                    });
+                })(i);
+            }
+        }
+
+
         //WRITE IV AND 'GREEKS' INFO/TOTALS TO THE TRADE SUMMARY TABLE
         addTableData = function() {
 
@@ -398,20 +420,71 @@ visuals = function(properties) {
             greeksArray.forEach(function(greek) { elem.select(greek+"-total").innerHTML = obj.sum(g[greek.toUpperCase()]).toFixed(2) });
         }
 
+        // END HELPERS //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        //ANIMATION
-        render = function() {
+        // MAIN /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            renderer.render(scene, camera);
-            requestAnimationFrame(render);
-            //console.log();
+        //PUSH 2D DATA TO POINT CLOUDS
+        push2DData = function(callback) {
+
+            //local vars
+            var colors = [0xff0000, 0xaa00ff, 0x0000ff];
+
+            //all data
+            [g.PROFITLOSS_DATA, g.DELTA_DATA, g.GAMMA_DATA, g.THETA_DATA, g.VEGA_DATA, g.RHO_DATA].forEach(function(num, n) {
+
+                getDataRange(num);
+
+                //declare objects to hold the point clouds
+                clouds[n] = {};
+
+                //point clouds
+                [num[30], num[29.5], num[0]].forEach(function(set, tau) {
+
+                    //create objects
+                    clouds[n][tau] = new THREE.Points( new THREE.Geometry(), new THREE.PointsMaterial({ size: 0.0035*w*scalar, color: colors[tau] }) );
+
+                    //push vertices to the point cloud geometries
+                    for(val in set) {
+
+                        clouds[n][tau].geometry.vertices.push(new THREE.Vector3(
+
+                            w*(scalar*(Object.keys(set).indexOf(val)/(obj.size(set)-1)-1)+0.5), //x-coordinate
+
+                            h/2*(scalar*(set[val]/range-numH/(numH-1))+1), //y-coordinate
+
+                            zDist+0.00001 //z-coordinate
+                        ));
+                    }
+                });
+            });
+
+            callback = function() {
+
+                //status message
+                console.log('point clouds full.');
+
+                //remove 'pushing data' text
+                elem.destroyChildren("output-view-container", ["BSM-push-text"]);
+
+                //display the global object in the console
+                console.log(g);
+
+                data = getGraphInfo('data');
+                getDataRange(data);
+
+                render();
+                add2DGraphObjects();
+                graph('add');
+                addGraphDataChangeListener();
+            }();
         }
 
-        render();
-        addGraphData();
-        addGraphDataChangeListener();
-        add2DView();
+        // END MAIN /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         addTableData();
+        setTimeout(function() { push2DData() }, 100);
+
         //console.log();
     }
 })

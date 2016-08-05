@@ -60,7 +60,7 @@ nav = function(properties) {
         //main
         (mainMenu = function() {
 
-            var headings = { 1: "models", 2: "info" };
+            var headings = { 1: "MODEL", 2: "Info" };
 
             elem.create({tag: "ul", attributes: {id: "nav-menu"}}, "header-main");
 
@@ -85,8 +85,8 @@ nav = function(properties) {
                 1: { a: {heading: "Black-Scholes-Merton", link: "../html/BSMpage.html"}, 
                    /*b: {heading: "Variance-Gamma",       link: "#"                   }*/ },
 
-                2: { a: {heading: "faq",   link: "#"},
-                     b: {heading: "legal", link: "#"} }
+                2: { a: {heading: "FAQ",   link: "#"},
+                     b: {heading: "Legal", link: "#"} }
             };
 
             for(num in subHeadings) {
@@ -242,37 +242,37 @@ numberFields = function(properties) {
         switch(idString) {
 
             case "num-contracts":
-                var content = "no. of contracts :",
+                var content = "No. of contracts :",
                     attr    = {min:"1", step:"1", value:"1"},
                     subNum  = 2;
                 break;
 
             case "strike-price":
-                var content = "exercise price :",
+                var content = "Exercise price :",
                     attr    = {min:".01", step:".01", value:"100"},
                     subNum  = 3;
                 break;
 
             case "option-price":
-                var content = "option price :",
+                var content = "Option price :",
                     attr    = {min:".01", step:".01", value:"1.25"},
                     subNum  = 4;
                 break;
 
             case "expiry":
-                var content = "calendar days to expiry :",
+                var content = "Calendar days to expiry :",
                     attr    = {min:"1", step:"1", value:"30"},
                     subNum  = 5;
                 break;
 
             case "div-yield":
-                var content = "dividend yield % :",
+                var content = "Dividend yield % :",
                     attr    = {min:"0", step:".01", value:"0"},
                     subNum  = 6;
                 break;
 
             case "risk-free-rate":
-                var content = "risk-free rate % :",
+                var content = "Risk-free rate % :",
                     attr    = {min:"0", step:".01", value:"0.25"},
                     subNum  = 7;
                 break;

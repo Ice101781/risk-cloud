@@ -95,14 +95,12 @@ html {
 }
 
 .nav-sub-list-item {
-  padding-right: 0.5vw;
-  padding-top: 0.25vw;
-  padding-bottom: 0.25vw;
+  padding: 0.5vw;
   text-align: right;
   background-color: #d8d8d8;
 }
 
 .nav-sub-list-item-link {
-  font-size: 0.75vw;
+  font-size: 0.8vw;
   color: black;
 }

@@ -173,7 +173,7 @@ finalParams = function(properties) {
         });
 
         elem.ease("in", "initial-params-container", 0.4, 24);
-        elem.fade("in", "initial-params-container", 0.01);
+        elem.fade("in", "initial-params-container", 0.02);
     },
 
     validate: function() {
@@ -307,7 +307,17 @@ finalParams = function(properties) {
                 //transitions, calculate and display output
                 elem.ease("out", "final-params-container", 0.5, 38);
                 elem.fade("out", "final-params-container", 0.02);
-                elem.fade("in", "output-container", 0.01, function() { setTimeout(function() { BSM.data(visuals.init) }, 350) });
+
+                elem.fade("in", "output-container", 0.01, function() {
+
+                    //status message
+                    console.log('now calculating...');
+
+                    //add 'calculating' text
+                    elem.create({tag: "div", content: 'Calculating...', attributes: {id: "BSM-calc-text", class: "loading-text"}}, "output-view-container");
+
+                    setTimeout(function() { BSM.data(visuals.init) }, 100);
+                });
                 break;
         }
     }

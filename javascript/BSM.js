@@ -226,24 +226,39 @@ BSM = function(properties) {
             }
         }
 
-        getImpliedVols();
-        getStockSpace();
+        allData = function(callback) {
 
-        //calculate current trade values
-        BSM.calc(0, g.STOCK_PRICE);
+            getImpliedVols();
+            getStockSpace();
 
-        //store the current price of the trade
-        tradeCost = obj.sum(BSM.price);
+            //calculate current trade values
+            BSM.calc(0, g.STOCK_PRICE);
 
-        getTimeSpaceData(0, obj.min(g.EXPIRY)-1);
-        getTimeSpaceData(obj.min(g.EXPIRY)-0.5, obj.min(g.EXPIRY)-0.5);
-        getTimeSpaceData(obj.min(g.EXPIRY), obj.min(g.EXPIRY));
+            //store the current price of the trade
+            tradeCost = obj.sum(BSM.price);
 
-        //clear values after last calculation
-        obj.reset(BSM);
+            getTimeSpaceData(0, obj.min(g.EXPIRY)-1);
+            getTimeSpaceData(obj.min(g.EXPIRY)-0.5, obj.min(g.EXPIRY)-0.5);
+            getTimeSpaceData(obj.min(g.EXPIRY), obj.min(g.EXPIRY));
 
-        //display the global object in the console
-        console.log(g);
+            //clear values after last calculation
+            obj.reset(BSM);
+
+            callback = function() {
+
+                //status message
+                console.log('finished calculations.');
+
+                //remove 'calculating' text
+                elem.destroyChildren("output-view-container", ["BSM-calc-text"]);
+
+                //status message
+                console.log('pushing vertices to point cloud geometries...');
+
+                //add 'pushing data' text
+                elem.create({tag: "div", content: 'Pushing data to three.js...', attributes: {id: "BSM-push-text", class: "loading-text"}}, "output-view-container");
+            }();
+        }();
 
         //data visualization callback
         if(typeof callback === 'function') { callback() }
