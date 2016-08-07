@@ -60,7 +60,7 @@ nav = function(properties) {
         //main
         (mainMenu = function() {
 
-            var headings = { 1: "MODEL", 2: "Info" };
+            var headings = { 1: "MODEL", 2: "info" };
 
             elem.create({tag: "ul", attributes: {id: "nav-menu"}}, "header-main");
 
@@ -86,7 +86,7 @@ nav = function(properties) {
                    /*b: {heading: "Variance-Gamma",       link: "#"                   }*/ },
 
                 2: { a: {heading: "FAQ",   link: "#"},
-                     b: {heading: "Legal", link: "#"} }
+                     b: {heading: "legal", link: "#"} }
             };
 
             for(num in subHeadings) {

@@ -31,8 +31,9 @@ visuals = function(properties) {
             zDist   = -h/(2*Math.tan((VFOVdeg*Math.PI/180)/2)),
             numH    = 25,
             numV    = 7,
-            canvasW = 2*Math.floor(width*(1-(1.01)*scalar)), //THE MULTIPLIER FIXES BLURRY TEXT - IS IT RELATED TO THE 'devicePixelRatio' PROPERTY?
-            canvasH = 2*Math.floor(height*(0.6)*scalar/(numH-1)), //AND HERE AS WELL
+            canvasW = 2*Math.floor(width*(1-(1.01)*scalar)), //the multiplier for these dimensions fixes blurry text - is it related to 'devicePixelRatio'?
+            canvasH = 2*Math.floor(height*(0.6)*scalar/(numH-1)),
+            dataArr = [ g.PROFITLOSS_DATA, g.DELTA_DATA, g.GAMMA_DATA, g.THETA_DATA, g.VEGA_DATA, g.RHO_DATA ],
             data,
             index,
             range,
@@ -80,11 +81,15 @@ visuals = function(properties) {
                 plane2 = new THREE.Mesh(new THREE.PlaneGeometry(w*scalar, h*scalar, 1, 1), new THREE.MeshBasicMaterial({color: 0x333333})),
                 lines  = { xaxis: {tick: {}, ext: {}, dots: {}}, yaxis: {} };
 
+            //position the background and add it to the scene
+            plane1.position.set(0, 0, zDist);
+            plane2.position.set(w/2*(1-scalar), h/2*(1-scalar*numH/(numH-1)), zDist);
+            camera.add(plane1, plane2);
 
             //label canvases, contexts, etc.
             addLabelCanvases = function(axis, n) {
 
-                var p = axis == 'yaxis' ? 1: 0.75;
+                var p = axis == 'yaxis' ? 1 : 0.75;
 
                 //create the canvas
                 labels[axis].canvas[n]        = document.createElement('canvas');
@@ -120,11 +125,6 @@ visuals = function(properties) {
                                        );
             }
 
-            //position the background and add it to the scene
-            plane1.position.set(0, 0, zDist);
-            plane2.position.set(w/2*(1-scalar), h/2*(1-scalar*numH/(numH-1)), zDist);
-            camera.add(plane1, plane2);
-
             //add horizontal gridlines and vertical axis labels
             for(i=0; i<numH; i++) {
 
@@ -139,17 +139,20 @@ visuals = function(properties) {
 
                 addLabelCanvases('yaxis', i);
 
-                //set color of and value at the x-axis as well as all other values
-                switch(i) {
+                //set horizontal label values including value at and color of the x-axis
+                switch(true) {
 
-                    case (numH-1)/2:
-                        lines.yaxis[i].material.color.setHex(0x777777);
-                        labels.yaxis.context[i].fillText('0', canvasW/2, canvasH/2);
+                    case (i < (numH-1)/2):
+                        labels.yaxis.context[i].fillText((range*(1-2*i/(numH-1))).toFixed(2), canvasW/2, canvasH/2);
                         break;
 
-                    //ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
-                    default:
-                        labels.yaxis.context[i].fillText((range*(1-2*i/(numH-1))).toFixed(2), canvasW/2, canvasH/2);
+                    case (i > (numH-1)/2):
+                        labels.yaxis.context[i].fillText((-range*(1-2*(numH-1-i)/(numH-1))).toFixed(2), canvasW/2, canvasH/2);
+                        break;
+
+                    case (i == (numH-1)/2):
+                        labels.yaxis.context[i].fillText('0', canvasW/2, canvasH/2);
+                        lines.yaxis[i].material.color.setHex(0x777777);
                         break;
                 }
 
@@ -270,54 +273,10 @@ visuals = function(properties) {
         }
 
 
-        //GRAPH DATA
-        getGraphInfo = function(type) {
-
-            switch(type) {
-
-                case 'data':
-                    var value = +elem.select("input[name=output-data-radio]:checked").value;
-
-                    switch(value) {
-
-                        case 0:
-                            return g.PROFITLOSS_DATA;
-                        case 1:
-                            return g.DELTA_DATA;
-                        case 2:
-                            return g.GAMMA_DATA;
-                        case 3:
-                            return g.THETA_DATA;
-                        case 4:
-                            return g.VEGA_DATA;
-                        case 5:
-                            return g.RHO_DATA;
-                    }
-
-                case 'index':
-                    switch(data) {
-
-                        case g.PROFITLOSS_DATA:
-                            return 0;
-                        case g.DELTA_DATA:
-                            return 1;
-                        case g.GAMMA_DATA:
-                            return 2;
-                        case g.THETA_DATA:
-                            return 3;
-                        case g.VEGA_DATA:
-                            return 4;
-                        case g.RHO_DATA:
-                            return 5;
-                    }
-            }
-        }
-
-
         //ADD OR REMOVE GRAPH DATA
-        graph = function(type) {
+        graphChange = function(type) {
 
-            index = getGraphInfo('index');
+            index = dataArr.indexOf(data);
 
             switch(type) {
 
@@ -341,19 +300,19 @@ visuals = function(properties) {
                 /* fall-through */
                 case g.THETA_DATA:
                     var r  = obj.range(data[0], data[obj.min(g.EXPIRY)-0.5]);
-                    range  = r !== 0 ? r : 1;
+                    range  = r !== 0 ? (r*1.025) : 1;
                     break;
 
                 default:
                     var r  = obj.range(data[0], data[obj.min(g.EXPIRY)]);
-                    range  = r !== 0 ? r : 1;
+                    range  = r !== 0 ? (r*1.025) : 1;
                     break;
             }
         }
 
 
         //LISTEN FOR GRAPH DATA DISPLAY CHANGE
-        addGraphDataChangeListener = function() {
+        addGraphChangeListener = function() {
 
             for(i=1; i<7; i++) {
 
@@ -362,35 +321,34 @@ visuals = function(properties) {
                     elem.select("output-data-radio-"+n).addEventListener('click', function() {
 
                         //remove the old point clouds
-                        graph('remove');
+                        graphChange('remove');
 
                         //add the new ones
-                        data = getGraphInfo('data');
+                        data = dataArr[+elem.select("input[name=output-data-radio]:checked").value];
                         getDataRange(data);
 
-                        graph('add');
+                        graphChange('add');
 
                         //change y-axis label values
-                        for(j=0; j<numH; j++) { 
+                        for(j=0; j<numH; j++) {
 
-                            //clear the old labels
-                            labels.yaxis.context[j].clearRect(0, 0, canvasW, canvasH);
+                            switch(true) {
 
-                            //set value at the x-axis as well as all other values
-                            switch(j) {
-
-                                case (numH-1)/2:
-                                    labels.yaxis.context[j].fillText('0', canvasW/2, canvasH/2);
+                                case (j < (numH-1)/2):
+                                    labels.yaxis.context[j].clearRect(0, 0, canvasW, canvasH);
+                                    labels.yaxis.context[j].fillText((range*(1-2*j/(numH-1))).toFixed(2), canvasW/2, canvasH/2);
+                                    labels.yaxis.texture[j].needsUpdate = true;
                                     break;
 
-                                //ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
+                                case (j > (numH-1)/2):
+                                    labels.yaxis.context[j].clearRect(0, 0, canvasW, canvasH);
+                                    labels.yaxis.context[j].fillText((-range*(1-2*(numH-1-j)/(numH-1))).toFixed(2), canvasW/2, canvasH/2);
+                                    labels.yaxis.texture[j].needsUpdate = true;
+                                    break;
+
                                 default:
-                                    labels.yaxis.context[j].fillText((range*(1-2*j/(numH-1))).toFixed(2), canvasW/2, canvasH/2);
                                     break;
                             }
-
-                            //update the texture
-                            labels.yaxis.texture[j].needsUpdate = true;
                         }
                     });
                 })(i);
@@ -431,7 +389,7 @@ visuals = function(properties) {
             var colors = [0xff0000, 0xaa00ff, 0x0000ff];
 
             //all data
-            [g.PROFITLOSS_DATA, g.DELTA_DATA, g.GAMMA_DATA, g.THETA_DATA, g.VEGA_DATA, g.RHO_DATA].forEach(function(num, n) {
+            dataArr.forEach(function(num, n) {
 
                 getDataRange(num);
 
@@ -439,15 +397,15 @@ visuals = function(properties) {
                 clouds[n] = {};
 
                 //point clouds
-                [num[30], num[29.5], num[0]].forEach(function(set, tau) {
+                [num[obj.min(g.EXPIRY)], num[obj.min(g.EXPIRY)-0.5], num[0]].forEach(function(set, dt) {
 
                     //create objects
-                    clouds[n][tau] = new THREE.Points( new THREE.Geometry(), new THREE.PointsMaterial({ size: 0.0035*w*scalar, color: colors[tau] }) );
+                    clouds[n][dt] = new THREE.Points( new THREE.Geometry(), new THREE.PointsMaterial({ size: 0.0035*w*scalar, color: colors[dt] }) );
 
                     //push vertices to the point cloud geometries
                     for(val in set) {
 
-                        clouds[n][tau].geometry.vertices.push(new THREE.Vector3(
+                        clouds[n][dt].geometry.vertices.push(new THREE.Vector3(
 
                             w*(scalar*(Object.keys(set).indexOf(val)/(obj.size(set)-1)-1)+0.5), //x-coordinate
 
@@ -470,13 +428,13 @@ visuals = function(properties) {
                 //display the global object in the console
                 console.log(g);
 
-                data = getGraphInfo('data');
+                data = dataArr[+elem.select("input[name=output-data-radio]:checked").value];
                 getDataRange(data);
 
                 render();
                 add2DGraphObjects();
-                graph('add');
-                addGraphDataChangeListener();
+                graphChange('add');
+                addGraphChangeListener();
             }();
         }
 
