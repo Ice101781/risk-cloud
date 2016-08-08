@@ -60,7 +60,11 @@ nav = function(properties) {
         //main
         (mainMenu = function() {
 
-            var headings = { 1: "MODEL", 2: "info" };
+            var headings = { 1: "ANALYZE",
+
+                             2: "MODEL",
+
+                             3: "info" };
 
             elem.create({tag: "ul", attributes: {id: "nav-menu"}}, "header-main");
 
@@ -82,11 +86,13 @@ nav = function(properties) {
 
             var subHeadings = {   
 
-                1: { a: {heading: "Black-Scholes-Merton", link: "../html/BSMpage.html"}, 
+                1: { a: {heading: "Skew",                 link: "#"} },
+
+                2: { a: {heading: "Black-Scholes-Merton", link: "../html/BSMpage.html"}//,
                    /*b: {heading: "Variance-Gamma",       link: "#"                   }*/ },
 
-                2: { a: {heading: "FAQ",   link: "#"},
-                     b: {heading: "legal", link: "#"} }
+                3: { a: {heading: "FAQ",                  link: "#"},
+                     b: {heading: "legal",                link: "#"} }
             };
 
             for(num in subHeadings) {
@@ -113,28 +119,46 @@ nav = function(properties) {
     anim: function(index) {
 
         //local vars
-        var otherIndex = (index == "1") ? "2" : "1",
-            inc        = 0.25,
-            maxHeight  = 4;
+        var increment = 0.25,
+            maxHeight = 4;
 
-        //close the other sub-menu if it's open
-        if(elem.select("nav-sub-container-"+otherIndex).getAttribute("data-open") == "true") {
+        navSubEase = function(type, num) {
 
-            elem.ease("out", "nav-sub-container-"+otherIndex, inc, maxHeight);
-            elem.select("nav-sub-container-"+otherIndex).setAttribute("data-open", "false");
+            var bool = type == "in" ? "true" : "false";
+
+            elem.ease(type, "nav-sub-container-"+num, increment, maxHeight);
+            elem.select("nav-sub-container-"+num).setAttribute("data-open", bool);
         }
 
-        //open or close the relevant sub-menu
+        closeNavSubs = function(arr) {
+
+            arr.forEach(function(n) { if(elem.select("nav-sub-container-"+n).getAttribute("data-open") == "true") { navSubEase("out", n) } });
+        }
+
+        //open or close the sub-menu
         switch(elem.select("nav-sub-container-"+index).getAttribute("data-open")) {
 
             case "false":
-                elem.ease("in", "nav-sub-container-"+index, inc, maxHeight);
-                elem.select("nav-sub-container-"+index).setAttribute("data-open", "true");
+                //close the other sub-menus if they're open
+                switch(index) {
+
+                    case 1:
+                        closeNavSubs([2,3]);
+                        break;
+
+                    case 2:
+                        closeNavSubs([1,3]);
+                        break;
+
+                    case 3:
+                        closeNavSubs([1,2]);
+                        break;
+                }
+                navSubEase("in", index);
                 break;
 
             case "true":
-                elem.ease("out", "nav-sub-container-"+index, inc, maxHeight);
-                elem.select("nav-sub-container-"+index).setAttribute("data-open", "false");
+                navSubEase("out", index);
                 break;
         }
     }
@@ -249,7 +273,7 @@ numberFields = function(properties) {
 
             case "strike-price":
                 var content = "Exercise price :",
-                    attr    = {min:".25", step:"0.25", value:"100"},
+                    attr    = {min:".25", step:".25", value:"100"},
                     subNum  = 3;
                 break;
 
@@ -364,11 +388,7 @@ classInputCheck = function(element) {
             case "num-contracts-field":
                 switch(false) {
 
-                    case val >= 1:
-                        obj[i] = false;
-                        return obj;
-
-                    case val == Math.floor(val):
+                    case val >= 1 && val == Math.floor(val):
                         obj[i] = false;
                         return obj;
 
@@ -407,11 +427,7 @@ classInputCheck = function(element) {
             case "expiry-field":
                 switch(false) {
 
-                    case val >= 1 && val <= 183:
-                        obj[i] = false;
-                        return obj;
-
-                    case val == Math.floor(val):
+                    case val >= 1 && val <= 183 && val == Math.floor(val):
                         obj[i] = false;
                         return obj;
 

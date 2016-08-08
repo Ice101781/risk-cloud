@@ -31,7 +31,7 @@ html {
   height: 1.875vw;
   width: 5vw; /* aspect ratio is 4:1.5 */
   position: relative;
-  right: 42.75vw;
+  right: 39.75vw;
 }
 
 #nav-menu, .nav-sub-menu {
@@ -43,7 +43,7 @@ html {
 #nav-menu {
   display: inline-block;
   position: relative;
-  left: 42.75vw;
+  left: 39.75vw;
 }
 
 .nav-list-item, .nav-sub-list-item {
@@ -84,14 +84,14 @@ html {
   position: relative;
 }
 
-#nav-sub-menu-1 {
-  width: 9.75vw;
-  left: 89.25vw; /* sum to 99vw */
-}
-
-#nav-sub-menu-2 { 
+#nav-sub-menu-1, #nav-sub-menu-3 { 
   width: 3.5vw;
   left: 95.5vw; /* sum to 99vw */
+}
+
+#nav-sub-menu-2 {
+  width: 9.75vw;
+  left: 89.25vw; /* sum to 99vw */
 }
 
 .nav-sub-list-item {

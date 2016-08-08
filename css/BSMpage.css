@@ -30,7 +30,7 @@
 }
 
 #initial-params-container {
-  height: 26vw;
+  height: 30vw;
   background-color: transparent; /*lightblue test*/
 }
 
@@ -44,7 +44,7 @@
 
 #final-params-container {
   opacity: 0; 
-  height: 38vw;
+  height: 39vw;
   background-color: transparent; /*lightpink test*/
 }
 
@@ -235,7 +235,6 @@ input[type=radio] + .radio {
   padding-top: 0.25vw;
   padding-bottom: 0.5vw;
   background-color: #d8d8d8;
-  color: #333333;
 }
 
 input[type=radio]:checked + .radio {
@@ -317,7 +316,7 @@ label.radio.output-data {
   margin: 0;
   padding: 0;
   padding-top: 0.5vw;
-  background-color: #ff5555;
+  background-color: #feffe0; /* thanks to http://www.color-hex.com/color-wheel/ */
 }
 
 #output-view-form {

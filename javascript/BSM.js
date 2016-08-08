@@ -180,8 +180,8 @@ BSM = function(properties) {
                 v = obj.avg(vols)*Math.sqrt(obj.min(g.EXPIRY)/365);
 
 
-            //create the array of stock prices using a range of -3 to +3 vols
-            for(i=0; i<n+1; i++) { sPrices.push(+(g.STOCK_PRICE*(1-(3*v)*(1-(2*i/n)))).toFixed(2)) } //ROUNDING ISSUE HERE, WORTH TRYING TO FIX?
+            //create the array of stock prices using a range of -3 to +3 v's
+            for(i=0; i<n+1; i++) { sPrices.push(+(g.STOCK_PRICE*(1-(3*v)*(1-(2*i/n)))).toFixed(2)) }
 
             //delete any duplicate prices in the stock price array
             sPrices = array.unique(sPrices);

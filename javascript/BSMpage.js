@@ -33,7 +33,7 @@ initialParams = function(properties) {
                 //remove initial params and create elements needed to specify final params; transitions
                 finalParams.create(function() {
 
-                    elem.ease("out", "initial-params-container", 0.5, 26);
+                    elem.ease("out", "initial-params-container", 0.5, 30);
                     elem.fade("out", "initial-params-container", 0.03);
                     elem.fade("in", "final-params-container", 0.01);
                 });
@@ -172,7 +172,7 @@ finalParams = function(properties) {
             elem.select("current-price-field").value = 100.25;
         });
 
-        elem.ease("in", "initial-params-container", 0.5, 26);
+        elem.ease("in", "initial-params-container", 0.5, 30);
         elem.fade("in", "initial-params-container", 0.01);
     },
 
@@ -231,7 +231,7 @@ finalParams = function(properties) {
                 inputErrorMsg(stockPriceField, "Please enter a number greater than 0 for the current price of the underlying stock.");
                 break;
 
-            //user-defined parameter capture, write some info to elements of the trade summary table
+            //user-defined parameter capture, write some info to elements of the trade summary table, calculate and launch visuals
             default:
                 g.STOCK_PRICE = +elem.select("current-price-field").value;
 
@@ -308,7 +308,7 @@ finalParams = function(properties) {
 
 
                 //transitions, calculate and display output
-                elem.ease("out", "final-params-container", 0.5, 38);
+                elem.ease("out", "final-params-container", 0.65, 39);
                 elem.fade("out", "final-params-container", 0.03);
 
                 elem.fade("in", "output-container", 0.01, function() {

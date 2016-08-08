@@ -9,7 +9,7 @@ visuals = function(properties) {
 
     init: function() {
 
-        //local vars for the 2D and 3D views 
+        //local vars
         var width    = elem.select("output-view-container").offsetWidth,
             height   = elem.select("output-view-container").offsetHeight,
             scene    = new THREE.Scene(),
@@ -86,8 +86,8 @@ visuals = function(properties) {
             plane2.position.set(w/2*(1-scalar), h/2*(1-scalar*numH/(numH-1)), zDist);
             camera.add(plane1, plane2);
 
-            //label canvases, contexts, etc.
-            addLabelCanvases = function(axis, n) {
+            //label canvas, context, etc.
+            addLabelCanvas = function(axis, n) {
 
                 var p = axis == 'yaxis' ? 1 : 0.75;
 
@@ -108,8 +108,8 @@ visuals = function(properties) {
                 labels[axis].context[n].textBaseline = 'middle';
             }
 
-            //label textures, meshes, etc.
-            addLabelMeshes = function(axis, n) {
+            //label texture, mesh, etc.
+            addLabelMesh = function(axis, n) {
 
                 var p = axis == 'yaxis' ? 1 : 0.75;
 
@@ -137,7 +137,7 @@ visuals = function(properties) {
 
                 lines.yaxis[i] = new THREE.Line(gridlineGeom, new THREE.LineBasicMaterial({color: 0x444444}));
 
-                addLabelCanvases('yaxis', i);
+                addLabelCanvas('yaxis', i);
 
                 //set horizontal label values including value at and color of the x-axis
                 switch(true) {
@@ -156,7 +156,7 @@ visuals = function(properties) {
                         break;
                 }
 
-                addLabelMeshes('yaxis', i);
+                addLabelMesh('yaxis', i);
 
                 //set label position
                 labels.yaxis.mesh[i].position.set(-w/2*(1.01)*scalar, h/2*(1-scalar*((2*i+1+(0.6)/4)/(numH-1)-(0.002))), zDist);
@@ -199,7 +199,7 @@ visuals = function(properties) {
                     lines.xaxis.dots[i].geometry.vertices.push(new THREE.Vector3(w*(scalar*(i/6-1)+0.5), h*(scalar*(0.25*(j+1)/(numH-1)-1)+0.5), zDist));
                 }
 
-                addLabelCanvases('xaxis', i);
+                addLabelCanvas('xaxis', i);
 
                 //set label values from -3 to +3 implied standard deviations
                 switch((g.STOCKRANGE_LENGTH-1) % (numV-1)) {
@@ -227,7 +227,7 @@ visuals = function(properties) {
 
                 labels.xaxis.context[i].fillText(labelText, canvasW/2*0.75, canvasH/2);
 
-                addLabelMeshes('xaxis', i);
+                addLabelMesh('xaxis', i);
 
                 //set label position; at book-ends: bump in label and extend tick mark
                 switch(i) {
@@ -288,9 +288,10 @@ visuals = function(properties) {
                         //remove the old point clouds
                         camera.remove(cloud[dataVal][0], cloud[dataVal][1], cloud[dataVal][2]);
 
-                        //add the new ones
+                        //get the new data's info
                         dataVal = +elem.select("input[name=output-data-radio]:checked").value;
 
+                        //add the new ones
                         camera.add(cloud[dataVal][0], cloud[dataVal][1], cloud[dataVal][2]);
 
                         //change y-axis label values
@@ -316,6 +317,31 @@ visuals = function(properties) {
                         }
                     });
                 })(i);
+            }
+        }
+
+
+        //LISTEN FOR GRAPH DATA TIME CHANGE
+        addTimeChangeListener = function() {
+
+            elem.select("output-time-button").onclick = function() {
+
+                var el  = "output-time-field",
+                    val = +elem.select(el).value;
+
+                //some error message handling
+                switch(false) {
+
+                    case val != "" && val >= 1 && val <= obj.min(g.EXPIRY) && val == Math.floor(val):
+                        inputErrorMsg(el, "Please enter a whole number between 1 and "+obj.min(g.EXPIRY)+" in the time field.");
+                        return;
+
+                    default:
+                        for(i=1; i<7; i++) { camera.remove(cloud[i][2]) }
+
+                            
+                        break;
+                }
             }
         }
 
@@ -354,6 +380,7 @@ visuals = function(properties) {
 
             dataArr.forEach(function(num, n) {
 
+                //get data info
                 dataVal = n+1;
 
                 //range of the data
@@ -393,15 +420,21 @@ visuals = function(properties) {
                 //remove 'pushing data' text
                 elem.destroyChildren("output-view-container", ["BSM-push-text"]);
 
+                //get data info
                 dataVal = +elem.select("input[name=output-data-radio]:checked").value;
 
                 render();
                 add2DGraphObjects();
                 addGraphChangeListener();
+                addTimeChangeListener();
 
-                //enable output data and output time radios
+                //enable output data and output time elements
                 for(i=1; i<7; i++) { elem.avail("output-data-radio-"+i, true) }
-                elem.select("output-data-form").style.backgroundColor = '#fafafa';
+
+                ["output-time-field", "output-time-button"].forEach(function(element) { elem.avail(element, true) });
+
+                ["output-data-form", "output-time-form"].forEach(function(element) { elem.select(element).style.backgroundColor = '#fafafa' });
+
 
                 //display the global object in the console
                 console.log(g);
