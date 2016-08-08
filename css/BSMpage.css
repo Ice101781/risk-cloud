@@ -2,8 +2,8 @@
 .model-heading {
   margin: 0;
   padding: 0;
-  margin-top: 1.75vw;
-  margin-bottom: 0.5vw;
+  margin-top: 1.5vw;
+  margin-bottom: 1.5vw;
   text-align: center;
 }
 
@@ -24,36 +24,34 @@
 
 /* CONTAINERS /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 #app-container {
-  height: 41vw;
+  height: 40vw;
   text-align: center;
-  background-color: transparent; /*lightgreen; test*/
+  background-color: transparent; /*lightgreen test*/
 }
 
 #initial-params-container {
-  height: 24vw;
-  margin-top: 0.5vw;
-  background-color: transparent; /*lightblue; test*/
+  height: 26vw;
+  background-color: transparent; /*lightblue test*/
 }
 
 #initial-params-sub-container {
   display: inline-block;
   height: 13vw;
   width: 30vw;
-  margin-top: 3vw;
+  margin-top: 2vw;
   background-color: #a6a6a6;
 }
 
 #final-params-container {
   opacity: 0; 
   height: 38vw;
-  background-color: transparent; /*lightpink; test*/
+  background-color: transparent; /*lightpink test*/
 }
 
 #final-params-sub-container {
   display: inline-block;
   height: 35vw;
   /* set width = 0 to vertically align two div's #trade-legs-params-container and #current-price-form */
-  margin-top: 1.5vw;
   background-color: #a6a6a6;
 }
 
@@ -77,13 +75,12 @@
 
 #output-container {
   opacity: 0;
-  height: 40.25vw;
-  background-color: transparent; /*violet; test*/
+  height: 39.5vw;
+  background-color: transparent; /*violet test*/
 }
 
 #output-sub-container {
   display: inline-block;
-  margin-top: 0.5vw;
   background-color: #a6a6a6;
 }
 
@@ -183,6 +180,7 @@
 
 #fees-align-helper {
   width: 20.25vw;
+  margin-right: 0.3125vw;
   padding-top: 0.375vw;
   font-size: 0.95vw;
 }
@@ -246,7 +244,7 @@ input[type=radio]:checked + .radio {
 
 label.radio.num-legs {
   width: 2vw;
-  margin-left: 0.5vw;
+  margin-left: 0.625vw;
 }
 
 label.radio.trade-leg-radios {
@@ -319,7 +317,7 @@ label.radio.output-data {
   margin: 0;
   padding: 0;
   padding-top: 0.5vw;
-  background-color: #fafafa;
+  background-color: #ff5555;
 }
 
 #output-view-form {

@@ -34,10 +34,10 @@ visuals = function(properties) {
             canvasW = 2*Math.floor(width*(1-(1.01)*scalar)), //the multiplier for these dimensions fixes blurry text - is it related to 'devicePixelRatio'?
             canvasH = 2*Math.floor(height*(0.6)*scalar/(numH-1)),
             dataArr = [ g.PROFITLOSS_DATA, g.DELTA_DATA, g.GAMMA_DATA, g.THETA_DATA, g.VEGA_DATA, g.RHO_DATA ],
-            data,
-            index,
-            range,
-            clouds  = {},
+            dataVal,
+            timeArr = [ obj.min(g.EXPIRY), obj.min(g.EXPIRY)-0.5, 0 ],
+            range   = [],
+            cloud   = {},
             labels  = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} };
 
         //set renderer params and attach when the container is available
@@ -143,11 +143,11 @@ visuals = function(properties) {
                 switch(true) {
 
                     case (i < (numH-1)/2):
-                        labels.yaxis.context[i].fillText((range*(1-2*i/(numH-1))).toFixed(2), canvasW/2, canvasH/2);
+                        labels.yaxis.context[i].fillText((range[dataVal]*(1-2*i/(numH-1))).toFixed(2), canvasW/2, canvasH/2);
                         break;
 
                     case (i > (numH-1)/2):
-                        labels.yaxis.context[i].fillText((-range*(1-2*(numH-1-i)/(numH-1))).toFixed(2), canvasW/2, canvasH/2);
+                        labels.yaxis.context[i].fillText((-range[dataVal]*(1-2*(numH-1-i)/(numH-1))).toFixed(2), canvasW/2, canvasH/2);
                         break;
 
                     case (i == (numH-1)/2):
@@ -270,44 +270,9 @@ visuals = function(properties) {
                 //add tick marks, dotted lines and labels to the scene
                 camera.add(lines.xaxis.tick[i], lines.xaxis.dots[i], labels.xaxis.mesh[i]);
             }
-        }
 
-
-        //ADD OR REMOVE GRAPH DATA
-        graphChange = function(type) {
-
-            index = dataArr.indexOf(data);
-
-            switch(type) {
-
-                case 'add':
-                    camera.add(clouds[index][0], clouds[index][1], clouds[index][2]);
-                    break;
-
-                case 'remove':
-                    camera.remove(clouds[index][0], clouds[index][1], clouds[index][2]);
-                    break;
-            }
-        }
-
-
-        //DATA RANGE
-        getDataRange = function(data) {
-
-            switch(data) {
-
-                case g.GAMMA_DATA:
-                /* fall-through */
-                case g.THETA_DATA:
-                    var r  = obj.range(data[0], data[obj.min(g.EXPIRY)-0.5]);
-                    range  = r !== 0 ? (r*1.025) : 1;
-                    break;
-
-                default:
-                    var r  = obj.range(data[0], data[obj.min(g.EXPIRY)]);
-                    range  = r !== 0 ? (r*1.025) : 1;
-                    break;
-            }
+            //add point clouds to the scene
+            camera.add(cloud[dataVal][0], cloud[dataVal][1], cloud[dataVal][2]);
         }
 
 
@@ -321,13 +286,12 @@ visuals = function(properties) {
                     elem.select("output-data-radio-"+n).addEventListener('click', function() {
 
                         //remove the old point clouds
-                        graphChange('remove');
+                        camera.remove(cloud[dataVal][0], cloud[dataVal][1], cloud[dataVal][2]);
 
                         //add the new ones
-                        data = dataArr[+elem.select("input[name=output-data-radio]:checked").value];
-                        getDataRange(data);
+                        dataVal = +elem.select("input[name=output-data-radio]:checked").value;
 
-                        graphChange('add');
+                        camera.add(cloud[dataVal][0], cloud[dataVal][1], cloud[dataVal][2]);
 
                         //change y-axis label values
                         for(j=0; j<numH; j++) {
@@ -336,13 +300,13 @@ visuals = function(properties) {
 
                                 case (j < (numH-1)/2):
                                     labels.yaxis.context[j].clearRect(0, 0, canvasW, canvasH);
-                                    labels.yaxis.context[j].fillText((range*(1-2*j/(numH-1))).toFixed(2), canvasW/2, canvasH/2);
+                                    labels.yaxis.context[j].fillText((range[dataVal]*(1-2*j/(numH-1))).toFixed(2), canvasW/2, canvasH/2);
                                     labels.yaxis.texture[j].needsUpdate = true;
                                     break;
 
                                 case (j > (numH-1)/2):
                                     labels.yaxis.context[j].clearRect(0, 0, canvasW, canvasH);
-                                    labels.yaxis.context[j].fillText((-range*(1-2*(numH-1-j)/(numH-1))).toFixed(2), canvasW/2, canvasH/2);
+                                    labels.yaxis.context[j].fillText((-range[dataVal]*(1-2*(numH-1-j)/(numH-1))).toFixed(2), canvasW/2, canvasH/2);
                                     labels.yaxis.texture[j].needsUpdate = true;
                                     break;
 
@@ -386,30 +350,34 @@ visuals = function(properties) {
         push2DData = function(callback) {
 
             //local vars
-            var colors = [0xff0000, 0xaa00ff, 0x0000ff];
+            var color = [0xff0000, 0xaa00ff, 0x0000ff];
 
-            //all data
             dataArr.forEach(function(num, n) {
 
-                getDataRange(num);
+                dataVal = n+1;
+
+                //range of the data
+                var r = obj.range([ num[timeArr[0]], num[timeArr[1]], num[timeArr[2]] ]);
+
+                range[dataVal] = r !== 0 ? (r*1.025) : 1;
 
                 //declare objects to hold the point clouds
-                clouds[n] = {};
+                cloud[dataVal] = {};
 
                 //point clouds
-                [num[obj.min(g.EXPIRY)], num[obj.min(g.EXPIRY)-0.5], num[0]].forEach(function(set, dt) {
+                timeArr.forEach(function(time, t) {
 
                     //create objects
-                    clouds[n][dt] = new THREE.Points( new THREE.Geometry(), new THREE.PointsMaterial({ size: 0.0035*w*scalar, color: colors[dt] }) );
+                    cloud[dataVal][t] = new THREE.Points( new THREE.Geometry(), new THREE.PointsMaterial({ size: 0.0035*w*scalar, color: color[t] }) );
 
                     //push vertices to the point cloud geometries
-                    for(val in set) {
+                    for(datum in num[time]) {
 
-                        clouds[n][dt].geometry.vertices.push(new THREE.Vector3(
+                        cloud[dataVal][t].geometry.vertices.push(new THREE.Vector3(
 
-                            w*(scalar*(Object.keys(set).indexOf(val)/(obj.size(set)-1)-1)+0.5), //x-coordinate
+                            w*(scalar*(Object.keys(num[time]).indexOf(datum)/(obj.size(num[time])-1)-1)+0.5), //x-coordinate
 
-                            h/2*(scalar*(set[val]/range-numH/(numH-1))+1), //y-coordinate
+                            h/2*(scalar*(num[time][datum]/range[dataVal]-numH/(numH-1))+1), //y-coordinate
 
                             zDist+0.00001 //z-coordinate
                         ));
@@ -425,16 +393,18 @@ visuals = function(properties) {
                 //remove 'pushing data' text
                 elem.destroyChildren("output-view-container", ["BSM-push-text"]);
 
-                //display the global object in the console
-                console.log(g);
-
-                data = dataArr[+elem.select("input[name=output-data-radio]:checked").value];
-                getDataRange(data);
+                dataVal = +elem.select("input[name=output-data-radio]:checked").value;
 
                 render();
                 add2DGraphObjects();
-                graphChange('add');
                 addGraphChangeListener();
+
+                //enable output data and output time radios
+                for(i=1; i<7; i++) { elem.avail("output-data-radio-"+i, true) }
+                elem.select("output-data-form").style.backgroundColor = '#fafafa';
+
+                //display the global object in the console
+                console.log(g);
             }();
         }
 

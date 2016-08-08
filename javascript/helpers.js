@@ -43,9 +43,6 @@ obj = function(properties) {
     //Object values sum
     sum: function(obj) {
 
-        //some basic error handling, else round values if parameters provided
-        for(key in obj) { if(typeof obj[key] !== 'number') { return "The 'obj.sum()' method requires all object values to be numbers." } }
-
         //thanks to 'Sirko' on stackoverflow.com for this
         return Object.keys(obj).reduce(function(s,key) { return s + obj[key] }, 0);
     },
@@ -71,12 +68,11 @@ obj = function(properties) {
 
 
     //Given two sets, define a range of values depending on the signs of the max and min of the merged set
-    range: function(set1, set2) {
+    range: function(obj) {
 
         //local vars
-        var all = array.merge(set1, set2),
-            max = this.max(all),
-            min = this.min(all);
+        var max = this.max(array.merge(obj)),
+            min = this.min(array.merge(obj));
 
         if(Math.sign(max) == 1 && Math.sign(min) == 1) {
 
@@ -113,34 +109,24 @@ array = function(properties) {
 }({
 
     //Remove duplicate elements from an array - thanks to 'georg' on stackoverflow.com for this 
-    unique: function(array) {
+    unique: function(arr) {
 
-        return array.filter(function(element, index) { return array.indexOf(element) == index });
+        return arr.filter(function(element, index) { return arr.indexOf(element) == index });
     },
 
 
-    //Merge all elements of two arrays OR all properties of two objects; return an array
-    merge: function(a1, a2) {
+    //Merge all elements of arrays OR properties of objects; return an array
+    merge: function(arr) {
 
         var merged = [];
 
-        for(i=0; i<Object.keys(a1).length; i++) { merged[i] = a1[Object.keys(a1)[i]] }
+        for(i=0; i<obj.size(arr); i++) {
 
-        for(j=0; j<Object.keys(a2).length; j++) { merged[obj.size(a1)+j] = a2[Object.keys(a2)[j]] }
+            for(j=0; j<obj.size(arr[i]); j++) { merged.push( arr[i][Object.keys(arr[i])[j]] ) }
+        }
 
         //remove duplicate elements
         return this.unique(merged);
-    },
-
-
-    //Find the intersection of two arrays
-    intersect: function(a1, a2) { // <--- THIS FUNCTION NOT CURRENTLY IN USE
-
-        //thanks to 'Anon.' on stackoverflow.com for help on this
-        var x = a1.filter(function(element) { return a2.indexOf(element) != -1 });
-
-        //remove duplicate elements
-        return this.unique(x);
     }
 })
 
@@ -162,22 +148,10 @@ elem = function(properties) {
     },
 
 
-    //Disable or enable multpile classes of elements at once
-    avail: function(idObject, bool) { // <--- THIS FUNCTION NOT CURRENTLY IN USE
+    //Disable or enable an element
+    avail: function(element, bool) {
 
-        for(key in idObject) {
-
-            switch(typeof idObject[key]) {
-
-                case 'string':
-                    this.select(idObject[key]).disabled = !bool;
-                    break;
-
-                case 'object':
-                    for(subKey in idObject[key]) { this.select(idObject[key][subKey]).disabled = !bool }
-                    break;
-            }
-        }
+        this.select(element).disabled = !bool;
     },
 
 

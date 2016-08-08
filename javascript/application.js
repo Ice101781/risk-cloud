@@ -249,7 +249,7 @@ numberFields = function(properties) {
 
             case "strike-price":
                 var content = "Exercise price :",
-                    attr    = {min:".01", step:".01", value:"100"},
+                    attr    = {min:".25", step:"0.25", value:"100"},
                     subNum  = 3;
                 break;
 
@@ -344,7 +344,7 @@ numberFields = function(properties) {
 })
 
 
-//Determine whether text input form conditions are met for a class of elements
+//Determine whether text input form conditions are met
 classInputCheck = function(element) {
 
     var obj = {};
@@ -379,7 +379,18 @@ classInputCheck = function(element) {
                 break;
 
             case "strike-price-field":
-            /* fall-through */
+                switch(false) {
+
+                    case val >= 0.25:
+                        obj[i] = false;
+                        return obj;
+
+                    default:
+                        obj[i] = true;
+                        break;
+                }
+                break;
+
             case "option-price-field":
                 switch(false) {
 

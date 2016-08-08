@@ -33,8 +33,8 @@ initialParams = function(properties) {
                 //remove initial params and create elements needed to specify final params; transitions
                 finalParams.create(function() {
 
-                    elem.ease("out", "initial-params-container", 0.4, 24);
-                    elem.fade("out", "initial-params-container", 0.02);
+                    elem.ease("out", "initial-params-container", 0.5, 26);
+                    elem.fade("out", "initial-params-container", 0.03);
                     elem.fade("in", "final-params-container", 0.01);
                 });
                 break;
@@ -163,7 +163,7 @@ finalParams = function(properties) {
         obj.reset(g);
 
         //transitions
-        elem.fade("out", "final-params-container", 0.02, function() {
+        elem.fade("out", "final-params-container", 0.03, function() {
 
             //destroy trade info
             elem.destroyChildren('trade-legs-params-container');
@@ -172,8 +172,8 @@ finalParams = function(properties) {
             elem.select("current-price-field").value = 100.25;
         });
 
-        elem.ease("in", "initial-params-container", 0.4, 24);
-        elem.fade("in", "initial-params-container", 0.02);
+        elem.ease("in", "initial-params-container", 0.5, 26);
+        elem.fade("in", "initial-params-container", 0.01);
     },
 
     validate: function() {
@@ -208,7 +208,7 @@ finalParams = function(properties) {
                 break;
 
             case strikePriceFieldsCond[obj.size(strikePriceFieldsCond)]:
-                inputErrorMsg("strike-price-field-"+obj.size(strikePriceFieldsCond), "Please enter a number greater than 0 for the strike price in this trade leg.");
+                inputErrorMsg("strike-price-field-"+obj.size(strikePriceFieldsCond), "Please enter a number greater than or equal to 0.25 for the strike price in this trade leg.");
                 break;
 
             case optionPriceFieldsCond[obj.size(optionPriceFieldsCond)]:
@@ -273,13 +273,13 @@ finalParams = function(properties) {
 
                         //local vars
                         var element  = "leg-"+n+"-",
-                            buy_sell = g.LONG_SHORT[n]    == 1 ? "BUY &nbsp&nbsp" : "SELL &nbsp&nbsp",
-                            color    = g.LONG_SHORT[n]    == 1 ? "rgb(0,175,0)"   : "rgb(200,0,0)",
-                            call_put = g.CONTRACT_TYPE[n] == 1 ? "&nbsp CALL"     : "&nbsp PUT",
-                            expiry   = " &nbsp&nbsp" + g.EXPIRY[n] + " DTE";
+                            buy_sell = g.LONG_SHORT[n]    == 1 ? "BUY &nbsp"    : "SELL &nbsp",
+                            color    = g.LONG_SHORT[n]    == 1 ? "rgb(0,175,0)" : "rgb(200,0,0)",
+                            call_put = g.CONTRACT_TYPE[n] == 1 ? " CALL "       : " PUT ",
+                            expiry   = " &nbsp" + g.EXPIRY[n] + " DTE";
 
                         //trade summary
-                        elem.select(element+"summary").innerHTML = buy_sell + g.NUM_CONTRACTS[n] + " x " + g.STRIKE_PRICE[n] + call_put + expiry;
+                        elem.select(element+"summary").innerHTML = buy_sell + g.NUM_CONTRACTS[n] + "&nbsp x &nbsp" + g.STRIKE_PRICE[n] + call_put + expiry;
                         elem.select(element+"summary").style.color = color;
                         elem.select(element+"summary").style.borderRightColor = "rgb(0,0,0)";
 
@@ -288,6 +288,7 @@ finalParams = function(properties) {
                         elem.select(element+"price").style.color = color;
                     })(i);
                 }
+
 
                 //write option price total to its trade summary table element
                 (function() {
@@ -300,13 +301,15 @@ finalParams = function(properties) {
                     elem.select("price-total").style.color = Math.sign(price) == 1 ? "rgb(0,150,0)" : "rgb(175,0,0)";
                 })();
 
+
                 //add nearest expiry value to the 'output-time-field' and set this value as the field's maximum
                 elem.select("output-time-field").value = obj.min(g.EXPIRY);
                 elem.select("output-time-field").setAttribute("max", obj.min(g.EXPIRY));
 
+
                 //transitions, calculate and display output
                 elem.ease("out", "final-params-container", 0.5, 38);
-                elem.fade("out", "final-params-container", 0.02);
+                elem.fade("out", "final-params-container", 0.03);
 
                 elem.fade("in", "output-container", 0.01, function() {
 
