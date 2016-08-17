@@ -1,10 +1,9 @@
-﻿// GLOBAL OBJECT ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+﻿// GLOBAL OBJECT ====================================================================================================================================
 
 var g = {
 
     //user input
     TRADE_LEGS : 0,
-    CONTRACT_FEES : 0,
     LONG_SHORT : {},
     CONTRACT_TYPE : {},
     NUM_CONTRACTS : {},
@@ -31,12 +30,12 @@ var g = {
     RHO_DATA : {}
 };
 
-// END GLOBAL OBJECT ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// END GLOBAL OBJECT ================================================================================================================================
 
 
-// HEADER ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// HEADER ===========================================================================================================================================
 
-//nav menu
+//navigation menu
 nav = function(properties) {
 
     var self = function() { return };
@@ -56,15 +55,17 @@ nav = function(properties) {
 
         elem.create({tag: "img", attributes: {id: "icon", alt: "Risk Cloud", src: "../images/icon.png"}}, "icon-link");
 
-        //navigation menu
-        //main
+        //main menu
         (mainMenu = function() {
 
-            var headings = { 1: "ANALYZE",
+            var headings = { 
 
-                             2: "MODEL",
+                1: "ANALYZE",
 
-                             3: "info" };
+                2: "MODEL",
+
+                3: "info"
+            };
 
             elem.create({tag: "ul", attributes: {id: "nav-menu"}}, "header-main");
 
@@ -72,12 +73,13 @@ nav = function(properties) {
 
                 elem.create({tag: "li", attributes: {id: "nav-list-item-"+num, class: "nav-list-item"}}, "nav-menu");
 
-                elem.create({tag: "a", content: headings[num], attributes: {
-                                                                   href: "#",
-                                                                   class: "nav-list-item-link",
-                                                                   onclick: "nav.anim("+num+")"
-                                                               }},
-                                                               "nav-list-item-"+num);
+                elem.create({tag: "a",
+
+                             content: headings[num],
+
+                             attributes: { href: "#", class: "nav-list-item-link", onclick: "nav.anim("+num+")" }},
+
+                            "nav-list-item-"+num);
             }
         })();
 
@@ -105,28 +107,30 @@ nav = function(properties) {
 
                     elem.create({tag: "li", attributes: {id: "nav-sub-list-item-"+num+letter, class: "nav-sub-list-item"}}, "nav-sub-menu-"+num);
 
-                    elem.create({tag: "a", content: subHeadings[num][letter].heading, attributes: {
-                                                                                          href: subHeadings[num][letter].link, 
-                                                                                          class: "nav-sub-list-item-link"
-                                                                                      }},
-                                                                                      "nav-sub-list-item-"+num+letter);
+                    elem.create({tag: "a",
+
+                                 content: subHeadings[num][letter].heading,
+
+                                 attributes: { href: subHeadings[num][letter].link, class: "nav-sub-list-item-link"}},
+                                                                                      
+                                "nav-sub-list-item-"+num+letter);
                 }
             }
         })();
     },
 
 
-    anim: function(index) {
+    anim: function(idx) {
 
         //local vars
-        var increment = 0.25,
-            maxHeight = 4;
+        var inc = 0.25,
+            hgt = 4;
 
         navSubEase = function(type, num) {
 
             var bool = type == "in" ? "true" : "false";
 
-            elem.ease(type, "nav-sub-container-"+num, increment, maxHeight);
+            elem.ease(type, "nav-sub-container-"+num, inc, hgt);
             elem.select("nav-sub-container-"+num).setAttribute("data-open", bool);
         }
 
@@ -136,11 +140,11 @@ nav = function(properties) {
         }
 
         //open or close the sub-menu
-        switch(elem.select("nav-sub-container-"+index).getAttribute("data-open")) {
+        switch(elem.select("nav-sub-container-"+idx).getAttribute("data-open")) {
 
             case "false":
                 //close the other sub-menus if they're open
-                switch(index) {
+                switch(idx) {
 
                     case 1:
                         closeNavSubs([2,3]);
@@ -154,41 +158,41 @@ nav = function(properties) {
                         closeNavSubs([1,2]);
                         break;
                 }
-                navSubEase("in", index);
+                navSubEase("in", idx);
                 break;
 
             case "true":
-                navSubEase("out", index);
+                navSubEase("out", idx);
                 break;
         }
     }
 })
 
-// END HEADER ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// END HEADER =======================================================================================================================================
 
 
-// MISC /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// MISC =============================================================================================================================================
 
-//Return an object with with numbered id strings
-idStringsObject = function(stringArray) {
+//return an object with with numbered id strings
+idStrings = function(arr) {
 
-    var iMax = stringArray[0] != "num-legs-radio" ? g.TRADE_LEGS : 4,
-        obj  = {};
+    var idx = arr[0] != "num-legs-radio" ? g.TRADE_LEGS : 4,
+        obj = {};
 
-    switch(stringArray.length) {
+    switch(arr.length) {
 
         case 1:
-            for(var i=1; i<iMax+1; i++) {
+            for(i=1; i<idx+1; i++) {
 
-                obj[i] = stringArray[0]+"-"+i;
+                obj[i] = arr[0]+"-"+i;
             }
             break;
 
         case 2:
-            for(var i=1; i<iMax+1; i++) {
+            for(i=1; i<idx+1; i++) {
 
-                obj[2*i-1] = stringArray[0]+"-"+i;
-                obj[2*i]   = stringArray[1]+"-"+i;
+                obj[2*i-1] = arr[0]+"-"+i;
+                obj[2*i]   = arr[1]+"-"+i;
             }
             break;
     }
@@ -203,51 +207,52 @@ twoButtons = function(properties) {
 
     for(prop in properties) { self[prop] = properties[prop] }
 
-    return self;  
+    return self;
 }({
 
-    create: function(buttonArray, n) {
+    create: function(arr, n) {
 
         //radio form
-        elem.create({tag: "form", attributes: {
-                                      id:    buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+n,
-                                      class: "general-group trade-leg-radio-forms"
-                                  }},
-                                  "leg-sub-container-1-"+n);
+        elem.create({tag: "form",
+
+                     attributes: {id: arr[0][0]+"-"+arr[1][0]+"-"+"form-"+n, class: "general-group trade-leg-radio-forms"}},
+
+                    "leg-sub-container-1-"+n);
 
         //radio buttons
-        for(var j=0; j<2; j++) {
+        for(j=0; j<2; j++) {
 
-            elem.create({tag: "input", attributes: {
-                                           type: "radio",
-                                           id: buttonArray[j][0]+"-"+"radio-"+n,
-                                           name: buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"radio-"+n,
-                                           value: buttonArray[j][1]
-                                       }},
-                                       buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+n);
+            elem.create({tag: "input",
 
-            elem.create({tag: "label", content: buttonArray[j][0].charAt(0).toUpperCase()+buttonArray[j][0].slice(1), 
+                         attributes: {type: "radio", id: arr[j][0]+"-"+"radio-"+n, name: arr[0][0]+"-"+arr[1][0]+"-"+"radio-"+n, value: arr[j][1]}},
 
-                                       attributes: {
-                                           "for": buttonArray[j][0]+"-"+"radio-"+n, 
-                                           class: "general-group radio trade-leg-radios"
-                                       }},
-                                       buttonArray[0][0]+"-"+buttonArray[1][0]+"-"+"form-"+n);
+                        arr[0][0]+"-"+arr[1][0]+"-"+"form-"+n);
+
+            //labels
+            elem.create({tag: "label",
+
+                         content: arr[j][0].charAt(0).toUpperCase()+arr[j][0].slice(1),
+
+                         attributes: {"for": arr[j][0]+"-"+"radio-"+n, class: "general-group radio trade-leg-radios"}},
+
+                        arr[0][0]+"-"+arr[1][0]+"-"+"form-"+n);
         }
 
-        //default settings to save time during common trade setups
-        switch(buttonArray[0][0]) {
+        //default settings for common trade setups
+        var bit;
+
+        switch(arr[0][0]) {
 
             case "buy":
-                if(n == 1 || n == 4) { var bit = 0 } else { var bit = 1 }
+                if(n == 1 || n == 4) { bit = 0 } else { bit = 1 }
                 break;
 
             case "call":
-                if(n < 3) { var bit = 1 } else { var bit = 0 }
+                if(n < 3) { bit = 1 } else { bit = 0 }
                 break;
         }
 
-        elem.select(buttonArray[bit][0]+"-"+"radio-"+n).setAttribute("checked", "");
+        elem.select(arr[bit][0]+"-"+"radio-"+n).setAttribute("checked", "");
     }
 })
 
@@ -261,9 +266,9 @@ numberFields = function(properties) {
     return self;  
 }({
 
-    create: function(idString, n) {
+    create: function(str, n) {
 
-        switch(idString) {
+        switch(str) {
 
             case "num-contracts":
                 var content = "No. of contracts :",
@@ -297,51 +302,51 @@ numberFields = function(properties) {
 
             case "risk-free-rate":
                 var content = "Risk-free rate % :",
-                    attr    = {min:"0", step:".01", value:"0.25"},
+                    attr    = {min:"0", step:".01", value:".25"},
                     subNum  = 7;
                 break;
         }
 
-        elem.create({tag: "form", attributes: {
-                                    id: idString+"-form-"+n,
-                                    class: "general group trade-leg-field-forms "+idString+"-form"
-                                    }},
-                                    "leg-sub-container-"+subNum+"-"+n);
+        elem.create({tag: "form",
 
-        elem.create({tag: "div", content: content, attributes: {
-                                                       class: "trade-leg-align-helpers align-helper"
-                                                       }},
-                                                       idString+"-form-"+n);
+                     attributes: {id: str+"-form-"+n, class: "general group trade-leg-field-forms "+str+"-form"}},
 
-        elem.create({tag: "input", attributes: {
-                                       type: "number",
-                                       id: idString+"-field-"+n,
-                                       class: "general-group all-fields small-fields "+idString+"-field",
-                                       min: attr.min,
-                                       step: attr.step,
-                                       value: attr.value
-                                   }},
-                                   idString+"-form-"+n);
+                    "leg-sub-container-"+subNum+"-"+n);
+
+        //align helper
+        elem.create({tag: "div",
+
+                     content: content,
+
+                     attributes: {class: "trade-leg-align-helpers align-helper"}},
+
+                    str+"-form-"+n);
+
+        elem.create({tag: "input",
+
+                     attributes: {type: "number", id: str+"-field-"+n, class: "general-group all-fields small-fields "+str+"-field", min: attr.min, step: attr.step, value: attr.value}},
+
+                    str+"-form-"+n);
     },
 
 
-    //on first container click, toggle visibility of remaining field containers
-    visible: function(container, maxHeight, field) {
+    //on first trade leg sub-container click, toggle visibility of remaining sub-containers
+    visible: function(ctr, hgt, fld) {
 
-        switch(elem.select(container+'-1').getAttribute("data-clicked")) {
+        switch(elem.select(ctr+'-1').getAttribute("data-clicked")) {
 
             case "true":
                 var type  = "out",
                     color = '#cbdafb';
 
-                elem.select(container+'-1').setAttribute("data-clicked", "false");
+                elem.select(ctr+'-1').setAttribute("data-clicked", "false");
                 break;
 
             case "false":
                 var type  = "in",
                     color = '#ffcccc';
 
-                elem.select(container+'-1').setAttribute("data-clicked", "true");
+                elem.select(ctr+'-1').setAttribute("data-clicked", "true");
                 break;
         }
 
@@ -350,11 +355,11 @@ numberFields = function(properties) {
 
             (function(n) {
 
-                elem.ease(type, container+'-'+n, 0.13625, maxHeight, function() {
+                elem.ease(type, ctr+'-'+n, 0.13625, hgt, function() {
 
                     if(type == "out") {
 
-                        var f = elem.select(field+'-field-'+n);
+                        var f = elem.select(fld+'-field-'+n);
 
                         f.value = f.getAttribute("min");
                     }
@@ -362,20 +367,20 @@ numberFields = function(properties) {
             })(i);
         }
 
-        //toggle background color of the first container in the class
-        elem.select(container+'-1').style.backgroundColor = color;
+        //toggle background color of the first sub-container in the class
+        elem.select(ctr+'-1').style.backgroundColor = color;
     }
 })
 
 
-//Determine whether text input form conditions are met
-classInputCheck = function(element) {
+//determine whether text input form conditions are met
+inputCheck = function(ele) {
 
     var obj = {};
 
     for(i=1; i<g.TRADE_LEGS+1; i++) {
 
-        var val = elem.select(element+"-"+i).value;
+        var val = elem.select(ele+"-"+i).value;
 
         if(val == "") {
 
@@ -383,7 +388,7 @@ classInputCheck = function(element) {
             return obj;
         }
 
-        switch(element) {
+        switch(ele) {
 
             case "num-contracts-field":
                 switch(false) {
@@ -469,12 +474,12 @@ classInputCheck = function(element) {
 }
 
 
-//Some basic error message handling for text form input
-inputErrorMsg = function(element, msg) {
+//some basic error message handling for text form input
+errorMsg = function(ele, msg) {
 
-    elem.select(element).style.borderColor = '#ff0000';
+    elem.select(ele).style.borderColor = 'red';
     alert(msg);
-    elem.select(element).style.borderColor = '#ddffdd';
+    elem.select(ele).style.borderColor = '#ddffdd';
 }
 
-// END MISC /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// END MISC =========================================================================================================================================

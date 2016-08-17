@@ -1,4 +1,5 @@
-﻿// INITIAL PARAMETERS ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+﻿// INITIAL PARAMETERS ===============================================================================================================================
+
 initialParams = function(properties) {
 
     var self = function() { return };
@@ -11,39 +12,27 @@ initialParams = function(properties) {
     validate: function() {
 
         //string objects containing element id's
-        var numLegsRadio    = idStringsObject(["num-legs-radio"]),
-            feesField       = "fees-field",
-            continueButton1 = "continue-button-1",
+        var numLegsRadio    = idStrings(["num-legs-radio"]),
+            continueButton1 = "continue-button-1";
 
-            //evaluate text form input conditions
-            feesFieldCond = (elem.select(feesField).value != "" && elem.select(feesField).value >= 0);
+        //capture initial user-defined parameters
+        g.TRADE_LEGS = +elem.select("input[name=num-legs-radio]:checked").value;
 
-        //input validation, error message handling
-        switch(false) {
+        //transitions
+        finalParams.create(function() {
 
-            case feesFieldCond:
-                inputErrorMsg(feesField, "Please enter 0 or a positive number for the total commissions and fees.");
-                break;
-
-            default:
-                //capture initial user-defined parameters
-                g.TRADE_LEGS    = +elem.select("input[name=num-legs-radio]:checked").value;
-                g.CONTRACT_FEES = +elem.select("fees-field").value;
-
-                //remove initial params and create elements needed to specify final params; transitions
-                finalParams.create(function() {
-
-                    elem.ease("out", "initial-params-container", 0.5, 30);
-                    elem.fade("out", "initial-params-container", 0.03);
-                    elem.fade("in", "final-params-container", 0.01);
-                });
-                break;
-        }
+            elem.ease("out", "initial-params-container", 0.5, 30);
+            elem.fade("out", "initial-params-container", 0.03);
+            elem.fade("in", "final-params-container", 0.01);
+        });
     }
 })
-// END INITIAL PARAMETERS ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// FINAL PARAMETERS /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// END INITIAL PARAMETERS ===========================================================================================================================
+
+
+// FINAL PARAMETERS =================================================================================================================================
+
 finalParams = function(properties) {
 
     var self = function() { return };
@@ -57,7 +46,7 @@ finalParams = function(properties) {
 
         for(i=1; i<g.TRADE_LEGS+1; i++) {
 
-            //create trade legs
+            //trade legs
             elem.create({tag: "div", attributes: {id: "leg-"+i, class: "general-group trade-leg"}}, "trade-legs-params-container");
 
             //sub-containers and logic
@@ -65,10 +54,10 @@ finalParams = function(properties) {
 
                 elem.create({tag: "div", attributes: {id: "leg-sub-container-"+j+"-"+i, class: "general-group leg-sub-container"}}, "leg-"+i);
 
-                //create some space between three groupings of sub-containers
+                //add some space between certain sub-containers
                 if(j==1 || j==4) { elem.select("leg-sub-container-"+j+"-"+i).style.marginBottom = 1.75 + "vw" }
 
-                //hide sub-containers 2 through 4 when g.TRADE_LEGS is greater than 1
+                //hide sub-containers 2 through 4 when the number of trade legs is greater than 1
                 if(j>4 && j<8) {
                         
                     switch(i>1) {
@@ -87,53 +76,46 @@ finalParams = function(properties) {
                 }
             }
 
-            //make sub-containers 1 larger and darker
+            //make the first sub-container of each trade leg larger and darker
             elem.select("leg-sub-container-1-"+i).style.height = 6.25 + "vw";
             elem.select("leg-sub-container-1-"+i).style.backgroundColor = '#777777';
 
-            //create sub-container input radios and text fields
+            //sub-container forms
             (function(n) {
 
                 //buy-sell & call-put radios
-                [ [["buy","1"],["sell","-1"]], [["call","1"],["put","-1"]] ].forEach(function(array) {
-
-                    twoButtons.create(array, n);
-                });
+                [ [["buy","1"],["sell","-1"]], [["call","1"],["put","-1"]] ].forEach(function(arr) { twoButtons.create(arr, n) });
 
                 //text fields
-                ["num-contracts", "strike-price", "option-price", "expiry", "div-yield", "risk-free-rate"].forEach(function(element) {
-
-                    numberFields.create(element, n)
-                });
-
+                ["num-contracts", "strike-price", "option-price", "expiry", "div-yield", "risk-free-rate"].forEach(function(ele) { numberFields.create(ele, n) });
             })(i);
         }
 
         //adaptive sizing, bordering
         (function() {
 
-            var border = '1px solid #fafafa';
+            var bdr = '1px solid #fafafa';
 
             switch(g.TRADE_LEGS) {
 
                 case 1:
                     elem.select("trade-legs-params-container").style.width = 45 + 'vw';
-                    elem.select("leg-1").style.borderLeft  = border;
-                    elem.select("leg-1").style.borderRight = border;
+                    elem.select("leg-1").style.borderLeft  = bdr;
+                    elem.select("leg-1").style.borderRight = bdr;
                     break;
                 case 2:
                     elem.select("trade-legs-params-container").style.width = 45 + 'vw';
-                    elem.select("leg-1").style.borderRight = border;
+                    elem.select("leg-1").style.borderRight = bdr;
                     break;
 
                 case 3:
                     elem.select("trade-legs-params-container").style.width = 68 + 'vw';
-                    for(n=1; n<g.TRADE_LEGS; n++) { elem.select("leg-"+n).style.borderRight = border }
+                    for(n=1; n<g.TRADE_LEGS; n++) { elem.select("leg-"+n).style.borderRight = bdr }
                     break;
 
                 case 4:
                     elem.select("trade-legs-params-container").style.width = 90 + 'vw';
-                    for(n=1; n<g.TRADE_LEGS; n++) { elem.select("leg-"+n).style.borderRight = border }
+                    for(n=1; n<g.TRADE_LEGS; n++) { elem.select("leg-"+n).style.borderRight = bdr }
                     break;
             }
         })();
@@ -147,9 +129,9 @@ finalParams = function(properties) {
             elem.select("leg-sub-container-7-1").addEventListener("click", rfrVis = function() {numberFields.visible("leg-sub-container-7", 2.725, 'risk-free-rate')});
 
             //prevent a field element click from triggering a sub-container event
-            ["expiry-field-1", "div-yield-field-1", "risk-free-rate-field-1"].forEach(function(element) {
+            ["expiry-field-1", "div-yield-field-1", "risk-free-rate-field-1"].forEach(function(ele) {
 
-                elem.select(element).addEventListener("click", function(e) { e.stopPropagation() });
+                elem.select(ele).addEventListener("click", function(e) { e.stopPropagation() });
             });
         }
 
@@ -179,56 +161,56 @@ finalParams = function(properties) {
     validate: function() {
 
         //id strings
-        var buySellRadios      = idStringsObject(["buy-radio", "sell-radio"]),
-            callPutRadios      = idStringsObject(["call-radio", "put-radio"]),
-            numContractsFields = idStringsObject(["num-contracts-field"]),
-            strikePriceFields  = idStringsObject(["strike-price-field"]),
-            optionPriceFields  = idStringsObject(["option-price-field"]),
-            expiryFields       = idStringsObject(["expiry-field"]),
-            divYieldFields     = idStringsObject(["div-yield-field"]),
-            riskFreeFields     = idStringsObject(["risk-free-rate-field"]),
+        var buySellRadios      = idStrings(["buy-radio", "sell-radio"]),
+            callPutRadios      = idStrings(["call-radio", "put-radio"]),
+            numContractsFields = idStrings(["num-contracts-field"]),
+            strikePriceFields  = idStrings(["strike-price-field"]),
+            optionPriceFields  = idStrings(["option-price-field"]),
+            expiryFields       = idStrings(["expiry-field"]),
+            divYieldFields     = idStrings(["div-yield-field"]),
+            riskFreeFields     = idStrings(["risk-free-rate-field"]),
             returnButton1      = "return-button-1",
             stockPriceField    = "current-price-field",
             calculateButton1   = "calculate-button-1",
 
             //evaluate text form input conditions
-            numContractsFieldsCond = classInputCheck("num-contracts-field"),
-            strikePriceFieldsCond  = classInputCheck("strike-price-field"),
-            optionPriceFieldsCond  = classInputCheck("option-price-field"),
-            expiryFieldsCond       = classInputCheck("expiry-field"),
-            divYieldFieldsCond     = classInputCheck("div-yield-field"),
-            riskFreeFieldsCond     = classInputCheck("risk-free-rate-field"),
-            stockPriceFieldCond    = (elem.select(stockPriceField).value != "" && elem.select(stockPriceField).value > 0);
+            numContractsCond = inputCheck("num-contracts-field"),
+            strikePriceCond  = inputCheck("strike-price-field"),
+            optionPriceCond  = inputCheck("option-price-field"),
+            expiryCond       = inputCheck("expiry-field"),
+            divYieldCond     = inputCheck("div-yield-field"),
+            riskFreeCond     = inputCheck("risk-free-rate-field"),
+            stockPriceCond   = (elem.select(stockPriceField).value != "" && elem.select(stockPriceField).value > 0);
 
         //input validation, error message handling
         switch(false) {
 
-            case numContractsFieldsCond[obj.size(numContractsFieldsCond)]:
-                inputErrorMsg("num-contracts-field-"+obj.size(numContractsFieldsCond), "Please enter a whole number greater than or equal to 1 for the number of contracts in this trade leg.");
+            case numContractsCond[obj.size(numContractsCond)]:
+                errorMsg("num-contracts-field-"+obj.size(numContractsCond), "Please enter a whole number greater than or equal to 1 for the number of contracts in this trade leg.");
                 break;
 
-            case strikePriceFieldsCond[obj.size(strikePriceFieldsCond)]:
-                inputErrorMsg("strike-price-field-"+obj.size(strikePriceFieldsCond), "Please enter a number greater than or equal to 0.25 for the strike price in this trade leg.");
+            case strikePriceCond[obj.size(strikePriceCond)]:
+                errorMsg("strike-price-field-"+obj.size(strikePriceCond), "Please enter a number greater than or equal to 0.25 for the strike price in this trade leg.");
                 break;
 
-            case optionPriceFieldsCond[obj.size(optionPriceFieldsCond)]:
-                inputErrorMsg("option-price-field-"+obj.size(optionPriceFieldsCond), "Please enter a number greater than 0 for the option price in this trade leg.");
+            case optionPriceCond[obj.size(optionPriceCond)]:
+                errorMsg("option-price-field-"+obj.size(optionPriceCond), "Please enter a number greater than 0 for the option price in this trade leg.");
                 break;
 
-            case expiryFieldsCond[obj.size(expiryFieldsCond)]:
-                inputErrorMsg("expiry-field-"+obj.size(expiryFieldsCond), "Please enter a whole number greater than or equal to 1, and less than or equal to 183, for the number of calendar days to expiry in this trade leg.");
+            case expiryCond[obj.size(expiryCond)]:
+                errorMsg("expiry-field-"+obj.size(expiryCond), "Please enter a whole number greater than or equal to 1, and less than or equal to 183, for the number of calendar days to expiry in this trade leg.");
                 break;
 
-            case divYieldFieldsCond[obj.size(divYieldFieldsCond)]:
-                inputErrorMsg("div-yield-field-"+obj.size(divYieldFieldsCond), "Please enter a number greater than or equal to 0, and less than or equal to 100, for the dividend yield percentage in this trade leg.");
+            case divYieldCond[obj.size(divYieldCond)]:
+                errorMsg("div-yield-field-"+obj.size(divYieldCond), "Please enter a number greater than or equal to 0, and less than or equal to 100, for the dividend yield percentage in this trade leg.");
                 break;
 
-            case riskFreeFieldsCond[obj.size(riskFreeFieldsCond)]:
-                inputErrorMsg("risk-free-rate-field-"+obj.size(riskFreeFieldsCond), "Please enter a number greater than or equal to 0, and less than or equal to 25, for the risk-free rate percentage in this trade leg.");
+            case riskFreeCond[obj.size(riskFreeCond)]:
+                errorMsg("risk-free-rate-field-"+obj.size(riskFreeCond), "Please enter a number greater than or equal to 0, and less than or equal to 25, for the risk-free rate percentage in this trade leg.");
                 break;
 
-            case stockPriceFieldCond:
-                inputErrorMsg(stockPriceField, "Please enter a number greater than 0 for the current price of the underlying stock.");
+            case stockPriceCond:
+                errorMsg(stockPriceField, "Please enter a number greater than 0 for the current price of the underlying stock.");
                 break;
 
             //user-defined parameter capture, write some info to elements of the trade summary table, calculate and launch visuals
@@ -272,20 +254,20 @@ finalParams = function(properties) {
                     (function(n) {
 
                         //local vars
-                        var element  = "leg-"+n+"-",
+                        var ele      = "leg-"+n+"-",
                             buy_sell = g.LONG_SHORT[n]    == 1 ? "BUY &nbsp"    : "SELL &nbsp",
                             color    = g.LONG_SHORT[n]    == 1 ? "rgb(0,175,0)" : "rgb(200,0,0)",
                             call_put = g.CONTRACT_TYPE[n] == 1 ? " CALL "       : " PUT ",
                             expiry   = " &nbsp" + g.EXPIRY[n] + " DTE";
 
                         //trade summary
-                        elem.select(element+"summary").innerHTML = buy_sell + g.NUM_CONTRACTS[n] + "&nbsp x &nbsp" + g.STRIKE_PRICE[n] + call_put + expiry;
-                        elem.select(element+"summary").style.color = color;
-                        elem.select(element+"summary").style.borderRightColor = "rgb(0,0,0)";
+                        elem.select(ele+"summary").innerHTML   = buy_sell + g.NUM_CONTRACTS[n] + "&nbsp x &nbsp" + g.STRIKE_PRICE[n] + call_put + expiry;
+                        elem.select(ele+"summary").style.color = color;
+                        elem.select(ele+"summary").style.borderRightColor = "rgb(0,0,0)";
 
                         //option price
-                        elem.select(element+"price").innerHTML = "$" + g.OPTION_PRICE[n].toFixed(2);
-                        elem.select(element+"price").style.color = color;
+                        elem.select(ele+"price").innerHTML   = "$" + g.OPTION_PRICE[n].toFixed(2);
+                        elem.select(ele+"price").style.color = color;
                     })(i);
                 }
 
@@ -297,7 +279,7 @@ finalParams = function(properties) {
 
                     for(i=1; i<g.TRADE_LEGS+1; i++) { price += g.LONG_SHORT[i]*g.NUM_CONTRACTS[i]*g.OPTION_PRICE[i].toFixed(2) }
 
-                    elem.select("price-total").innerHTML = "$" + Math.abs(price).toFixed(2);
+                    elem.select("price-total").innerHTML   = "$" + Math.abs(price).toFixed(2);
                     elem.select("price-total").style.color = Math.sign(price) == 1 ? "rgb(0,150,0)" : "rgb(175,0,0)";
                 })();
 
@@ -325,4 +307,5 @@ finalParams = function(properties) {
         }
     }
 })
-// END FINAL PARAMETERS /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// END FINAL PARAMETERS =============================================================================================================================

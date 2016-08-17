@@ -1,6 +1,6 @@
-// OBJECTS, ARRAYS AND ELEMENTS /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// OBJECTS, ARRAYS AND ELEMENTS =====================================================================================================================
 
-//Object functions
+//object functions
 obj = function(properties) {
 
     var self = function() { return };
@@ -10,26 +10,26 @@ obj = function(properties) {
     return self;
 }({
 
-    //Reset pre-defined parameter values in an object
+    //reset pre-defined parameter values in an object
     reset: function(obj) {
 
-        for(element in obj) {
+        for(ele in obj) {
 
-            switch(typeof obj[element]) {
+            switch(typeof obj[ele]) {
 
                 case 'number':
-                    obj[element] = 0;
+                    obj[ele] = 0;
                     break;
 
                 case 'object':
-                    obj[element] = {};
+                    obj[ele] = {};
                     break;
             }
         }
     },
 
 
-    //Object size - thanks to 'James Coglan' on stackoverflow.com for this
+    //object size - thanks to 'James Coglan' on stackoverflow.com for this
     size: function(obj) {
 
         var card = 0;
@@ -40,7 +40,7 @@ obj = function(properties) {
     },
 
 
-    //Object values sum
+    //object values sum
     sum: function(obj) {
 
         //thanks to 'Sirko' on stackoverflow.com for this
@@ -48,14 +48,14 @@ obj = function(properties) {
     },
 
 
-    //Object values average
+    //object values average
     avg: function(obj) {
 
         return this.sum(obj)/this.size(obj);
     },
 
 
-    //Object min and max - thanks to 'levi' on stackoverflow.com for this
+    //object min and max - thanks to 'levi' on stackoverflow.com for this
     min: function(obj) {
 
         return Object.keys(obj).reduce(function(m,n) { return obj[n] < m ? obj[n] : m }, Infinity);
@@ -67,7 +67,7 @@ obj = function(properties) {
     },
 
 
-    //Given two sets, define a range of values depending on the signs of the max and min of the merged set
+    //given two sets, define a range of values depending on the signs of the max and min of the merged set
     range: function(obj) {
 
         //local vars
@@ -86,7 +86,7 @@ obj = function(properties) {
     },
 
 
-    //Return all keys of an object whose properties meet a given condition
+    //return all keys of an object whose properties meet a given condition
     filterKeys: function(obj, test) {
 
         var keys = [];
@@ -98,7 +98,7 @@ obj = function(properties) {
 })
 
 
-//Array functions
+//array functions
 array = function(properties) {
 
     var self = function() { return };
@@ -108,14 +108,14 @@ array = function(properties) {
     return self;
 }({
 
-    //Remove duplicate elements from an array - thanks to 'georg' on stackoverflow.com for this 
+    //remove duplicate elements from an array - thanks to 'georg' on stackoverflow.com for this 
     unique: function(arr) {
 
-        return arr.filter(function(element, index) { return arr.indexOf(element) == index });
+        return arr.filter(function(ele, index) { return arr.indexOf(ele) == index });
     },
 
 
-    //Merge all elements of arrays OR properties of objects; return an array
+    //merge all elements of arrays OR properties of objects; return an array
     merge: function(arr) {
 
         var merged = [];
@@ -141,48 +141,48 @@ elem = function(properties) {
     return self;
 }({
 
-    //Selection
-    select: function(idString) {
+    //selection
+    select: function(str) {
 
-        return document.getElementById(idString) || document.querySelector(idString);
+        return document.getElementById(str) || document.querySelector(str);
     },
 
 
-    //Disable or enable an element
-    avail: function(element, bool) {
+    //disable or enable an element
+    avail: function(ele, bool) {
 
-        this.select(element).disabled = !bool;
+        this.select(ele).disabled = !bool;
     },
 
 
-    //Creation
-    create: function(paramsObject, appendId) {
+    //creation
+    create: function(obj, appendId) {
 
         //create a new document element
-        var element = document.createElement(paramsObject.tag);
+        var ele = document.createElement(obj.tag);
 
         //add empty string as content if none is provided
-        if(typeof paramsObject.content === 'undefined') { paramsObject.content = "" }
+        if(typeof obj.content === 'undefined') { obj.content = "" }
 
-        element.appendChild(document.createTextNode(paramsObject.content));
+        ele.appendChild(document.createTextNode(obj.content));
 
         //add attributes
-        for(attr in paramsObject.attributes) { element.setAttribute(attr, paramsObject.attributes[attr]) }
+        for(attr in obj.attributes) { ele.setAttribute(attr, obj.attributes[attr]) }
 
         //append the new element to a parent element
-        this.select(appendId).appendChild(element);
+        this.select(appendId).appendChild(ele);
 
-        return element;
+        return ele;
     },
 
 
-    //Remove children from an element of the DOM
-    destroyChildren: function(idStringParent, idArrayChildren) {
+    //remove children from an element of the DOM
+    destroyChildren: function(par, chd) {
 
-        idArrayChildren = typeof idArrayChildren !== 'undefined' ? idArrayChildren : 'none specified';
+        chd = typeof chd !== 'undefined' ? chd : 'none specified';
 
-        var parent   = this.select(idStringParent),
-            children = idArrayChildren;
+        var parent   = this.select(par),
+            children = chd;
 
         switch(children) {
 
@@ -199,18 +199,18 @@ elem = function(properties) {
     },
 
 
-    //Transition animations
-    ease: function(type, idString, increment, maxHeight, callback) {
+    //transition animations
+    ease: function(type, str, inc, hgt, callback) {
 
-        var element = this.select(idString).style,
-            height  = 0,
-            timer   = setInterval(render, (1000/50)); //50 fps
+        var ele    = this.select(str).style,
+            height = 0,
+            timer  = setInterval(render, (1000/50)); //50 fps
 
         function render() {
 
-            height = (maxHeight-height > 0) ? height + increment : maxHeight;
+            height = (hgt-height > 0) ? height + inc : hgt;
 
-            if(height == maxHeight) {
+            if(height == hgt) {
 
                 clearInterval(timer);
 
@@ -218,24 +218,24 @@ elem = function(properties) {
 
             } else {
 
-                height += increment;
+                height += inc;
 
-                if(type == "in") { element.height = height + 'vw' } else if(type == "out") { element.height = maxHeight - height + 'vw' }
+                if(type == "in") { ele.height = height + 'vw' } else if(type == "out") { ele.height = hgt - height + 'vw' }
             }
         }
     },
 
-    fade: function(type, idString, increment, callback) {
+    fade: function(type, str, inc, callback) {
 
-        var element = this.select(idString).style,
-            opacity = 0,
-            timer   = setInterval(render, (1000/50)); //50 fps
+        var ele   = this.select(str).style,
+            opc   = 0,
+            timer = setInterval(render, (1000/50)); //50 fps
 
         function render() {
 
-            opacity = (1-opacity > 0) ? opacity + increment : 1;
+            opc = (1-opc > 0) ? opc + inc : 1;
 
-            if(opacity == 1) {
+            if(opc == 1) {
 
                 clearInterval(timer);
 
@@ -243,18 +243,18 @@ elem = function(properties) {
 
             } else {
 
-                opacity += increment;
+                opc += inc;
 
-                if(type == "in") { element.opacity = opacity } else if(type == "out") { element.opacity = 1 - opacity }
+                if(type == "in") { ele.opacity = opc } else if(type == "out") { ele.opacity = 1 - opc }
             }
         }
     }
 })
 
-//END OBJECTS, ARRAYS AND ELEMENTS //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//END OBJECTS, ARRAYS AND ELEMENTS ==================================================================================================================
 
 
-// MATH /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// MATH =============================================================================================================================================
 
 math = function(properties) {
     
@@ -265,22 +265,22 @@ math = function(properties) {
     return self;
 }({
 
-    //Compute integrals numerically using Simpson's rule
-    INTEGRAL: function(leftBound, rightBound, numSubIntervals, expression) { // <--- THIS FUNCTION NOT CURRENTLY IN USE
+    //compute integrals numerically using Simpson's rule
+    INTEGRAL: function(lBnd, rBnd, subs, expr) { // <--- THIS FUNCTION NOT CURRENTLY IN USE
 
-        var a = leftBound,
-            b = rightBound,
-            n = numSubIntervals,
-            f = expression;
+        var a = lBnd,
+            b = rBnd,
+            n = subs,
+            f = expr;
 
         if(n % 2 == 0) {
 
             var sum1 = 0,
                 sum2 = 0;
 
-            for(var i=1; i<(n/2); i++) { sum1 += f(((((n/2)-i)*a)+(i*b))/(n/2)) }               
+            for(i=1; i<(n/2);   i++) { sum1 += f(((((n/2)-i)*a)+(i*b))/(n/2)) }
 
-            for(var i=1; i<(n/2)+1; i++) { sum2 += f((((((n+1)/2)-i)*a)+((i-(1/2))*b))/(n/2)) }
+            for(i=1; i<(n/2)+1; i++) { sum2 += f((((((n+1)/2)-i)*a)+((i-(1/2))*b))/(n/2)) }
 
             return ((b-a)/(3*n))*(f(a)+(2*sum1)+(4*sum2)+f(b));
 
@@ -292,14 +292,14 @@ math = function(properties) {
     },
 
 
-    //Standard Normal Distribution PDF
+    //standard Normal Distribution PDF
     NORM: function(x) {
 
         return (1/Math.sqrt(2*Math.PI))*Math.pow(Math.E,(-1/2)*Math.pow(x,2));
     },
 
 
-    //Cumulative Standard Normal Distribution functions
+    //cumulative standard Normal Distribution functions
     CUSTNORM: function(z, n) { // <--- THIS FUNCTION NOT CURRENTLY IN USE
 
         //this method is far slower than the logistic approximation below; n >= 200 is necessary for reasonable accuracy in most trade setups
@@ -315,17 +315,17 @@ math = function(properties) {
         }
     },
 
-    //Logistic approximation - thanks to http://http://www.jiem.org/index.php/jiem/article/viewFile/60/27 for this
+    //logistic approximation - thanks to http://http://www.jiem.org/index.php/jiem/article/viewFile/60/27 for this
     LOGISTIC: function(z) {
 
         return Math.pow((1+Math.pow(Math.E,-(0.07056*Math.pow(z,3)+1.5976*z))),-1);
     }
 })
 
-// END MATH /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// END MATH =========================================================================================================================================
 
 
-// MISC /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// MISC =============================================================================================================================================
 
 //disable certain keys
 disableKey = function(key) {
@@ -334,8 +334,8 @@ disableKey = function(key) {
 
     document.addEventListener('keydown', block);
 
-    //required for certain keys in Firefox (i.e., the spacebar)
+    //required for certain keys in Firefox; i.e., the spacebar
     document.addEventListener('keyup', block);
 }
 
-// END MISC /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// END MISC =========================================================================================================================================

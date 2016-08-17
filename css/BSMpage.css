@@ -1,4 +1,5 @@
-﻿/* HEADING ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+﻿/* HEADING ========================================================================================================================================*/
+
 .model-heading {
   margin: 0;
   padding: 0;
@@ -14,7 +15,9 @@
   font-size: 1.5vw;
   color: #555555;
 }
-/* END HEADING ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+/* END HEADING ====================================================================================================================================*/
+
 
 .general-group {
   overflow: hidden;
@@ -22,36 +25,41 @@
   font-size: 1vw;
 }
 
-/* CONTAINERS /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+/* CONTAINERS =====================================================================================================================================*/
+
+/* lightgreen background color test */
 #app-container {
   height: 40vw;
   text-align: center;
-  background-color: transparent; /*lightgreen test*/
+  background-color: transparent;
 }
 
+/* lightblue background color test */
 #initial-params-container {
   height: 30vw;
-  background-color: transparent; /*lightblue test*/
+  background-color: transparent;
 }
 
 #initial-params-sub-container {
   display: inline-block;
-  height: 13vw;
+  height: 10vw;
   width: 30vw;
   margin-top: 2vw;
   background-color: #a6a6a6;
 }
 
+ /* lightpink background color test */
 #final-params-container {
-  opacity: 0; 
+  opacity: 0;
   height: 39vw;
-  background-color: transparent; /*lightpink test*/
+  background-color: transparent;
 }
 
+/* set width = 0 to vertically align two div's #trade-legs-params-container and #current-price-form */
 #final-params-sub-container {
   display: inline-block;
   height: 35vw;
-  /* set width = 0 to vertically align two div's #trade-legs-params-container and #current-price-form */
   background-color: #a6a6a6;
 }
 
@@ -73,10 +81,11 @@
   background-color: #fafafa;
 }
 
+ /* violet background color test */
 #output-container {
   opacity: 0;
   height: 39.5vw;
-  background-color: transparent; /*violet test*/
+  background-color: transparent;
 }
 
 #output-sub-container {
@@ -108,8 +117,9 @@
   color: #9999ff;
 }
 
+ /* aspect ratio is 2.5 : 1 for the #output-view-container */
 #output-view-container, #output-summary-container {
-  width: 77.5vw; /* aspect ratio of #output-view-container is 2.5:1 */
+  width: 77.5vw;
 }
 
 #output-view-container {
@@ -121,9 +131,12 @@
   height: 6.5vw;
   margin-top: 0.375vw;
 }
-/* END CONTAINERS /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-/* TABLES /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/* END CONTAINERS =================================================================================================================================*/
+
+
+/* TABLES =========================================================================================================================================*/
+
 #output-summary-table {
   width: 65.60875vw;
   font-family: Arial;
@@ -131,7 +144,7 @@
   border-spacing: 0;
 }
 
-#table-headings {
+.table-headings {
   height: 1vw;
   background-color: #9999ff;
 }
@@ -140,12 +153,14 @@
   width: 18.12125vw;
 }
 
+ /* width x 2 = 11.8vw */
 .price-iv-headings {
-  width: 5.9vw; /* width x 2 = 11.8vw */
+  width: 5.9vw;
 }
 
+ /* width x 5 = 35.6875vw */
 .greek-headings {
-  width: 7.1375vw; /* width x 5 = 35.6875vw */
+  width: 7.1375vw;
 }
 
 .summary-group, td {
@@ -164,31 +179,20 @@
 .border-right-group {
   border-right: 1px solid;
 }
-/* END TABLES /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-/* ALIGNMENT HELPERS //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/* END TABLES =====================================================================================================================================*/
+
+
+/* ALIGNMENT HELPERS ==============================================================================================================================*/
+
 .align-helper {
   display: inline-block;
   text-align: left;
 }
 
 #num-legs-align-helper {
-  width: 15vw;
-  padding-bottom: 0.1875vw;
-  font-size: 0.95vw;
-}
-
-#fees-align-helper {
-  width: 20.25vw;
-  margin-right: 0.3125vw;
-  padding-top: 0.375vw;
-  font-size: 0.95vw;
-}
-
-#current-price-align-helper {
   height: 1.5vw;
-  width: 18.25vw;
-  padding-top: 0.25vw;
+  width: 13.25vw;
   font-size: 0.95vw;
 }
 
@@ -196,14 +200,24 @@
   width: 13vw;
 }
 
+#current-price-align-helper {
+  height: 1.5vw;
+  width: 18vw;
+  padding-top: 0.25vw;
+  font-size: 0.95vw;
+}
+
 #output-time-align-helper {
   width: 10.5vw;
   margin-left: 0.30625vw;
   font-size: 0.9vw;
 }
-/* END ALIGNMENT HELPERS //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-/* BUTTONS ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/* END ALIGNMENT HELPERS ==========================================================================================================================*/
+
+
+/* BUTTONS ========================================================================================================================================*/
+
 .buttons {
   height: 1.75vw;
   margin: 0;
@@ -221,9 +235,12 @@
   width: 2.75vw;
   font-size: 0.9vw;
 }
-/* END BUTTONS ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-/* FORMS //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/* END BUTTONS ====================================================================================================================================*/
+
+
+/* FORMS ==========================================================================================================================================*/
+
 input[type=radio] {
   display: none;
 }
@@ -243,7 +260,7 @@ input[type=radio]:checked + .radio {
 
 label.radio.num-legs {
   width: 2vw;
-  margin-left: 0.625vw;
+  margin-left: 1vw;
 }
 
 label.radio.trade-leg-radios {
@@ -252,18 +269,27 @@ label.radio.trade-leg-radios {
   margin-right: 1vw;
 }
 
-label.radio.output-view {
-  width: 3vw;
-  margin-left: 0.75vw;
-  margin-right: 0.75vw;
-}
-
 label.radio.output-data {
   width: 8vw;
   margin-top: 0.625vw;
   margin-bottom: 0.625vw;
   padding-top: 0.375vw;
   padding-bottom: 0.625vw;
+}
+
+#num-legs-form, #current-price-form {
+  display: inline-block;
+  height: 2vw;
+  margin: 0;
+  padding: 0.5vw;
+  background-color: #fafafa;
+}
+
+#num-legs-form {
+  width: 27vw;
+  margin-top: 1vw;
+  margin-bottom: 3vw;
+  padding-top: 0.75vw;
 }
 
 .trade-leg-radio-forms {
@@ -284,58 +310,36 @@ label.radio.output-data {
   text-align: center;
 }
 
-#num-legs-form, #fees-form, #current-price-form {
-  display: inline-block;
-  height: 2vw;
-  margin: 0;
-  padding: 0.5vw;
-  background-color: #fafafa;
-}
-
-#num-legs-form, #fees-form {
-  width: 27vw;
-  margin-top: 0.875vw;
-}
-
-#num-legs-form {
-  padding-top: 0.75vw;
-}
-
-#fees-form {
-  padding-top: 0.4375vw;
-  margin-bottom: 2.75vw;
-}
-
 #current-price-form {
   margin-top: 1.25vw;
+  padding-left: 0.75vw;
+  padding-right: 0.75vw;
 }
 
+ /* thanks to http://www.color-hex.com/color-wheel/ for help with the background color */
 .output-forms {
   display: inline-block;
   width: 11vw;
   margin: 0;
   padding: 0;
-  padding-top: 0.5vw;
-  background-color: #feffe0; /* thanks to http://www.color-hex.com/color-wheel/ */
-}
-
-#output-view-form {
-  height: 2.25vw;
   margin-top: 1vw;
+  padding-top: 0.5vw;
+  background-color: #feffe0;
 }
 
 #output-data-form {
   height: 21.125vw;
-  margin-top: 0.6875vw;
 }
 
 #output-time-form {
   height: 4.25vw;
-  margin-top: 0.6875vw;
 }
-/* END FORMS //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-/* FIELDS /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/* END FORMS ======================================================================================================================================*/
+
+
+/* FIELDS =========================================================================================================================================*/
+
 .all-fields {
   display: inline-block;
   margin: 0;
@@ -351,7 +355,7 @@ label.radio.output-data {
   padding-left: 0.75vw;
 }
 
-#fees-field, #current-price-field {
+#current-price-field {
   height: 1.75vw;
   width: 5vw;
   padding-left: 0.5vw;
@@ -363,4 +367,5 @@ label.radio.output-data {
   margin-top: 0.5vw;
   padding-left: 0.5vw;
 }
-/* END FIELDS /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+/* END FIELDS =====================================================================================================================================*/

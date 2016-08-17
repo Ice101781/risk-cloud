@@ -22,23 +22,27 @@ visuals = function(properties) {
             phi      = 0,
             theta    = 0,
             radius   = 0,
-            light    = new THREE.AmbientLight(0xffffff);
+            light    = new THREE.AmbientLight(0xffffff),
 
-        //local vars for the 2D view
-        var w       = 1,
-            h       = 0.4, //container aspect is 2.5:1
-            scalar  = 0.925,
-            zDist   = -h/(2*Math.tan((VFOVdeg*Math.PI/180)/2)),
-            numH    = 25,
-            numV    = 7,
-            canvasW = 2*Math.floor(width*(1-(1.01)*scalar)), //the multiplier for these dimensions fixes blurry text - is it related to 'devicePixelRatio'?
-            canvasH = 2*Math.floor(height*(0.6)*scalar/(numH-1)),
-            dataArr = [ g.PROFITLOSS_DATA, g.DELTA_DATA, g.GAMMA_DATA, g.THETA_DATA, g.VEGA_DATA, g.RHO_DATA ],
+            //aspect ratio is 2.5 : 1
+            w        = 1,
+            h        = 0.4,
+
+            scalar   = 0.925,
+            zDist    = -h/(2*Math.tan((VFOVdeg*Math.PI/180)/2)),
+            numH     = 25,
+            numV     = 7,
+
+            //the multiplier for these dimensions fixes blurry text - is it related to 'devicePixelRatio'?
+            canvasW  = 2*Math.floor(width*(1-(1.01)*scalar)),
+            canvasH  = 2*Math.floor(height*(0.6)*scalar/(numH-1)),
+
+            dataArr  = [ g.PROFITLOSS_DATA, g.DELTA_DATA, g.GAMMA_DATA, g.THETA_DATA, g.VEGA_DATA, g.RHO_DATA ],
             dataVal,
-            timeArr = [ obj.min(g.EXPIRY), obj.min(g.EXPIRY)-0.5, 0 ],
-            range   = [],
-            cloud   = {},
-            labels  = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} };
+            timeArr  = [ obj.min(g.EXPIRY), obj.min(g.EXPIRY)-0.5, 0 ],
+            range    = [],
+            cloud    = {},
+            labels   = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} };
 
         //set renderer params and attach when the container is available
         if(elem.select("output-view-container") != null) {
@@ -62,9 +66,10 @@ visuals = function(properties) {
         camera.position.set(radius*Math.sin(phi)*Math.cos(theta), radius*Math.sin(phi)*Math.sin(theta), radius*Math.cos(phi));
         scene.add(light, camera);
 
-        // HELPERS //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        //ANIMATION
+        // HELPERS ==================================================================================================================================
+
+        //animation
         render = function() {
 
             renderer.render(scene, camera);
@@ -73,8 +78,8 @@ visuals = function(properties) {
         }
 
 
-        //THE 2D VIEW
-        add2DGraphObjects = function() {
+        //graph objects
+        addGraphObjects = function() {
 
             //local vars for the background and gridlines
             var plane1 = new THREE.Mesh(new THREE.PlaneGeometry(w, h, 1, 1), new THREE.MeshBasicMaterial({color: 0x888888})),
@@ -115,14 +120,14 @@ visuals = function(properties) {
 
                 //set canvas as texture and specify texture parameters
                 labels[axis].texture[n]             = new THREE.Texture(labels[axis].canvas[n]);
-                labels[axis].texture[n].minFilter   = THREE.LinearFilter; //WHAT DOES THIS ACTUALLY DO?
                 labels[axis].texture[n].needsUpdate = true;
 
+                //what does this actually do?
+                labels[axis].texture[n].minFilter = THREE.LinearFilter;
+
                 //create label mesh and map canvas texture to it
-                labels[axis].mesh[n] = new THREE.Mesh(
-                                           new THREE.PlaneGeometry(w*(1-(1.01)*scalar)*p, h*(0.6)*scalar/(numH-1), 1, 1),
-                                           new THREE.MeshBasicMaterial({map: labels[axis].texture[n]})
-                                       );
+                labels[axis].mesh[n] = new THREE.Mesh( new THREE.PlaneGeometry(w*(1-(1.01)*scalar)*p, h*(0.6)*scalar/(numH-1), 1, 1),
+                                                       new THREE.MeshBasicMaterial({map: labels[axis].texture[n]}) );
             }
 
             //add horizontal gridlines and vertical axis labels
@@ -164,7 +169,6 @@ visuals = function(properties) {
                 //add gridline and label to the scene
                 camera.add(lines.yaxis[i], labels.yaxis.mesh[i]);
             }
-
 
             //add vertical tick marks and dotted lines as well as horizontal axis labels
             for(i=0; i<numV; i++) {
@@ -211,9 +215,8 @@ visuals = function(properties) {
                     default:
                         switch(Math.floor((g.STOCKRANGE_LENGTH-1)/(numV-1))) {
 
-                            //the case where the fractional part of the remainder is < 0.5
+                            //the case where the fractional part of the remainder is < 0.5; thanks to Michael Wunder for his help with this
                             case Math.round((g.STOCKRANGE_LENGTH-1)/(numV-1)):
-                                //Thanks to Michael Wunder for his help with this
                                 var labelText = '$'+Object.keys(g.PROFITLOSS_DATA[0])[Math.floor((g.STOCKRANGE_LENGTH-1)/(numV-1))*i+Math.floor((i+1)/3)];
                                 break;
 
@@ -229,7 +232,7 @@ visuals = function(properties) {
 
                 addLabelMesh('xaxis', i);
 
-                //set label position; at book-ends: bump in label and extend tick mark
+                //set label position, at book-ends bump in label and extend tick mark
                 switch(i) {
 
                     case 0:
@@ -276,7 +279,7 @@ visuals = function(properties) {
         }
 
 
-        //LISTEN FOR GRAPH DATA DISPLAY CHANGE
+        //listen for graph data display change
         addGraphChangeListener = function() {
 
             for(i=1; i<7; i++) {
@@ -321,59 +324,56 @@ visuals = function(properties) {
         }
 
 
-        //LISTEN FOR GRAPH DATA TIME CHANGE
+        //listen for graph data time change
         addTimeChangeListener = function() {
 
             elem.select("output-time-button").onclick = function() {
 
-                var el  = "output-time-field",
-                    val = +elem.select(el).value;
+                var ele = "output-time-field",
+                    val = +elem.select(ele).value;
 
-                //some error message handling
                 switch(false) {
 
+                    //some error message handling
                     case val != "" && val >= 1 && val <= obj.min(g.EXPIRY) && val == Math.floor(val):
-                        inputErrorMsg(el, "Please enter a whole number between 1 and "+obj.min(g.EXPIRY)+" in the time field.");
+                        errorMsg(ele, "Please enter a whole number between 1 and "+obj.min(g.EXPIRY)+" in the time field.");
                         return;
 
                     default:
                         for(i=1; i<7; i++) { camera.remove(cloud[i][2]) }
 
-                            
+                        // NEED TO ADD LOGIC HERE //
                         break;
                 }
             }
         }
 
 
-        //WRITE IV AND 'GREEKS' INFO/TOTALS TO THE TRADE SUMMARY TABLE
+        //write IV and 'greeks' info to the trade summary table
         addTableData = function() {
 
             for(i=1; i<g.TRADE_LEGS+1; i++) {
 
                 //local loop vars
-                var element     = "leg-"+i+"-",
-                    greeksArray = ['delta','gamma','theta','vega','rho']; 
+                var ele = "leg-"+i+"-",
+                    arr = ['delta','gamma','theta','vega','rho'];
 
                 //IV
-                elem.select(element+"iv").innerHTML = (g.IMPLIED_VOL[i]*Math.pow(10,2)).toFixed(2) + "%";
-                elem.select(element+"iv").style.color = g.LONG_SHORT[i] == 1 ? "rgb(0,175,0)" : "rgb(200,0,0)";
-                elem.select(element+"iv").style.borderRightColor = "rgb(0,0,0)";
+                elem.select(ele+"iv").innerHTML   = (g.IMPLIED_VOL[i]*Math.pow(10,2)).toFixed(2) + "%";
+                elem.select(ele+"iv").style.color = g.LONG_SHORT[i] == 1 ? "rgb(0,175,0)" : "rgb(200,0,0)";
+                elem.select(ele+"iv").style.borderRightColor = "rgb(0,0,0)";
 
                 //'greeks'
-                greeksArray.forEach(function(greek) { elem.select(element+greek).innerHTML = g[greek.toUpperCase()][i].toFixed(2) });
+                arr.forEach(function(greek) { elem.select(ele+greek).innerHTML = g[greek.toUpperCase()][i].toFixed(2) });
             }
 
             //'greeks' totals
-            greeksArray.forEach(function(greek) { elem.select(greek+"-total").innerHTML = obj.sum(g[greek.toUpperCase()]).toFixed(2) });
+            arr.forEach(function(greek) { elem.select(greek+"-total").innerHTML = obj.sum(g[greek.toUpperCase()]).toFixed(2) });
         }
 
-        // END HELPERS //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        // MAIN /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        //PUSH 2D DATA TO POINT CLOUDS
-        push2DData = function(callback) {
+        //push data to point clouds
+        pushData = function(callback) {
 
             //local vars
             var color = [0xff0000, 0xaa00ff, 0x0000ff];
@@ -424,28 +424,28 @@ visuals = function(properties) {
                 dataVal = +elem.select("input[name=output-data-radio]:checked").value;
 
                 render();
-                add2DGraphObjects();
+                addGraphObjects();
                 addGraphChangeListener();
                 addTimeChangeListener();
 
                 //enable output data and output time elements
                 for(i=1; i<7; i++) { elem.avail("output-data-radio-"+i, true) }
-
-                ["output-time-field", "output-time-button"].forEach(function(element) { elem.avail(element, true) });
-
-                ["output-data-form", "output-time-form"].forEach(function(element) { elem.select(element).style.backgroundColor = '#fafafa' });
-
+                ["output-time-field", "output-time-button"].forEach(function(ele) { elem.avail(ele, true) });
+                ["output-data-form",    "output-time-form"].forEach(function(ele) { elem.select(ele).style.backgroundColor = '#fafafa' });
 
                 //display the global object in the console
                 console.log(g);
             }();
         }
 
-        // END MAIN /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // END HELPERS ==============================================================================================================================
+
+
+        // MAIN =====================================================================================================================================
 
         addTableData();
-        setTimeout(function() { push2DData() }, 100);
+        setTimeout(function() { pushData() }, 100);
 
-        //console.log();
+        // END MAIN =================================================================================================================================
     }
 })

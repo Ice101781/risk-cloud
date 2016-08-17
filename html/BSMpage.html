@@ -49,12 +49,6 @@
                             <label class="general-group radio num-legs" for="num-legs-radio-4">4</label>
                         </form>
 
-                        <form id="fees-form">
-                            <div id="fees-align-helper" class="align-helper">Total commissions and fees per contract :</div>
-
-                            <input type="number" id="fees-field" class="general-group all-fields" min="0" step=".01" value="1.50" />
-                        </form>
-
                         <button id="continue-button-1" class="general-group buttons" type="button" onclick="initialParams.validate()">Continue</button>
                     </div>
                 </div>
@@ -78,14 +72,6 @@
                 <div id="output-container" class="general-group">
                     <div id="output-sub-container" class="general-group">
                         <div id="output-sub-container-1" class="general-group">
-                            <div id="output-view-form" class="general-group output-forms">
-                                <input type="radio" id="output-view-radio-1" name="output-view-radio" value="2D" disabled="true" checked />
-                                <label class="general-group radio output-view" for="output-view-radio-1">2D</label>
-
-                                <input type="radio" id="output-view-radio-2" name="output-view-radio" value="3D" disabled="true" />
-                                <label class="general-group radio output-view" for="output-view-radio-2">3D</label>
-                            </div>
-
                             <form id="output-data-form" class="general-group output-forms">
                                 <input type="radio" id="output-data-radio-1" name="output-data-radio" value="1" disabled="true" checked />
                                 <label class="general-group radio output-data" for="output-data-radio-1">Profit and Loss</label>
@@ -122,7 +108,7 @@
                             <div id="output-summary-container" class="general-group">
                                 <table id="output-summary-table" class="general-group">
                                     <!-- table headings -->
-                                    <tr id="table-headings">
+                                    <tr class="table-headings">
                                         <th id="trade-summary-heading" class="border-right-group">Trade Summary</th>
                                         <th class="price-iv-headings">Option Price</th>
                                         <th class="price-iv-headings border-right-group">IV</th>
