@@ -50,9 +50,10 @@ nav = function(properties) {
         //main header container
         elem.create({tag: "div", attributes: {id: "header-main"}}, ".body");
 
-        //icon
+        //icon link
         elem.create({tag: "a", attributes: {id: "icon-link", href: "../html/home.html"}}, "header-main");
 
+        //icon image
         elem.create({tag: "img", attributes: {id: "icon", alt: "Risk Cloud", src: "../images/icon.png"}}, "icon-link");
 
         //main menu
@@ -173,7 +174,7 @@ nav = function(properties) {
 
 // MISC =============================================================================================================================================
 
-//return an object with with numbered id strings
+//return an object comprised of numbered id strings
 idStrings = function(arr) {
 
     var idx = arr[0] != "num-legs-radio" ? g.TRADE_LEGS : 4,
@@ -302,11 +303,12 @@ numberFields = function(properties) {
 
             case "risk-free-rate":
                 var content = "Risk-free rate % :",
-                    attr    = {min:"0", step:".01", value:".25"},
+                    attr    = {min:"0", step:".01", value:"0.25"},
                     subNum  = 7;
                 break;
         }
 
+        //field form
         elem.create({tag: "form",
 
                      attributes: {id: str+"-form-"+n, class: "general group trade-leg-field-forms "+str+"-form"}},
@@ -331,7 +333,7 @@ numberFields = function(properties) {
 
 
     //on first trade leg sub-container click, toggle visibility of remaining sub-containers
-    visible: function(ctr, hgt, fld) {
+    visible: function(ctr, mht, fld) {
 
         switch(elem.select(ctr+'-1').getAttribute("data-clicked")) {
 
@@ -355,7 +357,7 @@ numberFields = function(properties) {
 
             (function(n) {
 
-                elem.ease(type, ctr+'-'+n, 0.13625, hgt, function() {
+                elem.ease(type, ctr+'-'+n, 0.13625, mht, function() {
 
                     if(type == "out") {
 
@@ -478,8 +480,13 @@ inputCheck = function(ele) {
 errorMsg = function(ele, msg) {
 
     elem.select(ele).style.borderColor = 'red';
-    alert(msg);
-    elem.select(ele).style.borderColor = '#ddffdd';
+
+    setTimeout(function() {
+
+        alert(msg);
+        elem.select(ele).style.borderColor = '#ddffdd';
+
+    }, 50);
 }
 
 // END MISC =========================================================================================================================================

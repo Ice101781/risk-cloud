@@ -213,8 +213,9 @@ finalParams = function(properties) {
                 errorMsg(stockPriceField, "Please enter a number greater than 0 for the current price of the underlying stock.");
                 break;
 
-            //user-defined parameter capture, write some info to elements of the trade summary table, calculate and launch visuals
+            //user-defined parameter capture, write some info to elements of the trade summary table, calculate data and launch visuals
             default:
+                //params capture
                 g.STOCK_PRICE = +elem.select("current-price-field").value;
 
                 for(i=1; i<g.TRADE_LEGS+1; i++) {
@@ -289,19 +290,24 @@ finalParams = function(properties) {
                 elem.select("output-time-field").setAttribute("max", obj.min(g.EXPIRY));
 
 
-                //transitions, calculate and display output
+                //transitions
                 elem.ease("out", "final-params-container", 0.65, 39);
                 elem.fade("out", "final-params-container", 0.03);
 
                 elem.fade("in", "output-container", 0.01, function() {
 
-                    //status message
-                    console.log('now calculating...');
-
                     //add 'calculating' text
                     elem.create({tag: "div", content: 'Calculating...', attributes: {id: "BSM-calc-text", class: "loading-text"}}, "output-view-container");
 
-                    setTimeout(function() { BSM.data(visuals.init) }, 100);
+                    //status message
+                    console.log('now calculating...');
+
+                    setTimeout(function() {
+
+                        //calculate data and launch visuals
+                        BSM.data(visuals.init);
+
+                    }, 50);
                 });
                 break;
         }

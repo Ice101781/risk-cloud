@@ -414,11 +414,11 @@ visuals = function(properties) {
 
             callback = function() {
 
-                //status message
-                console.log('point clouds full.');
-
                 //remove 'pushing data' text
                 elem.destroyChildren("output-view-container", ["BSM-push-text"]);
+
+                //status message
+                console.log('point clouds full.');
 
                 //get data info
                 dataVal = +elem.select("input[name=output-data-radio]:checked").value;
@@ -431,7 +431,7 @@ visuals = function(properties) {
                 //enable output data and output time elements
                 for(i=1; i<7; i++) { elem.avail("output-data-radio-"+i, true) }
                 ["output-time-field", "output-time-button"].forEach(function(ele) { elem.avail(ele, true) });
-                ["output-data-form",    "output-time-form"].forEach(function(ele) { elem.select(ele).style.backgroundColor = '#fafafa' });
+                ["output-data-form" , "output-time-form"  ].forEach(function(ele) { elem.select(ele).style.backgroundColor = '#fafafa' });
 
                 //display the global object in the console
                 console.log(g);
@@ -444,7 +444,12 @@ visuals = function(properties) {
         // MAIN =====================================================================================================================================
 
         addTableData();
-        setTimeout(function() { pushData() }, 100);
+
+        setTimeout(function() {
+
+            pushData();
+
+        }, 50);
 
         // END MAIN =================================================================================================================================
     }

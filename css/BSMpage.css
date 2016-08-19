@@ -45,11 +45,11 @@
   display: inline-block;
   height: 10vw;
   width: 30vw;
-  margin-top: 2vw;
+  margin-top: 2.5vw;
   background-color: #a6a6a6;
 }
 
- /* lightpink background color test */
+/* lightpink background color test */
 #final-params-container {
   opacity: 0;
   height: 39vw;
@@ -60,6 +60,7 @@
 #final-params-sub-container {
   display: inline-block;
   height: 35vw;
+  margin-top: 1.75vw;
   background-color: #a6a6a6;
 }
 
@@ -81,7 +82,7 @@
   background-color: #fafafa;
 }
 
- /* violet background color test */
+/* violet background color test */
 #output-container {
   opacity: 0;
   height: 39.5vw;
@@ -117,7 +118,7 @@
   color: #9999ff;
 }
 
- /* aspect ratio is 2.5 : 1 for the #output-view-container */
+/* aspect ratio is 2.5 : 1 for the #output-view-container */
 #output-view-container, #output-summary-container {
   width: 77.5vw;
 }
@@ -153,12 +154,12 @@
   width: 18.12125vw;
 }
 
- /* width x 2 = 11.8vw */
+/* width x 2 = 11.8vw */
 .price-iv-headings {
   width: 5.9vw;
 }
 
- /* width x 5 = 35.6875vw */
+/* width x 5 = 35.6875vw */
 .greek-headings {
   width: 7.1375vw;
 }
@@ -316,7 +317,7 @@ label.radio.output-data {
   padding-right: 0.75vw;
 }
 
- /* thanks to http://www.color-hex.com/color-wheel/ for help with the background color */
+/* thanks to http://www.color-hex.com/color-wheel/ for help with the background color */
 .output-forms {
   display: inline-block;
   width: 11vw;

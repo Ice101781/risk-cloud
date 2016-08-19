@@ -10,7 +10,7 @@ obj = function(properties) {
     return self;
 }({
 
-    //reset pre-defined parameter values in an object
+    //reset parameter values in an object
     reset: function(obj) {
 
         for(ele in obj) {
@@ -32,11 +32,11 @@ obj = function(properties) {
     //object size - thanks to 'James Coglan' on stackoverflow.com for this
     size: function(obj) {
 
-        var card = 0;
+        var crd = 0;
 
-        for(key in obj) { if(obj.hasOwnProperty(key)) { card++ } }
+        for(key in obj) { if(obj.hasOwnProperty(key)) { crd++ } }
 
-        return card;
+        return crd;
     },
 
 
@@ -156,7 +156,7 @@ elem = function(properties) {
 
 
     //creation
-    create: function(obj, appendId) {
+    create: function(obj, par) {
 
         //create a new document element
         var ele = document.createElement(obj.tag);
@@ -170,7 +170,7 @@ elem = function(properties) {
         for(attr in obj.attributes) { ele.setAttribute(attr, obj.attributes[attr]) }
 
         //append the new element to a parent element
-        this.select(appendId).appendChild(ele);
+        this.select(par).appendChild(ele);
 
         return ele;
     },
@@ -200,36 +200,36 @@ elem = function(properties) {
 
 
     //transition animations
-    ease: function(type, str, inc, hgt, callback) {
+    ease: function(type, str, inc, mht, callback) {
 
-        var ele    = this.select(str).style,
-            height = 0,
-            timer  = setInterval(render, (1000/50)); //50 fps
+        var ele = this.select(str).style,
+            hgt = 0,
+            tmr = setInterval(render, (1000/50)); //50 fps
 
         function render() {
 
-            height = (hgt-height > 0) ? height + inc : hgt;
+            hgt = (mht-hgt > 0) ? hgt + inc : mht;
 
-            if(height == hgt) {
+            if(hgt == mht) {
 
-                clearInterval(timer);
+                clearInterval(tmr);
 
                 if(typeof callback === 'function') { callback() }
 
             } else {
 
-                height += inc;
+                hgt += inc;
 
-                if(type == "in") { ele.height = height + 'vw' } else if(type == "out") { ele.height = hgt - height + 'vw' }
+                if(type == "in") { ele.height = hgt + 'vw' } else if(type == "out") { ele.height = mht - hgt + 'vw' }
             }
         }
     },
 
     fade: function(type, str, inc, callback) {
 
-        var ele   = this.select(str).style,
-            opc   = 0,
-            timer = setInterval(render, (1000/50)); //50 fps
+        var ele = this.select(str).style,
+            opc = 0,
+            tmr = setInterval(render, (1000/50)); //50 fps
 
         function render() {
 
@@ -237,7 +237,7 @@ elem = function(properties) {
 
             if(opc == 1) {
 
-                clearInterval(timer);
+                clearInterval(tmr);
 
                 if(typeof callback === 'function') { callback() }
 

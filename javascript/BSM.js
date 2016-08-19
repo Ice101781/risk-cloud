@@ -25,14 +25,14 @@ BSM = function(properties) {
     impVol: function(leg, S, mtd) {
 
         //local variables
-        var type     = g.CONTRACT_TYPE[leg],
-            n        = g.NUM_CONTRACTS[leg],
-            K        = g.STRIKE_PRICE[leg],
-            optPrice = g.OPTION_PRICE[leg],
-            T        = g.EXPIRY[leg]/365,
-            D        = g.DIV_YIELD[leg],
-            r        = g.RISK_FREE[leg],
-            bsmPrice = 0;
+        var type = g.CONTRACT_TYPE[leg],
+            n    = g.NUM_CONTRACTS[leg],
+            K    = g.STRIKE_PRICE[leg],
+            optP = g.OPTION_PRICE[leg],
+            T    = g.EXPIRY[leg]/365,
+            D    = g.DIV_YIELD[leg],
+            r    = g.RISK_FREE[leg],
+            bsmP = 0;
 
         switch(mtd) {
 
@@ -51,13 +51,13 @@ BSM = function(properties) {
                         vga = S*Math.pow(Math.E,-D*T)*math.NORM(d1)*Math.sqrt(T);
 
                     //option price based on current estimate for implied volatility
-                    bsmPrice = type*((S*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*T))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*T)));
+                    bsmP = type*((S*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*T))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*T)));
 
                     //return a value if threshold condition is met
-                    if(Math.abs(optPrice-bsmPrice) <= Math.pow(10,-2)) { return est }
+                    if(Math.abs(optP-bsmP) <= Math.pow(10,-2)) { return est }
 
                     //next estimate for implied volatility
-                    est += (optPrice-bsmPrice)/vga;
+                    est += (optP-bsmP)/vga;
                 }
 
                 if(j==itr) { return false }
@@ -82,10 +82,10 @@ BSM = function(properties) {
                         d2  = d1-(est*Math.sqrt(T));
 
                     //option price based on current estimate for implied volatility
-                    bsmPrice = type*((S*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*T))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*T)));
+                    bsmP = type*((S*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*T))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*T)));
 
                     //next estimate for implied volatility
-                    switch(Math.sign(optPrice-bsmPrice)) {
+                    switch(Math.sign(optP-bsmP)) {
 
                         case 1:
                             low = est;
@@ -109,29 +109,29 @@ BSM = function(properties) {
         for(i=1; i<g.TRADE_LEGS+1; i++) {
 
             //local variables
-            var signN = g.LONG_SHORT[i]*g.NUM_CONTRACTS[i],
-                type  = g.CONTRACT_TYPE[i],
-                K     = g.STRIKE_PRICE[i],
-                tau   = (g.EXPIRY[i]-t)/365,
-                D     = g.DIV_YIELD[i],
-                r     = g.RISK_FREE[i],
-                vol   = g.IMPLIED_VOL[i],
-                d1    = tau == 0 && S == K ? Infinity : (Math.log(S/K)+((r-D+(Math.pow(vol,2)/2))*tau))/(vol*Math.sqrt(tau)),
-                d2    = d1-(vol*Math.sqrt(tau));
+            var sgnN = g.LONG_SHORT[i]*g.NUM_CONTRACTS[i],
+                type = g.CONTRACT_TYPE[i],
+                K    = g.STRIKE_PRICE[i],
+                tau  = (g.EXPIRY[i]-t)/365,
+                D    = g.DIV_YIELD[i],
+                r    = g.RISK_FREE[i],
+                vol  = g.IMPLIED_VOL[i],
+                d1   = tau == 0 && S == K ? Infinity : (Math.log(S/K)+((r-D+(Math.pow(vol,2)/2))*tau))/(vol*Math.sqrt(tau)),
+                d2   = d1-(vol*Math.sqrt(tau));
 
             //price
-            this.price[i] = +(signN*type*((S*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*tau))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*tau)))*100).toFixed(2);
+            this.price[i] = +(sgnN*type*((S*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*tau))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*tau)))*100).toFixed(2);
 
             //greeks
-            this.delta[i] = +(signN*type*Math.pow(Math.E,-D*tau)*math.LOGISTIC(type*d1)*100).toFixed(2);
+            this.delta[i] = +(sgnN*type*Math.pow(Math.E,-D*tau)*math.LOGISTIC(type*d1)*100).toFixed(2);
 
-            this.gamma[i] = tau !== 0 ? +(signN*(Math.pow(Math.E,-D*tau)*math.NORM(d1))/(S*vol*Math.sqrt(tau))*100).toFixed(2) : 0;
+            this.gamma[i] = tau !== 0 ? +(sgnN*(Math.pow(Math.E,-D*tau)*math.NORM(d1))/(S*vol*Math.sqrt(tau))*100).toFixed(2) : 0;
 
-            this.theta[i] = tau !== 0 ? +(signN*((S*Math.pow(Math.E,-D*tau)*(D*type*math.LOGISTIC(type*d1)))-(K*Math.pow(Math.E,-r*tau)*((r*type*math.LOGISTIC(type*d2))+((vol*math.NORM(d2))/(2*Math.sqrt(tau))))))/3.65).toFixed(2) : 0;
+            this.theta[i] = tau !== 0 ? +(sgnN*((S*Math.pow(Math.E,-D*tau)*(D*type*math.LOGISTIC(type*d1)))-(K*Math.pow(Math.E,-r*tau)*((r*type*math.LOGISTIC(type*d2))+((vol*math.NORM(d2))/(2*Math.sqrt(tau))))))/3.65).toFixed(2) : 0;
 
-            this.vega[i]  = +(signN*S*Math.pow(Math.E,-D*tau)*math.NORM(d1)*Math.sqrt(tau)).toFixed(2);
+            this.vega[i]  = +(sgnN*S*Math.pow(Math.E,-D*tau)*math.NORM(d1)*Math.sqrt(tau)).toFixed(2);
 
-            this.rho[i]   = +(signN*type*K*tau*Math.pow(Math.E,-r*tau)*math.LOGISTIC(type*d2)).toFixed(2);
+            this.rho[i]   = +(sgnN*type*K*tau*Math.pow(Math.E,-r*tau)*math.LOGISTIC(type*d2)).toFixed(2);
         }
     },
 
@@ -141,8 +141,10 @@ BSM = function(properties) {
 
         //local variables
         var sPrices = [],
-            tradeCost,
+            tCost,
             arr     = ['delta','gamma','theta','vega','rho'];
+
+        // HELPERS ==================================================================================================================================
 
         //calculate the implied volatility for each trade leg and store it to the global object
         getImpliedVols = function() {
@@ -200,7 +202,7 @@ BSM = function(properties) {
                 BSM.calc(t, sPrices[s]);
 
                 //store values across time and stock price
-                g.PROFITLOSS_DATA[t][sPrices[s].toFixed(2)] = +(obj.sum(BSM.price)-tradeCost).toFixed(2);
+                g.PROFITLOSS_DATA[t][sPrices[s].toFixed(2)] = +(obj.sum(BSM.price)-tCost).toFixed(2);
 
                 arr.forEach(function(greek) { g[greek.toUpperCase()+'_DATA'][t][sPrices[s].toFixed(2)] = +(obj.sum(BSM[greek])).toFixed(2) });
 
@@ -225,6 +227,11 @@ BSM = function(properties) {
             }
         }
 
+        // END HELPERS ==============================================================================================================================
+
+
+        // MAIN =====================================================================================================================================
+
         allData = function(callback) {
 
             getImpliedVols();
@@ -234,7 +241,7 @@ BSM = function(properties) {
             BSM.calc(0, g.STOCK_PRICE);
 
             //store the current price of the trade
-            tradeCost = obj.sum(BSM.price);
+            tCost = obj.sum(BSM.price);
 
             getTimeSpaceData(0, obj.min(g.EXPIRY)-1);
             getTimeSpaceData(obj.min(g.EXPIRY)-0.5, obj.min(g.EXPIRY)-0.5);
@@ -245,21 +252,23 @@ BSM = function(properties) {
 
             callback = function() {
 
-                //status message
-                console.log('finished calculations.');
-
                 //remove 'calculating' text
                 elem.destroyChildren("output-view-container", ["BSM-calc-text"]);
 
                 //status message
-                console.log('pushing vertices to point cloud geometries...');
+                console.log('finished calculations.');
 
                 //add 'pushing data' text
                 elem.create({tag: "div", content: 'Pushing data to three.js...', attributes: {id: "BSM-push-text", class: "loading-text"}}, "output-view-container");
+
+                //status message
+                console.log('pushing vertices to point cloud geometries...');
             }();
         }();
 
         //data visualization callback
         if(typeof callback === 'function') { callback() }
+
+        // END MAIN =================================================================================================================================
     }
 })
