@@ -37,11 +37,11 @@ visuals = function(properties) {
             canvasW  = 2*Math.floor(width*(1-(1.01)*scalar)),
             canvasH  = 2*Math.floor(height*(0.6)*scalar/(numH-1)),
 
-            dataArr  = [ g.PROFITLOSS_DATA, g.DELTA_DATA, g.GAMMA_DATA, g.THETA_DATA, g.VEGA_DATA, g.RHO_DATA ],
+            dataArr  = [g.PROFITLOSS_DATA, g.DELTA_DATA, g.GAMMA_DATA, g.THETA_DATA, g.VEGA_DATA, g.RHO_DATA],
             dataVal,
-            timeArr  = [ obj.min(g.EXPIRY), obj.min(g.EXPIRY)-0.5, 0 ],
+            timeArr  = [obj.min(g.EXPIRY), obj.min(g.EXPIRY)-0.5, 0],
             range    = [],
-            cloud    = {},
+            cloud    = { 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {} },
             labels   = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} };
 
         //set renderer params and attach when the container is available
@@ -68,6 +68,26 @@ visuals = function(properties) {
 
 
         // HELPERS ==================================================================================================================================
+
+        //push vertices to point cloud geometry
+        pushVertices = function(oArr, tIdx, dVal) {
+
+            for(datum in oArr) {
+
+                cloud[dVal][tIdx].geometry.vertices.push(new THREE.Vector3(
+
+                    //x-coordinate
+                    w*(scalar*(Object.keys(oArr).indexOf(datum)/(obj.size(oArr)-1)-1)+0.5),
+
+                    //y-coordinate
+                    h/2*(scalar*(oArr[datum]/range[dVal]-numH/(numH-1))+1),
+
+                    //z-coordinate
+                    zDist+0.00001
+                ));
+            }
+        }
+
 
         //animation
         render = function() {
@@ -273,9 +293,6 @@ visuals = function(properties) {
                 //add tick marks, dotted lines and labels to the scene
                 camera.add(lines.xaxis.tick[i], lines.xaxis.dots[i], labels.xaxis.mesh[i]);
             }
-
-            //add point clouds to the scene
-            camera.add(cloud[dataVal][0], cloud[dataVal][1], cloud[dataVal][2]);
         }
 
 
@@ -334,17 +351,36 @@ visuals = function(properties) {
 
                 switch(false) {
 
-                    //some error message handling
+                    //some error handling
                     case val != "" && val >= 1 && val <= obj.min(g.EXPIRY) && val == Math.floor(val):
-                        errorMsg(ele, "Please enter a whole number between 1 and "+obj.min(g.EXPIRY)+" in the time field.");
+                        //message
+                        errorMsg(ele, "Please enter a whole number between 1 and "+obj.min(g.EXPIRY)+" for the number of calendar days to expiry.");
                         return;
 
                     default:
-                        for(i=1; i<7; i++) { camera.remove(cloud[i][2]) }
+                        //assign new time = t to the time array
+                        timeArr[2] = val;
 
-                        // NEED TO ADD LOGIC HERE //
+                        //point clouds
+                        for(i=1; i<7; i++) {
+
+                            //remove the old time = t cloud
+                            camera.remove(cloud[i][2]);
+
+                            //create new time = t cloud
+                            cloud[i][2] = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({ size: 0.0035*w*scalar, color: 0x0000ff }));
+
+                            //push new vertices to the point cloud geometries
+                            pushVertices(dataArr[i-1][obj.min(g.EXPIRY)-val], 2, i);
+                        }
                         break;
                 }
+
+                //get current data info
+                dataVal = +elem.select("input[name=output-data-radio]:checked").value;
+
+                //add the current point cloud to the scene
+                camera.add(cloud[dataVal][2]);
             }
         }
 
@@ -372,43 +408,24 @@ visuals = function(properties) {
         }
 
 
-        //push data to point clouds
-        pushData = function(callback) {
-
-            //local vars
-            var color = [0xff0000, 0xaa00ff, 0x0000ff];
+        //push initial data to point clouds
+        pushInitialData = function(callback) {
 
             dataArr.forEach(function(num, n) {
-
-                //get data info
-                dataVal = n+1;
 
                 //range of the data
                 var r = obj.range([ num[timeArr[0]], num[timeArr[1]], num[timeArr[2]] ]);
 
-                range[dataVal] = r !== 0 ? (r*1.025) : 1;
-
-                //declare objects to hold the point clouds
-                cloud[dataVal] = {};
+                range[n+1] = r !== 0 ? (r*1.025) : 1;
 
                 //point clouds
                 timeArr.forEach(function(time, t) {
 
-                    //create objects
-                    cloud[dataVal][t] = new THREE.Points( new THREE.Geometry(), new THREE.PointsMaterial({ size: 0.0035*w*scalar, color: color[t] }) );
+                    //create cloud objects
+                    cloud[n+1][t] = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({ size: 0.0035*w*scalar, color: [0xff0000, 0xaa00ff, 0x0000ff][t] }));
 
                     //push vertices to the point cloud geometries
-                    for(datum in num[time]) {
-
-                        cloud[dataVal][t].geometry.vertices.push(new THREE.Vector3(
-
-                            w*(scalar*(Object.keys(num[time]).indexOf(datum)/(obj.size(num[time])-1)-1)+0.5), //x-coordinate
-
-                            h/2*(scalar*(num[time][datum]/range[dataVal]-numH/(numH-1))+1), //y-coordinate
-
-                            zDist+0.00001 //z-coordinate
-                        ));
-                    }
+                    pushVertices(num[time], t, n+1);
                 });
             });
 
@@ -422,6 +439,9 @@ visuals = function(properties) {
 
                 //get data info
                 dataVal = +elem.select("input[name=output-data-radio]:checked").value;
+
+                //add initial point clouds to the scene
+                camera.add(cloud[1][0], cloud[1][1], cloud[1][2]);
 
                 render();
                 addGraphObjects();
@@ -447,7 +467,7 @@ visuals = function(properties) {
 
         setTimeout(function() {
 
-            pushData();
+            pushInitialData();
 
         }, 50);
 

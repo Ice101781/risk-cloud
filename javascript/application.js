@@ -202,60 +202,51 @@ idStrings = function(arr) {
 }
 
 
-twoButtons = function(properties) {
+//radio with two options
+twoButtons = function(arr, n) {
 
-    var self = function() { return };
+    //form
+    elem.create({tag: "form",
 
-    for(prop in properties) { self[prop] = properties[prop] }
+                 attributes: {id: arr[0][0]+"-"+arr[1][0]+"-"+"form-"+n, class: "general-group trade-leg-radio-forms"}},
 
-    return self;
-}({
+                "leg-sub-container-1-"+n);
 
-    create: function(arr, n) {
+    //buttons
+    for(j=0; j<2; j++) {
 
-        //radio form
-        elem.create({tag: "form",
+        elem.create({tag: "input",
 
-                     attributes: {id: arr[0][0]+"-"+arr[1][0]+"-"+"form-"+n, class: "general-group trade-leg-radio-forms"}},
+                     attributes: {type: "radio", id: arr[j][0]+"-"+"radio-"+n, name: arr[0][0]+"-"+arr[1][0]+"-"+"radio-"+n, value: arr[j][1]}},
 
-                    "leg-sub-container-1-"+n);
+                    arr[0][0]+"-"+arr[1][0]+"-"+"form-"+n);
 
-        //radio buttons
-        for(j=0; j<2; j++) {
+        //labels
+        elem.create({tag: "label",
 
-            elem.create({tag: "input",
+                     content: arr[j][0].charAt(0).toUpperCase()+arr[j][0].slice(1),
 
-                         attributes: {type: "radio", id: arr[j][0]+"-"+"radio-"+n, name: arr[0][0]+"-"+arr[1][0]+"-"+"radio-"+n, value: arr[j][1]}},
+                     attributes: {"for": arr[j][0]+"-"+"radio-"+n, class: "general-group radio trade-leg-radios"}},
 
-                        arr[0][0]+"-"+arr[1][0]+"-"+"form-"+n);
-
-            //labels
-            elem.create({tag: "label",
-
-                         content: arr[j][0].charAt(0).toUpperCase()+arr[j][0].slice(1),
-
-                         attributes: {"for": arr[j][0]+"-"+"radio-"+n, class: "general-group radio trade-leg-radios"}},
-
-                        arr[0][0]+"-"+arr[1][0]+"-"+"form-"+n);
-        }
-
-        //default settings for common trade setups
-        var bit;
-
-        switch(arr[0][0]) {
-
-            case "buy":
-                if(n == 1 || n == 4) { bit = 0 } else { bit = 1 }
-                break;
-
-            case "call":
-                if(n < 3) { bit = 1 } else { bit = 0 }
-                break;
-        }
-
-        elem.select(arr[bit][0]+"-"+"radio-"+n).setAttribute("checked", "");
+                    arr[0][0]+"-"+arr[1][0]+"-"+"form-"+n);
     }
-})
+
+    //default settings for common trade setups
+    var bit;
+
+    switch(arr[0][0]) {
+
+        case "buy":
+            if(n == 1 || n == 4) { bit = 0 } else { bit = 1 }
+            break;
+
+        case "call":
+            if(n < 3) { bit = 1 } else { bit = 0 }
+            break;
+    }
+
+    elem.select(arr[bit][0]+"-"+"radio-"+n).setAttribute("checked", "");
+}
 
 
 numberFields = function(properties) {
@@ -484,6 +475,9 @@ errorMsg = function(ele, msg) {
     setTimeout(function() {
 
         alert(msg);
+
+        //reset field value and border color
+        elem.select(ele).value = "";
         elem.select(ele).style.borderColor = '#ddffdd';
 
     }, 50);

@@ -84,7 +84,7 @@ finalParams = function(properties) {
             (function(n) {
 
                 //buy-sell & call-put radios
-                [ [["buy","1"],["sell","-1"]], [["call","1"],["put","-1"]] ].forEach(function(arr) { twoButtons.create(arr, n) });
+                [ [["buy","1"],["sell","-1"]], [["call","1"],["put","-1"]] ].forEach(function(arr) { twoButtons(arr, n) });
 
                 //text fields
                 ["num-contracts", "strike-price", "option-price", "expiry", "div-yield", "risk-free-rate"].forEach(function(ele) { numberFields.create(ele, n) });

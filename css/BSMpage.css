@@ -56,11 +56,11 @@
   background-color: transparent;
 }
 
-/* set width = 0 to vertically align two div's #trade-legs-params-container and #current-price-form */
+/* zero width to vertically align #trade-legs-params-container and #current-price-form */
 #final-params-sub-container {
   display: inline-block;
   height: 35vw;
-  margin-top: 1.75vw;
+  margin-top: 1.5vw;
   background-color: #a6a6a6;
 }
 
@@ -70,7 +70,7 @@
 
 .trade-leg {
   display: inline-block;
-  height: 28vw;
+  height: 28.5vw;
   width: 20vw;
   padding-left: 1.125vw;
   padding-right: 1.125vw;
@@ -312,7 +312,7 @@ label.radio.output-data {
 }
 
 #current-price-form {
-  margin-top: 1.25vw;
+  margin-top: 0.75vw;
   padding-left: 0.75vw;
   padding-right: 0.75vw;
 }
