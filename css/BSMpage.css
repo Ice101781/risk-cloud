@@ -107,6 +107,14 @@
   width: 78.25vw;
 }
 
+#output-data-tracker {
+  display: inline-block;
+  height: 9.3175vw;
+  width: 11vw;
+  margin-top: 0.75vw;
+  background-color: #333333;
+}
+
 #output-view-container, .loading-text {
   height: 31vw;
 }
@@ -323,17 +331,18 @@ label.radio.output-data {
   width: 11vw;
   margin: 0;
   padding: 0;
-  margin-top: 1vw;
   padding-top: 0.5vw;
   background-color: #feffe0;
 }
 
 #output-data-form {
   height: 21.125vw;
+  margin-top: 1vw;
 }
 
 #output-time-form {
   height: 4.25vw;
+  margin-top: 0.75vw;
 }
 
 /* END FORMS ======================================================================================================================================*/

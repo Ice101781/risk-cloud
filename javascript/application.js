@@ -59,11 +59,11 @@ nav = function(properties) {
         //main menu
         (mainMenu = function() {
 
-            var headings = { 
+            var headings = {
 
-                1: "ANALYZE",
+                1: "MODEL",
 
-                2: "MODEL",
+                2: "LOGIN",
 
                 3: "info"
             };
@@ -87,12 +87,12 @@ nav = function(properties) {
         //sub-menus
         (subMenus = function() {
 
-            var subHeadings = {   
+            var subHeadings = {
 
-                1: { a: {heading: "Skew",                 link: "#"} },
-
-                2: { a: {heading: "Black-Scholes-Merton", link: "../html/BSMpage.html"}//,
+                1: { a: {heading: "Black-Scholes-Merton", link: "../html/BSMpage.html"}//,
                    /*b: {heading: "Variance-Gamma",       link: "#"                   }*/ },
+
+                2: { a: {heading: "#",                    link: "#"} },
 
                 3: { a: {heading: "FAQ",                  link: "#"},
                      b: {heading: "legal",                link: "#"} }

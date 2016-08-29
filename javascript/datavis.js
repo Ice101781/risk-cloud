@@ -111,8 +111,8 @@ visuals = function(properties) {
             plane2.position.set(w/2*(1-scalar), h/2*(1-scalar*numH/(numH-1)), zDist);
             camera.add(plane1, plane2);
 
-            //label canvas, context, etc.
-            addLabelCanvas = function(axis, n) {
+            //axis label canvas, context, etc.
+            addAxisLabelCanvas = function(axis, fStyleC, fStyleT, n) {
 
                 var p = axis == 'yaxis' ? 1 : 0.75;
 
@@ -123,18 +123,18 @@ visuals = function(properties) {
 
                 //get context, paint the canvas background
                 labels[axis].context[n]           = labels[axis].canvas[n].getContext('2d');
-                labels[axis].context[n].fillStyle = '#888888';
+                labels[axis].context[n].fillStyle = fStyleC;
                 labels[axis].context[n].fillRect(0, 0, canvasW*p, canvasH);
 
                 //set color, font and alignment for the text
-                labels[axis].context[n].fillStyle    = 'black';
+                labels[axis].context[n].fillStyle    = fStyleT;
                 labels[axis].context[n].font         = (canvasH-1)+'px Arial';
                 labels[axis].context[n].textAlign    = 'center';
                 labels[axis].context[n].textBaseline = 'middle';
             }
 
-            //label texture, mesh, etc.
-            addLabelMesh = function(axis, n) {
+            //axis label texture, mesh, etc.
+            addAxisLabelMesh = function(axis, n) {
 
                 var p = axis == 'yaxis' ? 1 : 0.75;
 
@@ -162,7 +162,8 @@ visuals = function(properties) {
 
                 lines.yaxis[i] = new THREE.Line(gridlineGeom, new THREE.LineBasicMaterial({color: 0x444444}));
 
-                addLabelCanvas('yaxis', i);
+                //label canvas
+                addAxisLabelCanvas('yaxis', '#888888', 'black', i);
 
                 //set horizontal label values including value at and color of the x-axis
                 switch(true) {
@@ -181,7 +182,8 @@ visuals = function(properties) {
                         break;
                 }
 
-                addLabelMesh('yaxis', i);
+                //label mesh
+                addAxisLabelMesh('yaxis', i);
 
                 //set label position
                 labels.yaxis.mesh[i].position.set(-w/2*(1.01)*scalar, h/2*(1-scalar*((2*i+1+(0.6)/4)/(numH-1)-(0.002))), zDist);
@@ -223,7 +225,8 @@ visuals = function(properties) {
                     lines.xaxis.dots[i].geometry.vertices.push(new THREE.Vector3(w*(scalar*(i/6-1)+0.5), h*(scalar*(0.25*(j+1)/(numH-1)-1)+0.5), zDist));
                 }
 
-                addLabelCanvas('xaxis', i);
+                //label canvas
+                addAxisLabelCanvas('xaxis', '#ffff00', 'black', i);
 
                 //set label values from -3 to +3 implied standard deviations
                 switch((g.STOCKRANGE_LENGTH-1) % (numV-1)) {
@@ -250,7 +253,8 @@ visuals = function(properties) {
 
                 labels.xaxis.context[i].fillText(labelText, canvasW/2*0.75, canvasH/2);
 
-                addLabelMesh('xaxis', i);
+                //label mesh
+                addAxisLabelMesh('xaxis', i);
 
                 //set label position, at book-ends bump in label and extend tick mark
                 switch(i) {
@@ -290,9 +294,56 @@ visuals = function(properties) {
                         break;
                 }
 
-                //add tick marks, dotted lines and labels to the scene
+                //add tick mark, dotted line and label to the scene
                 camera.add(lines.xaxis.tick[i], lines.xaxis.dots[i], labels.xaxis.mesh[i]);
             }
+
+            //add mouse cursor tracker line and mesh
+            var trackerGeom = new THREE.Geometry();
+
+            trackerGeom.vertices.push(new THREE.Vector3(w/2*(1-scalar), h/2*(1-scalar/(numH-1)), zDist+0.00002)); //top vertex
+            trackerGeom.vertices.push(new THREE.Vector3(w/2*(1-scalar), h/2*(1-scalar*(numH)/(numH-1)), zDist+0.00002)); //center vertex
+            trackerGeom.vertices.push(new THREE.Vector3(w/2*(1-scalar), h/2*(1-scalar*(2*numH-1)/(numH-1)), zDist+0.00002)); //bottom vertex
+
+            var trackerLine = new THREE.Line(trackerGeom, new THREE.LineBasicMaterial({color: 0xff0000}));
+
+            //create the canvas
+            var trackerCanvas    = document.createElement('canvas');
+            trackerCanvas.width  = canvasW*0.75;
+            trackerCanvas.height = canvasH;
+
+            //get context, paint the canvas background
+            var trackerContext       = trackerCanvas.getContext('2d');
+            trackerContext.fillStyle = '#00ff00';
+            trackerContext.fillRect(0, 0, canvasW*0.75, canvasH);
+
+            //set color, font and alignment for the text
+            trackerContext.fillStyle    = 'black';
+            trackerContext.font         = (canvasH-1)+'px Arial';
+            trackerContext.textAlign    = 'center';
+            trackerContext.textBaseline = 'middle';
+
+            //set value
+            trackerContext.fillText('Hello!', canvasW/2*0.75, canvasH/2);
+
+            //set canvas as texture and specify texture parameters
+            var trackerTexture         = new THREE.Texture(trackerCanvas);
+            trackerTexture.needsUpdate = true;
+
+            //what does this actually do?
+            trackerTexture.minFilter = THREE.LinearFilter;
+
+            //create mesh and map canvas texture to it
+            var trackerMesh = new THREE.Mesh(
+                                  new THREE.PlaneGeometry(w*(1-(1.01)*scalar)*0.75, h*(0.6)*scalar/(numH-1), 1, 1),
+                                  new THREE.MeshBasicMaterial({map: trackerTexture})
+                              );
+
+            //set mesh position
+            trackerMesh.position.set(w*(1-scalar)*0.5, h*(scalar/(1-numH)*(numH+0.45)+0.5), zDist+0.00002);
+
+            //add tracker line and mesh to the scene
+            camera.add(trackerLine, trackerMesh);
         }
 
 
