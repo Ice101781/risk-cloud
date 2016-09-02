@@ -19,17 +19,17 @@ visuals = function(properties) {
             near     = 0.1,
             far      = 100,
             camera   = new THREE.PerspectiveCamera(VFOVdeg, aspect, near, far),
-            phi      = 0,
-            theta    = 0,
-            radius   = 0,
             light    = new THREE.AmbientLight(0xffffff),
+
+            mouse    = {x:0, y:0},
+            pos,
 
             //aspect ratio is 2.5 : 1
             w        = 1,
             h        = 0.4,
+            r        = h/(2*Math.tan((VFOVdeg*Math.PI/180)/2)),
 
             scalar   = 0.925,
-            zDist    = -h/(2*Math.tan((VFOVdeg*Math.PI/180)/2)),
             numH     = 25,
             numV     = 7,
 
@@ -37,12 +37,16 @@ visuals = function(properties) {
             canvasW  = 2*Math.floor(width*(1-(1.01)*scalar)),
             canvasH  = 2*Math.floor(height*(0.6)*scalar/(numH-1)),
 
+            labels   = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} },
+            tracker,
+            trackerLine,
+            trackerMesh,
+
             dataArr  = [g.PROFITLOSS_DATA, g.DELTA_DATA, g.GAMMA_DATA, g.THETA_DATA, g.VEGA_DATA, g.RHO_DATA],
             dataVal,
             timeArr  = [obj.min(g.EXPIRY), obj.min(g.EXPIRY)-0.5, 0],
             range    = [],
-            cloud    = { 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {} },
-            labels   = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} };
+            cloud    = { 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {} };
 
         //set renderer params and attach when the container is available
         if(elem.select("output-view-container") != null) {
@@ -63,9 +67,15 @@ visuals = function(properties) {
         });
 
         //set camera position and add light, camera to the scene
-        camera.position.set(radius*Math.sin(phi)*Math.cos(theta), radius*Math.sin(phi)*Math.sin(theta), radius*Math.cos(phi));
+        camera.position.set(r*Math.sin(0)*Math.cos(0), r*Math.sin(0)*Math.sin(0), r*Math.cos(0));
         scene.add(light, camera);
 
+        //add listener to store mouse coordinates
+        window.addEventListener('mousemove', function(e) {
+
+            mouse.x = ((event.clientX-renderer.domElement.offsetLeft)/renderer.domElement.width)*2-1;
+            mouse.y = -((event.clientY-renderer.domElement.offsetTop)/renderer.domElement.height)*2+1;
+        });
 
         // HELPERS ==================================================================================================================================
 
@@ -83,8 +93,33 @@ visuals = function(properties) {
                     h/2*(scalar*(oArr[datum]/range[dVal]-numH/(numH-1))+1),
 
                     //z-coordinate
-                    zDist+0.00001
+                    0.00001
                 ));
+            }
+        }
+
+
+        function moveTracker() {
+
+            //thanks to 'uhura' on stackoverflow.com for this
+            var vec, dir, distance;
+            
+            vec = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+            
+            vec.unproject(camera);
+            
+            dir = vec.sub(camera.position).normalize();
+            
+            distance = - camera.position.z / dir.z;
+
+            tracker = camera.position.clone().add(dir.multiplyScalar(distance));
+
+            if( tracker.x >= w*(0.5-scalar) && tracker.x <= w/2 ) {
+
+                trackerLine.position.x = tracker.x;
+                trackerMesh.position.x = tracker.x;
+
+                console.log(tracker.x);
             }
         }
 
@@ -92,8 +127,11 @@ visuals = function(properties) {
         //animation
         render = function() {
 
+            if(trackerLine && trackerMesh) { moveTracker() }
+
             renderer.render(scene, camera);
             requestAnimationFrame(render);
+
             //console.log();
         }
 
@@ -107,12 +145,12 @@ visuals = function(properties) {
                 lines  = { xaxis: {tick: {}, ext: {}, dots: {}}, yaxis: {} };
 
             //position the background and add it to the scene
-            plane1.position.set(0, 0, zDist);
-            plane2.position.set(w/2*(1-scalar), h/2*(1-scalar*numH/(numH-1)), zDist);
-            camera.add(plane1, plane2);
+            plane1.position.set(0, 0, 0);
+            plane2.position.set(w/2*(1-scalar), h/2*(1-scalar*numH/(numH-1)), 0);
+            scene.add(plane1, plane2);
 
             //axis label canvas, context, etc.
-            addAxisLabelCanvas = function(axis, fStyleC, fStyleT, n) {
+            addAxisLabelCanvas = function(axis, fStyleCol, fStyleTxt, n) {
 
                 var p = axis == 'yaxis' ? 1 : 0.75;
 
@@ -123,11 +161,11 @@ visuals = function(properties) {
 
                 //get context, paint the canvas background
                 labels[axis].context[n]           = labels[axis].canvas[n].getContext('2d');
-                labels[axis].context[n].fillStyle = fStyleC;
+                labels[axis].context[n].fillStyle = fStyleCol;
                 labels[axis].context[n].fillRect(0, 0, canvasW*p, canvasH);
 
                 //set color, font and alignment for the text
-                labels[axis].context[n].fillStyle    = fStyleT;
+                labels[axis].context[n].fillStyle    = fStyleTxt;
                 labels[axis].context[n].font         = (canvasH-1)+'px Arial';
                 labels[axis].context[n].textAlign    = 'center';
                 labels[axis].context[n].textBaseline = 'middle';
@@ -156,9 +194,9 @@ visuals = function(properties) {
                 //gridlines
                 var gridlineGeom = new THREE.Geometry();
 
-                    gridlineGeom.vertices.push(new THREE.Vector3(w/2*(1-(1.01)*scalar*2), h/2*(1-scalar*(2*i+1)/(numH-1)), zDist)); //left vertex
-                    gridlineGeom.vertices.push(new THREE.Vector3(w/2*(1-(1.01)*scalar), h/2*(1-scalar*(2*i+1)/(numH-1)), zDist)); //center vertex
-                    gridlineGeom.vertices.push(new THREE.Vector3(w/2, h/2*(1-scalar*(2*i+1)/(numH-1)), zDist)); //right vertex
+                    gridlineGeom.vertices.push(new THREE.Vector3(w/2*(1-(1.01)*scalar*2), h/2*(1-scalar*(2*i+1)/(numH-1)), 0)); //left vertex
+                    gridlineGeom.vertices.push(new THREE.Vector3(w/2*(1-(1.01)*scalar), h/2*(1-scalar*(2*i+1)/(numH-1)), 0)); //center vertex
+                    gridlineGeom.vertices.push(new THREE.Vector3(w/2, h/2*(1-scalar*(2*i+1)/(numH-1)), 0)); //right vertex
 
                 lines.yaxis[i] = new THREE.Line(gridlineGeom, new THREE.LineBasicMaterial({color: 0x444444}));
 
@@ -186,10 +224,10 @@ visuals = function(properties) {
                 addAxisLabelMesh('yaxis', i);
 
                 //set label position
-                labels.yaxis.mesh[i].position.set(-w/2*(1.01)*scalar, h/2*(1-scalar*((2*i+1+(0.6)/4)/(numH-1)-(0.002))), zDist);
+                labels.yaxis.mesh[i].position.set(-w/2*(1.01)*scalar, h/2*(1-scalar*((2*i+1+(0.6)/4)/(numH-1)-(0.002))), 0);
 
                 //add gridline and label to the scene
-                camera.add(lines.yaxis[i], labels.yaxis.mesh[i]);
+                scene.add(lines.yaxis[i], labels.yaxis.mesh[i]);
             }
 
             //add vertical tick marks and dotted lines as well as horizontal axis labels
@@ -198,9 +236,9 @@ visuals = function(properties) {
                 //tick marks
                 var tickGeom = new THREE.Geometry();
 
-                tickGeom.vertices.push(new THREE.Vector3(w*(scalar*(i/6-1)+0.5), h/2*(1-scalar*2), zDist)); //top vertex
-                tickGeom.vertices.push(new THREE.Vector3(w*(scalar*(i/6-1)+0.5), h/2*(1-scalar*(2*numH-1)/(numH-1)), zDist)); //center vertex
-                tickGeom.vertices.push(new THREE.Vector3(w*(scalar*(i/6-1)+0.5), h/2*(1-scalar*(2*numH)/(numH-1)), zDist)); //bottom vertex
+                tickGeom.vertices.push(new THREE.Vector3(w*(scalar*(i/6-1)+0.5), h/2*(1-scalar*2), 0)); //top vertex
+                tickGeom.vertices.push(new THREE.Vector3(w*(scalar*(i/6-1)+0.5), h/2*(1-scalar*(2*numH-1)/(numH-1)), 0)); //center vertex
+                tickGeom.vertices.push(new THREE.Vector3(w*(scalar*(i/6-1)+0.5), h/2*(1-scalar*(2*numH)/(numH-1)), 0)); //bottom vertex
 
                 lines.xaxis.tick[i] = new THREE.Line(tickGeom, new THREE.LineBasicMaterial({color: 0xffff00}));
 
@@ -222,11 +260,11 @@ visuals = function(properties) {
                 //add vertices (as vectors) to the dotted line geometries
                 for(j=0; j<(4*numH-6); j++) {
 
-                    lines.xaxis.dots[i].geometry.vertices.push(new THREE.Vector3(w*(scalar*(i/6-1)+0.5), h*(scalar*(0.25*(j+1)/(numH-1)-1)+0.5), zDist));
+                    lines.xaxis.dots[i].geometry.vertices.push(new THREE.Vector3(w*(scalar*(i/6-1)+0.5), h*(scalar*(0.25*(j+1)/(numH-1)-1)+0.5), 0));
                 }
 
                 //label canvas
-                addAxisLabelCanvas('xaxis', '#ffff00', 'black', i);
+                addAxisLabelCanvas('xaxis', '#888888', 'black', i);
 
                 //set label values from -3 to +3 implied standard deviations
                 switch((g.STOCKRANGE_LENGTH-1) % (numV-1)) {
@@ -261,51 +299,51 @@ visuals = function(properties) {
 
                     case 0:
                         //bump label right
-                        labels.xaxis.mesh[i].position.set(w*(scalar*(i/6-1-1.01*0.375)+0.375+0.5), h*(scalar/(1-numH)*(numH+0.45)+0.5), zDist);
+                        labels.xaxis.mesh[i].position.set(w*(scalar*(i/6-1-1.01*0.375)+0.375+0.5), h*(scalar/(1-numH)*(numH+0.45)+0.5), 0);
 
                         //extend tick mark right
                         var extGeom = new THREE.Geometry();
 
-                        extGeom.vertices.push(new THREE.Vector3(w*(-scalar+0.5), h/2*(1-scalar*(2*numH)/(numH-1)), zDist)); //left vertex
-                        extGeom.vertices.push(new THREE.Vector3(w*0.25*(-scalar*(1.01*0.75+4)+0.75+2), h/2*(1-scalar*(2*numH)/(numH-1)), zDist)); //center vertex
-                        extGeom.vertices.push(new THREE.Vector3(w*0.5*(-scalar*(1.01*0.75+2)+0.75+1), h/2*(1-scalar*(2*numH)/(numH-1)), zDist)); //right vertex
+                        extGeom.vertices.push(new THREE.Vector3(w*(-scalar+0.5), h/2*(1-scalar*(2*numH)/(numH-1)), 0)); //left vertex
+                        extGeom.vertices.push(new THREE.Vector3(w*0.25*(-scalar*(1.01*0.75+4)+0.75+2), h/2*(1-scalar*(2*numH)/(numH-1)), 0)); //center vertex
+                        extGeom.vertices.push(new THREE.Vector3(w*0.5*(-scalar*(1.01*0.75+2)+0.75+1), h/2*(1-scalar*(2*numH)/(numH-1)), 0)); //right vertex
 
                         lines.xaxis.ext[i] = new THREE.Line(extGeom, new THREE.LineBasicMaterial({color: 0xffff00}));
-                        camera.add(lines.xaxis.ext[i]);
+                        scene.add(lines.xaxis.ext[i]);
                         break;
 
                     case 6:
                         //bump label left
-                        labels.xaxis.mesh[i].position.set(w*(scalar*(i/6-1+1.01*0.375)-0.375+0.5), h*(scalar/(1-numH)*(numH+0.45)+0.5), zDist);
+                        labels.xaxis.mesh[i].position.set(w*(scalar*(i/6-1+1.01*0.375)-0.375+0.5), h*(scalar/(1-numH)*(numH+0.45)+0.5), 0);
 
                         //extend tick mark left
                         var extGeom = new THREE.Geometry();
 
-                        extGeom.vertices.push(new THREE.Vector3(w*0.5*(0.75*(scalar*1.01-1)+1), h/2*(1-scalar*(2*numH)/(numH-1)), zDist)); //left vertex
-                        extGeom.vertices.push(new THREE.Vector3(w*0.25*(0.75*(scalar*1.01-1)+2), h/2*(1-scalar*(2*numH)/(numH-1)), zDist)); //center vertex
-                        extGeom.vertices.push(new THREE.Vector3(w*0.5, h/2*(1-scalar*(2*numH)/(numH-1)), zDist)); //right vertex
+                        extGeom.vertices.push(new THREE.Vector3(w*0.5*(0.75*(scalar*1.01-1)+1), h/2*(1-scalar*(2*numH)/(numH-1)), 0)); //left vertex
+                        extGeom.vertices.push(new THREE.Vector3(w*0.25*(0.75*(scalar*1.01-1)+2), h/2*(1-scalar*(2*numH)/(numH-1)), 0)); //center vertex
+                        extGeom.vertices.push(new THREE.Vector3(w*0.5, h/2*(1-scalar*(2*numH)/(numH-1)), 0)); //right vertex
 
                         lines.xaxis.ext[i] = new THREE.Line(extGeom, new THREE.LineBasicMaterial({color: 0xffff00}));
-                        camera.add(lines.xaxis.ext[i]);
+                        scene.add(lines.xaxis.ext[i]);
                         break;
 
                     default:
-                        labels.xaxis.mesh[i].position.set(w*(scalar*(i/6-1)+0.5), h*(scalar/(1-numH)*(numH+0.45)+0.5), zDist);
+                        labels.xaxis.mesh[i].position.set(w*(scalar*(i/6-1)+0.5), h*(scalar/(1-numH)*(numH+0.45)+0.5), 0);
                         break;
                 }
 
                 //add tick mark, dotted line and label to the scene
-                camera.add(lines.xaxis.tick[i], lines.xaxis.dots[i], labels.xaxis.mesh[i]);
+                scene.add(lines.xaxis.tick[i], lines.xaxis.dots[i], labels.xaxis.mesh[i]);
             }
 
             //add mouse cursor tracker line and mesh
             var trackerGeom = new THREE.Geometry();
 
-            trackerGeom.vertices.push(new THREE.Vector3(w/2*(1-scalar), h/2*(1-scalar/(numH-1)), zDist+0.00002)); //top vertex
-            trackerGeom.vertices.push(new THREE.Vector3(w/2*(1-scalar), h/2*(1-scalar*(numH)/(numH-1)), zDist+0.00002)); //center vertex
-            trackerGeom.vertices.push(new THREE.Vector3(w/2*(1-scalar), h/2*(1-scalar*(2*numH-1)/(numH-1)), zDist+0.00002)); //bottom vertex
+            trackerGeom.vertices.push(new THREE.Vector3(0, h/2*(1-scalar/(numH-1)), 0.00002)); //top vertex
+            trackerGeom.vertices.push(new THREE.Vector3(0, h/2*(1-scalar*(numH)/(numH-1)), 0.00002)); //center vertex
+            trackerGeom.vertices.push(new THREE.Vector3(0, h/2*(1-scalar*(2*numH-1)/(numH-1)), 0.00002)); //bottom vertex
 
-            var trackerLine = new THREE.Line(trackerGeom, new THREE.LineBasicMaterial({color: 0xff0000}));
+            trackerLine = new THREE.Line(trackerGeom, new THREE.LineBasicMaterial({color: 0x00ff00}));
 
             //create the canvas
             var trackerCanvas    = document.createElement('canvas');
@@ -314,11 +352,11 @@ visuals = function(properties) {
 
             //get context, paint the canvas background
             var trackerContext       = trackerCanvas.getContext('2d');
-            trackerContext.fillStyle = '#00ff00';
+            trackerContext.fillStyle = 'rgba(0,0,0,0)';
             trackerContext.fillRect(0, 0, canvasW*0.75, canvasH);
 
             //set color, font and alignment for the text
-            trackerContext.fillStyle    = 'black';
+            trackerContext.fillStyle    = 'white';
             trackerContext.font         = (canvasH-1)+'px Arial';
             trackerContext.textAlign    = 'center';
             trackerContext.textBaseline = 'middle';
@@ -334,16 +372,16 @@ visuals = function(properties) {
             trackerTexture.minFilter = THREE.LinearFilter;
 
             //create mesh and map canvas texture to it
-            var trackerMesh = new THREE.Mesh(
-                                  new THREE.PlaneGeometry(w*(1-(1.01)*scalar)*0.75, h*(0.6)*scalar/(numH-1), 1, 1),
-                                  new THREE.MeshBasicMaterial({map: trackerTexture})
-                              );
+            trackerMesh = new THREE.Mesh(
+                            new THREE.PlaneGeometry(w*(1-(1.01)*scalar)*0.75, h*(0.6)*scalar/(numH-1), 1, 1),
+                            new THREE.MeshBasicMaterial({map: trackerTexture, transparent: true})
+                          );
 
             //set mesh position
-            trackerMesh.position.set(w*(1-scalar)*0.5, h*(scalar/(1-numH)*(numH+0.45)+0.5), zDist+0.00002);
+            trackerMesh.position.set(w/2*(1-scalar), h*(scalar/(1-numH)*(numH+0.45)+0.5), 0.00002);
 
             //add tracker line and mesh to the scene
-            camera.add(trackerLine, trackerMesh);
+            scene.add(trackerLine, trackerMesh);
         }
 
 
@@ -357,13 +395,13 @@ visuals = function(properties) {
                     elem.select("output-data-radio-"+n).addEventListener('click', function() {
 
                         //remove the old point clouds
-                        camera.remove(cloud[dataVal][0], cloud[dataVal][1], cloud[dataVal][2]);
+                        scene.remove(cloud[dataVal][0], cloud[dataVal][1], cloud[dataVal][2]);
 
                         //get the new data's info
                         dataVal = +elem.select("input[name=output-data-radio]:checked").value;
 
                         //add the new ones
-                        camera.add(cloud[dataVal][0], cloud[dataVal][1], cloud[dataVal][2]);
+                        scene.add(cloud[dataVal][0], cloud[dataVal][1], cloud[dataVal][2]);
 
                         //change y-axis label values
                         for(j=0; j<numH; j++) {
@@ -416,7 +454,7 @@ visuals = function(properties) {
                         for(i=1; i<7; i++) {
 
                             //remove the old time = t cloud
-                            camera.remove(cloud[i][2]);
+                            scene.remove(cloud[i][2]);
 
                             //create new time = t cloud
                             cloud[i][2] = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({ size: 0.0035*w*scalar, color: 0x0000ff }));
@@ -431,7 +469,7 @@ visuals = function(properties) {
                 dataVal = +elem.select("input[name=output-data-radio]:checked").value;
 
                 //add the current point cloud to the scene
-                camera.add(cloud[dataVal][2]);
+                scene.add(cloud[dataVal][2]);
             }
         }
 
@@ -465,9 +503,9 @@ visuals = function(properties) {
             dataArr.forEach(function(num, n) {
 
                 //range of the data
-                var r = obj.range([ num[timeArr[0]], num[timeArr[1]], num[timeArr[2]] ]);
+                var rng = obj.range([ num[timeArr[0]], num[timeArr[1]], num[timeArr[2]] ]);
 
-                range[n+1] = r !== 0 ? (r*1.025) : 1;
+                range[n+1] = rng !== 0 ? (rng*1.025) : 1;
 
                 //point clouds
                 timeArr.forEach(function(time, t) {
@@ -492,7 +530,7 @@ visuals = function(properties) {
                 dataVal = +elem.select("input[name=output-data-radio]:checked").value;
 
                 //add initial point clouds to the scene
-                camera.add(cloud[1][0], cloud[1][1], cloud[1][2]);
+                scene.add(cloud[1][0], cloud[1][1], cloud[1][2]);
 
                 render();
                 addGraphObjects();
