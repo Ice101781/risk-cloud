@@ -99,7 +99,7 @@ visuals = function(properties) {
         }
 
 
-        function moveTracker() {
+        function animateTracker() {
 
             //thanks to 'uhura' on stackoverflow.com for this
             var vec, dir, distance;
@@ -114,12 +114,60 @@ visuals = function(properties) {
 
             tracker = camera.position.clone().add(dir.multiplyScalar(distance));
 
-            if( tracker.x >= w*(0.5-scalar) && tracker.x <= w/2 ) {
 
-                trackerLine.position.x = tracker.x;
-                trackerMesh.position.x = tracker.x;
+            switch(false) {
 
-                console.log(tracker.x);
+                //left, right, top, bottom boundaries for cursor tracking 
+                case tracker.x >= w/2-w*scalar :
+                /* fall through */
+                case tracker.x <= w/2 :
+                /* fall through */
+                case tracker.y <= h/2 :
+                /* fall through */
+                case tracker.y >= -h/2 :
+                    break;
+
+                default:
+                    trackerLine.position.x = tracker.x;
+                    trackerMesh.position.x = tracker.x;
+
+                    //reduce the time complexity of the search
+                    switch(true) {
+
+                        //region 1 (-3sd to -2sd)
+                        case tracker.x >= w/2-w*scalar && tracker.x < w/2-w*scalar*(1-1/6) :
+                            //console.log('in region 1!');
+                            break;
+
+                        //region 2 (-2sd to -1sd)
+                        case tracker.x >= w/2-w*scalar*(1-1/6) && tracker.x < w/2-w*scalar*(1-2/6) :
+                            //console.log('in region 2!');
+                            break;
+
+                        //region 3 ...
+                        case tracker.x >= w/2-w*scalar*(1-2/6) && tracker.x < w/2-w*scalar*(1-3/6) :
+                            //console.log('in region 3!');
+                            break;
+
+                        //region 4
+                        case tracker.x >= w/2-w*scalar*(1-3/6) && tracker.x < w/2-w*scalar*(1-4/6) :
+                            //console.log('in region 4!');
+                            break;
+
+                        //region 5
+                        case tracker.x >= w/2-w*scalar*(1-4/6) && tracker.x < w/2-w*scalar*(1-5/6) :
+                            //console.log('in region 5!');
+                            break;
+
+
+                        //region 6
+                        case tracker.x >= w/2-w*scalar*(1-5/6) && tracker.x < w/2 :
+                            //console.log('in region 6!');
+                            break;
+                    }
+
+                    //console.log(tracker.x);
+                    break;
             }
         }
 
@@ -127,7 +175,7 @@ visuals = function(properties) {
         //animation
         render = function() {
 
-            if(trackerLine && trackerMesh) { moveTracker() }
+            if(trackerLine && trackerMesh) { animateTracker() }
 
             renderer.render(scene, camera);
             requestAnimationFrame(render);
@@ -350,19 +398,19 @@ visuals = function(properties) {
             trackerCanvas.width  = canvasW*0.75;
             trackerCanvas.height = canvasH;
 
-            //get context, paint the canvas background
+            //get context, set transparent canvas background
             var trackerContext       = trackerCanvas.getContext('2d');
-            trackerContext.fillStyle = 'rgba(0,0,0,0)';
+            trackerContext.fillStyle = 'rgba(100,100,100,0.75)';
             trackerContext.fillRect(0, 0, canvasW*0.75, canvasH);
 
             //set color, font and alignment for the text
-            trackerContext.fillStyle    = 'white';
-            trackerContext.font         = (canvasH-1)+'px Arial';
+            trackerContext.fillStyle    = 'rgb(25,255,25)';
+            trackerContext.font         = canvasH - 1 +'px Arial';
             trackerContext.textAlign    = 'center';
             trackerContext.textBaseline = 'middle';
 
             //set value
-            trackerContext.fillText('Hello!', canvasW/2*0.75, canvasH/2);
+            trackerContext.fillText('$100.25', canvasW/2*0.75, canvasH/2);
 
             //set canvas as texture and specify texture parameters
             var trackerTexture         = new THREE.Texture(trackerCanvas);
