@@ -22,7 +22,6 @@ visuals = function(properties) {
             light    = new THREE.AmbientLight(0xffffff),
 
             mouse    = {x:0, y:0},
-            pos,
 
             //aspect ratio is 2.5 : 1
             w        = 1,
@@ -37,6 +36,7 @@ visuals = function(properties) {
             canvasW  = 2*Math.floor(width*(1-(1.01)*scalar)),
             canvasH  = 2*Math.floor(height*(0.6)*scalar/(numH-1)),
 
+            lines    = { xaxis: {tick: {}, ext: {}, dots: {}}, yaxis: {} },
             labels   = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} },
             tracker,
             trackerLine,
@@ -66,131 +66,26 @@ visuals = function(properties) {
             camera.aspect = (width/height);
         });
 
-        //set camera position and add light, camera to the scene
-        camera.position.set(r*Math.sin(0)*Math.cos(0), r*Math.sin(0)*Math.sin(0), r*Math.cos(0));
-        scene.add(light, camera);
-
         //add listener to store mouse coordinates
-        window.addEventListener('mousemove', function(e) {
+        window.addEventListener('mousemove', function onMouseMove(e) {
 
             mouse.x = ((event.clientX-renderer.domElement.offsetLeft)/renderer.domElement.width)*2-1;
             mouse.y = -((event.clientY-renderer.domElement.offsetTop)/renderer.domElement.height)*2+1;
         });
 
+        //set camera position and add light, camera to the scene
+        camera.position.set(r*Math.sin(0)*Math.cos(0), r*Math.sin(0)*Math.sin(0), r*Math.cos(0));
+        scene.add(light, camera);
+
+
         // HELPERS ==================================================================================================================================
-
-        //push vertices to point cloud geometry
-        pushVertices = function(oArr, tIdx, dVal) {
-
-            for(datum in oArr) {
-
-                cloud[dVal][tIdx].geometry.vertices.push(new THREE.Vector3(
-
-                    //x-coordinate
-                    w*(scalar*(Object.keys(oArr).indexOf(datum)/(obj.size(oArr)-1)-1)+0.5),
-
-                    //y-coordinate
-                    h/2*(scalar*(oArr[datum]/range[dVal]-numH/(numH-1))+1),
-
-                    //z-coordinate
-                    0.00001
-                ));
-            }
-        }
-
-
-        function animateTracker() {
-
-            //thanks to 'uhura' on stackoverflow.com for this
-            var vec, dir, distance;
-            
-            vec = new THREE.Vector3(mouse.x, mouse.y, 0.5);
-            
-            vec.unproject(camera);
-            
-            dir = vec.sub(camera.position).normalize();
-            
-            distance = - camera.position.z / dir.z;
-
-            tracker = camera.position.clone().add(dir.multiplyScalar(distance));
-
-
-            switch(false) {
-
-                //left, right, top, bottom boundaries for cursor tracking 
-                case tracker.x >= w/2-w*scalar :
-                /* fall through */
-                case tracker.x <= w/2 :
-                /* fall through */
-                case tracker.y <= h/2 :
-                /* fall through */
-                case tracker.y >= -h/2 :
-                    break;
-
-                default:
-                    trackerLine.position.x = tracker.x;
-                    trackerMesh.position.x = tracker.x;
-
-                    //reduce the time complexity of the search
-                    switch(true) {
-
-                        //region 1 (-3sd to -2sd)
-                        case tracker.x >= w/2-w*scalar && tracker.x < w/2-w*scalar*(1-1/6) :
-                            //console.log('in region 1!');
-                            break;
-
-                        //region 2 (-2sd to -1sd)
-                        case tracker.x >= w/2-w*scalar*(1-1/6) && tracker.x < w/2-w*scalar*(1-2/6) :
-                            //console.log('in region 2!');
-                            break;
-
-                        //region 3 ...
-                        case tracker.x >= w/2-w*scalar*(1-2/6) && tracker.x < w/2-w*scalar*(1-3/6) :
-                            //console.log('in region 3!');
-                            break;
-
-                        //region 4
-                        case tracker.x >= w/2-w*scalar*(1-3/6) && tracker.x < w/2-w*scalar*(1-4/6) :
-                            //console.log('in region 4!');
-                            break;
-
-                        //region 5
-                        case tracker.x >= w/2-w*scalar*(1-4/6) && tracker.x < w/2-w*scalar*(1-5/6) :
-                            //console.log('in region 5!');
-                            break;
-
-
-                        //region 6
-                        case tracker.x >= w/2-w*scalar*(1-5/6) && tracker.x < w/2 :
-                            //console.log('in region 6!');
-                            break;
-                    }
-
-                    //console.log(tracker.x);
-                    break;
-            }
-        }
-
-
-        //animation
-        render = function() {
-
-            if(trackerLine && trackerMesh) { animateTracker() }
-
-            renderer.render(scene, camera);
-            requestAnimationFrame(render);
-
-            //console.log();
-        }
-
 
         //graph objects
         addGraphObjects = function() {
 
             //local vars for the background and gridlines
             var plane1 = new THREE.Mesh(new THREE.PlaneGeometry(w, h, 1, 1), new THREE.MeshBasicMaterial({color: 0x888888})),
-                plane2 = new THREE.Mesh(new THREE.PlaneGeometry(w*scalar, h*scalar, 1, 1), new THREE.MeshBasicMaterial({color: 0x333333})),
-                lines  = { xaxis: {tick: {}, ext: {}, dots: {}}, yaxis: {} };
+                plane2 = new THREE.Mesh(new THREE.PlaneGeometry(w*scalar, h*scalar, 1, 1), new THREE.MeshBasicMaterial({color: 0x333333}));
 
             //position the background and add it to the scene
             plane1.position.set(0, 0, 0);
@@ -198,7 +93,7 @@ visuals = function(properties) {
             scene.add(plane1, plane2);
 
             //axis label canvas, context, etc.
-            addAxisLabelCanvas = function(axis, fStyleCol, fStyleTxt, n) {
+            addAxisLabelCanvas = function(axis, n) {
 
                 var p = axis == 'yaxis' ? 1 : 0.75;
 
@@ -209,11 +104,11 @@ visuals = function(properties) {
 
                 //get context, paint the canvas background
                 labels[axis].context[n]           = labels[axis].canvas[n].getContext('2d');
-                labels[axis].context[n].fillStyle = fStyleCol;
+                labels[axis].context[n].fillStyle = '#888888';
                 labels[axis].context[n].fillRect(0, 0, canvasW*p, canvasH);
 
                 //set color, font and alignment for the text
-                labels[axis].context[n].fillStyle    = fStyleTxt;
+                labels[axis].context[n].fillStyle    = 'black';
                 labels[axis].context[n].font         = (canvasH-1)+'px Arial';
                 labels[axis].context[n].textAlign    = 'center';
                 labels[axis].context[n].textBaseline = 'middle';
@@ -249,7 +144,7 @@ visuals = function(properties) {
                 lines.yaxis[i] = new THREE.Line(gridlineGeom, new THREE.LineBasicMaterial({color: 0x444444}));
 
                 //label canvas
-                addAxisLabelCanvas('yaxis', '#888888', 'black', i);
+                addAxisLabelCanvas('yaxis', i);
 
                 //set horizontal label values including value at and color of the x-axis
                 switch(true) {
@@ -312,7 +207,7 @@ visuals = function(properties) {
                 }
 
                 //label canvas
-                addAxisLabelCanvas('xaxis', '#888888', 'black', i);
+                addAxisLabelCanvas('xaxis', i);
 
                 //set label values from -3 to +3 implied standard deviations
                 switch((g.STOCKRANGE_LENGTH-1) % (numV-1)) {
@@ -400,7 +295,7 @@ visuals = function(properties) {
 
             //get context, set transparent canvas background
             var trackerContext       = trackerCanvas.getContext('2d');
-            trackerContext.fillStyle = 'rgba(100,100,100,0.75)';
+            trackerContext.fillStyle = 'rgba(100,100,100,0.5)';
             trackerContext.fillRect(0, 0, canvasW*0.75, canvasH);
 
             //set color, font and alignment for the text
@@ -422,13 +317,16 @@ visuals = function(properties) {
             //create mesh and map canvas texture to it
             trackerMesh = new THREE.Mesh(
                             new THREE.PlaneGeometry(w*(1-(1.01)*scalar)*0.75, h*(0.6)*scalar/(numH-1), 1, 1),
-                            new THREE.MeshBasicMaterial({map: trackerTexture, transparent: true})
+                            new THREE.MeshBasicMaterial({transparent: true, map: trackerTexture})
                           );
 
             //set mesh position
             trackerMesh.position.set(w/2*(1-scalar), h*(scalar/(1-numH)*(numH+0.45)+0.5), 0.00002);
 
-            //add tracker line and mesh to the scene
+            //set initial visibility and add tracker line and mesh to the scene
+            trackerLine.visible = false;
+            trackerMesh.visible = false;
+
             scene.add(trackerLine, trackerMesh);
         }
 
@@ -522,6 +420,101 @@ visuals = function(properties) {
         }
 
 
+        animateTracker = function() {
+
+            //thanks to 'uhura' on stackoverflow.com for this
+            var vec = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+
+            vec.unproject(camera);
+
+            var dir = vec.sub(camera.position).normalize();
+
+            var distance = -camera.position.z/dir.z;
+
+            tracker = camera.position.clone().add(dir.multiplyScalar(distance));
+
+
+            switch(false) {
+
+                //left, right, top, bottom boundaries for cursor tracking 
+                case tracker.x >= w/2-w*scalar :
+                /* fall through */
+                case tracker.x <= w/2 :
+                /* fall through */
+                case tracker.y <= h/2 :
+                /* fall through */
+                case tracker.y >= -h/2 :
+                    //toggle tracker visibility
+                    if(trackerLine.visible == true) {
+                        trackerLine.visible = false;
+                        trackerMesh.visible = false;
+                    }
+                    break;
+
+                default:
+                    //toggle tracker visibility
+                    if(trackerLine.visible == false) {
+                        trackerLine.visible = true;
+                        trackerMesh.visible = true;
+                    }
+
+                    trackerLine.position.x = tracker.x;
+
+                    //reduce the time complexity of the search
+                    switch(true) {
+
+                        //region 1 (-3sd to -2sd)
+                        case tracker.x >= w/2-w*scalar && tracker.x < w/2-w*scalar*(1-1/6) :
+                            //stop mesh movement if its position reaches the left-most label
+                            if(tracker.x >= w*(-scalar*(1+1.01*0.375)+0.375+0.5)) { trackerMesh.position.x = tracker.x }
+
+
+                            break;
+
+                        //region 2 (-2sd to -1sd)
+                        case tracker.x >= w/2-w*scalar*(5/6) && tracker.x < w/2-w*scalar*(1-2/6) :
+                            trackerMesh.position.x = tracker.x;
+
+
+                            break;
+
+                        //region 3 ...
+                        case tracker.x >= w/2-w*scalar*(4/6) && tracker.x < w/2-w*scalar*(1-3/6) :
+                            trackerMesh.position.x = tracker.x;
+
+
+                            break;
+
+                        //region 4
+                        case tracker.x >= w/2-w*scalar*(3/6) && tracker.x < w/2-w*scalar*(1-4/6) :
+                            trackerMesh.position.x = tracker.x;
+
+
+                            break;
+
+                        //region 5
+                        case tracker.x >= w/2-w*scalar*(2/6) && tracker.x < w/2-w*scalar*(1-5/6) :
+                            trackerMesh.position.x = tracker.x;
+
+
+                            break;
+
+
+                        //region 6
+                        case tracker.x >= w/2-w*scalar*(1/6) && tracker.x < w/2 :
+                            //stop mesh movement if its position reaches the right-most label
+                            if(tracker.x <= w*(scalar*(1.01*0.375)-0.375+0.5)) { trackerMesh.position.x = tracker.x }
+
+
+                            break;
+                    }
+
+                    //console.log(tracker.x);
+                    break;
+            }
+        }
+
+
         //write IV and 'greeks' info to the trade summary table
         addTableData = function() {
 
@@ -545,54 +538,23 @@ visuals = function(properties) {
         }
 
 
-        //push initial data to point clouds
-        pushInitialData = function(callback) {
+        //push vertices to point cloud geometry
+        pushVertices = function(oArr, tIdx, dVal) {
 
-            dataArr.forEach(function(num, n) {
+            for(datum in oArr) {
 
-                //range of the data
-                var rng = obj.range([ num[timeArr[0]], num[timeArr[1]], num[timeArr[2]] ]);
+                cloud[dVal][tIdx].geometry.vertices.push(new THREE.Vector3(
 
-                range[n+1] = rng !== 0 ? (rng*1.025) : 1;
+                    //x-coordinate
+                    w*(scalar*(Object.keys(oArr).indexOf(datum)/(obj.size(oArr)-1)-1)+0.5),
 
-                //point clouds
-                timeArr.forEach(function(time, t) {
+                    //y-coordinate
+                    h/2*(scalar*(oArr[datum]/range[dVal]-numH/(numH-1))+1),
 
-                    //create cloud objects
-                    cloud[n+1][t] = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({ size: 0.0035*w*scalar, color: [0xff0000, 0xaa00ff, 0x0000ff][t] }));
-
-                    //push vertices to the point cloud geometries
-                    pushVertices(num[time], t, n+1);
-                });
-            });
-
-            callback = function() {
-
-                //remove 'pushing data' text
-                elem.destroyChildren("output-view-container", ["BSM-push-text"]);
-
-                //status message
-                console.log('point clouds full.');
-
-                //get data info
-                dataVal = +elem.select("input[name=output-data-radio]:checked").value;
-
-                //add initial point clouds to the scene
-                scene.add(cloud[1][0], cloud[1][1], cloud[1][2]);
-
-                render();
-                addGraphObjects();
-                addGraphChangeListener();
-                addTimeChangeListener();
-
-                //enable output data and output time elements
-                for(i=1; i<7; i++) { elem.avail("output-data-radio-"+i, true) }
-                ["output-time-field", "output-time-button"].forEach(function(ele) { elem.avail(ele, true) });
-                ["output-data-form" , "output-time-form"  ].forEach(function(ele) { elem.select(ele).style.backgroundColor = '#fafafa' });
-
-                //display the global object in the console
-                console.log(g);
-            }();
+                    //z-coordinate
+                    0.00001
+                ));
+            }
         }
 
         // END HELPERS ==============================================================================================================================
@@ -604,8 +566,65 @@ visuals = function(properties) {
 
         setTimeout(function() {
 
-            pushInitialData();
+            //push initial data to point clouds
+            (pushInitialData = function(callback) {
 
+                dataArr.forEach(function(num, n) {
+
+                    //range of the data
+                    var rng = obj.range([ num[timeArr[0]], num[timeArr[1]], num[timeArr[2]] ]);
+
+                    range[n+1] = rng !== 0 ? (rng*1.025) : 1;
+
+                    //point clouds
+                    timeArr.forEach(function(time, t) {
+
+                        //create cloud objects
+                        cloud[n+1][t] = new THREE.Points(new THREE.Geometry(), new THREE.PointsMaterial({ size: 0.0035*w*scalar, color: [0xff0000, 0xaa00ff, 0x0000ff][t] }));
+
+                        //push vertices to the point cloud geometries
+                        pushVertices(num[time], t, n+1);
+                    });
+                });
+
+                callback = function() {
+
+                    //remove 'pushing data' text
+                    elem.destroyChildren("output-view-container", ["BSM-push-text"]);
+
+                    //status message
+                    console.log('point clouds full.');
+
+                    //get data info
+                    dataVal = +elem.select("input[name=output-data-radio]:checked").value;
+
+                    //add initial point clouds to the scene
+                    scene.add(cloud[1][0], cloud[1][1], cloud[1][2]);
+
+                    addGraphObjects();
+                    addGraphChangeListener();
+                    addTimeChangeListener();
+
+                    //animation
+                    (render = function() {
+                                
+                        if(trackerLine && trackerMesh) { animateTracker() }
+                                            
+                        renderer.render(scene, camera);
+                        requestAnimationFrame(render);
+
+                        //console.log();
+                    })();
+
+                    //enable output data and output time elements
+                    for(i=1; i<7; i++) { elem.avail("output-data-radio-"+i, true) }
+                    ["output-time-field", "output-time-button"].forEach(function(ele) { elem.avail(ele, true) });
+                    ["output-data-form" ,   "output-time-form"].forEach(function(ele) { elem.select(ele).style.backgroundColor = '#fafafa' });
+
+                    //display the global object in the console
+                    console.log(g, cloud);
+                }();
+            })();
         }, 50);
 
         // END MAIN =================================================================================================================================
