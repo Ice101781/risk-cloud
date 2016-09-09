@@ -210,7 +210,7 @@ finalParams = function(properties) {
                 break;
 
             case stockPriceCond:
-                errorMsg(stockPriceField, "Please enter a number greater than 0 for the current price of the underlying stock.");
+                errorMsg(stockPriceField, "Please enter a number greater than 0 for the current level of the underlying.");
                 break;
 
             //user-defined parameter capture, write some info to elements of the trade summary table, calculate data and launch visuals
@@ -305,8 +305,32 @@ finalParams = function(properties) {
                     setTimeout(function() {
 
                         //calculate data and launch visuals
-                        BSM.data(visuals.init);
+                        BSM.data(function() {
 
+                            //write IV and 'greeks' info to the trade summary table
+                            addIVGreeks = (function() {
+
+                                for(i=1; i<g.TRADE_LEGS+1; i++) {
+
+                                    //local loop vars
+                                    var ele = "leg-"+i+"-",
+                                        arr = ['delta','gamma','theta','vega','rho'];
+
+                                    //IV
+                                    elem.select(ele+"iv").innerHTML   = (g.IMPLIED_VOL[i]*Math.pow(10,2)).toFixed(2) + "%";
+                                    elem.select(ele+"iv").style.color = g.LONG_SHORT[i] == 1 ? "rgb(0,175,0)" : "rgb(200,0,0)";
+                                    elem.select(ele+"iv").style.borderRightColor = "rgb(0,0,0)";
+
+                                    //'greeks'
+                                    arr.forEach(function(greek) { elem.select(ele+greek).innerHTML = g[greek.toUpperCase()][i].toFixed(2) });
+                                }
+
+                                //'greeks' totals
+                                arr.forEach(function(greek) { elem.select(greek+"-total").innerHTML = obj.sum(g[greek.toUpperCase()]).toFixed(2) });
+                            }());
+
+                            VISUALS.init();
+                        });
                     }, 50);
                 });
                 break;

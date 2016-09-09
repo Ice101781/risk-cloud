@@ -6,7 +6,7 @@
             <script src="../javascript/helpers.js"></script>
             <script src="../javascript/application.js"></script>
             <script src="../javascript/three.js"></script>
-            <script src="../javascript/datavis.js"></script>
+            <script src="../javascript/visuals.js"></script>
 
             <title>Option Trade Analytics | Black-Scholes-Merton Model | Risk Cloud</title>
             <link rel="stylesheet" href="../css/BSMpage.css" />
@@ -27,7 +27,7 @@
             </script>
 
             <h1 class="model-heading">
-                <pre>THE BLACK-SCHOLES-MERTON MODEL:   European-style equity options with continuously-payable dividends</pre>
+                <pre>THE BLACK-SCHOLES-MERTON MODEL:   European-style options with continuously-payable dividends</pre>
             </h1>
 
             <div id="app-container" class="general-group">
@@ -60,7 +60,7 @@
                         <button id="return-button-1" class="general-group buttons" type="button" onclick="finalParams.destroy()">Return</button>
 
                         <form id="current-price-form">
-                            <div id="current-price-align-helper" class="align-helper">Current price of the underlying stock :</div>
+                            <div id="current-price-align-helper" class="align-helper">Current level of the underlying :</div>
 
                             <input type="number" id="current-price-field" class="general-group all-fields" min=".01" step=".01" value="100.25" />
                         </form>
