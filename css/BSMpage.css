@@ -107,20 +107,30 @@
   width: 78.25vw;
 }
 
-#output-data-tracker {
-  display: inline-block;
-  height: 9.3175vw;
-  width: 11vw;
-  margin-top: 0.75vw;
-  background-color: #333333;
+#output-data-tracker, .load-icon {
+  background-color: #888888;
 }
 
-#output-view-container, .loading-text {
+.load-icon {
+  height: 4vw;
+  width: 6vw;
+  padding-top: 2.5vw;
+  color: #9999ff;
+}
+
+#output-data-tracker {
+  display: inline-block;
+  height: 9.375vw;
+  width: 11vw;
+  margin-top: 0.625vw;
+}
+
+#output-view-container, .load-text {
   height: 31vw;
 }
 
-.loading-text {
-  line-height: 32vw;
+.load-text {
+  line-height: 31vw;
   text-align: center;
   font-size: 1.75vw;
   color: #9999ff;
@@ -325,14 +335,13 @@ label.radio.output-data {
   padding-right: 0.75vw;
 }
 
-/* thanks to http://www.color-hex.com/color-wheel/ for help with the background color */
 .output-forms {
   display: inline-block;
   width: 11vw;
   margin: 0;
   padding: 0;
   padding-top: 0.5vw;
-  background-color: #feffe0;
+  background-color: #fafafa;
 }
 
 #output-data-form {
@@ -342,7 +351,7 @@ label.radio.output-data {
 
 #output-time-form {
   height: 4.25vw;
-  margin-top: 0.75vw;
+  margin-top: 0.625vw;
 }
 
 /* END FORMS ======================================================================================================================================*/

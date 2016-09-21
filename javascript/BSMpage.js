@@ -92,7 +92,7 @@ finalParams = function(properties) {
         }
 
         //adaptive sizing, bordering
-        (function() {
+        adaptSize = (function() {
 
             var bdr = '1px solid #fafafa';
 
@@ -118,7 +118,7 @@ finalParams = function(properties) {
                     for(n=1; n<g.TRADE_LEGS; n++) { elem.select("leg-"+n).style.borderRight = bdr }
                     break;
             }
-        })();
+        }());
 
         //some more logic needed to apply certain trade parameters to all legs on multi-leg trades
         if(g.TRADE_LEGS>1) {
@@ -136,7 +136,7 @@ finalParams = function(properties) {
         }
 
         //transition animation callback
-        if(typeof callback === 'function') { callback() }
+        callback();
     },
 
     destroy: function() {
@@ -296,8 +296,11 @@ finalParams = function(properties) {
 
                 elem.fade("in", "output-container", 0.01, function() {
 
-                    //add 'calculating' text
-                    elem.create({tag: "div", content: 'Calculating...', attributes: {id: "BSM-calc-text", class: "loading-text"}}, "output-view-container");
+                    //add load icon
+                    elem.create({tag: "img", attributes: {id: "BSM-load-icon", class: "load-icon", src: '../images/icon3.png'}}, "output-data-tracker");
+
+                    //add calc text
+                    elem.create({tag: "div", content: 'Calculating...', attributes: {id: "BSM-calc-text", class: "load-text"}}, "output-view-container");
 
                     //status message
                     console.log('now calculating...');
@@ -310,11 +313,13 @@ finalParams = function(properties) {
                             //write IV and 'greeks' info to the trade summary table
                             addIVGreeks = (function() {
 
+                                //local var
+                                var arr = ['delta','gamma','theta','vega','rho'];
+
                                 for(i=1; i<g.TRADE_LEGS+1; i++) {
 
-                                    //local loop vars
-                                    var ele = "leg-"+i+"-",
-                                        arr = ['delta','gamma','theta','vega','rho'];
+                                    //loop var
+                                    var ele = "leg-"+i+"-";
 
                                     //IV
                                     elem.select(ele+"iv").innerHTML   = (g.IMPLIED_VOL[i]*Math.pow(10,2)).toFixed(2) + "%";

@@ -207,10 +207,7 @@ BSM = function(properties) {
                 arr.forEach(function(greek) { g[greek.toUpperCase()+'_DATA'][t][sPrices[s].toFixed(2)] = +(obj.sum(BSM[greek])).toFixed(2) });
 
                 //store current 'greek' values to the global object for use in the trade summary table
-                if(t == 0 && s == (g.STOCKRANGE_LENGTH-1)/2) {
-
-                    arr.forEach(function(greek) { for(n in BSM[greek]) { g[greek.toUpperCase()][n] = BSM[greek][n] } });
-                }
+                if(t==0 && s==(g.STOCKRANGE_LENGTH-1)/2) { arr.forEach(function(greek) { for(n in BSM[greek]) { g[greek.toUpperCase()][n] = BSM[greek][n] } }) }
             }
         }
 
@@ -252,14 +249,14 @@ BSM = function(properties) {
 
             callback = function() {
 
-                //remove 'calculating' text
+                //remove calc text
                 elem.destroyChildren("output-view-container", ["BSM-calc-text"]);
 
                 //status message
                 console.log('finished calculations.');
 
-                //add 'pushing data' text
-                elem.create({tag: "div", content: 'Pushing data to three.js...', attributes: {id: "BSM-push-text", class: "loading-text"}}, "output-view-container");
+                //add push text
+                elem.create({tag: "div", content: 'Pushing data to three.js...', attributes: {id: "BSM-push-text", class: "load-text"}}, "output-view-container");
 
                 //status message
                 console.log('pushing vertices to point cloud geometries...');
@@ -267,7 +264,7 @@ BSM = function(properties) {
         }();
 
         //data visualization callback
-        if(typeof callback === 'function') { callback() }
+        callback();
 
         // END MAIN =================================================================================================================================
     }

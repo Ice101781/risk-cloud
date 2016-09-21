@@ -163,7 +163,7 @@ var VISUALS = (function() {
             }
 
 
-            //extend left or right-most tickmark on the graph
+            //extend left or right-most tick mark on the graph
             function extendTick(idx) {
 
                 var x = {  0: { left:   w*(-scalar+0.50),
@@ -385,6 +385,7 @@ var VISUALS = (function() {
         //add mouse cursor tracker
         function addTracker() {
 
+            //line geometry 
             var trackerGeom = new THREE.Geometry();
 
             //top vertex
@@ -668,7 +669,15 @@ var VISUALS = (function() {
 
             callback = function() {
 
-                //remove 'pushing data' text
+                //remove load icon and change background color
+                elem.destroyChildren("output-data-tracker", ["BSM-load-icon"]);
+                elem.select("output-data-tracker").style.backgroundColor = '#333333';
+
+                elem.create({tag: 'div', content: obj.min(g.EXPIRY)+' days to expiry:', attributes: {id: 'today-end-text', class: 'data-tracker-text-sub', style: 'height: 1.5625vw; color: #0000ff'}}, 'output-data-tracker');
+                elem.create({tag: 'div', content: 'Mid-day on expiry:', attributes: {id: 'expiry-mid-text', class: 'data-tracker-text-sub', style: 'height: 1.5625vw; color: #aa00ff'}}, 'output-data-tracker');
+                elem.create({tag: 'div', content: 'End-day on expiry:', attributes: {id: 'expiry-end-text', class: 'data-tracker-text-sub', style: 'height: 1.5625vw; color: #ff0000'}}, 'output-data-tracker');
+
+                //remove push text
                 elem.destroyChildren("output-view-container", ["BSM-push-text"]);
 
                 //status message
@@ -708,7 +717,6 @@ var VISUALS = (function() {
                     for(i=1; i<7; i++) { elem.avail("output-data-radio-"+i, true) }
 
                     ["output-time-field", "output-time-button"].forEach(function(ele) { elem.avail(ele, true) });
-                    ["output-data-form" ,   "output-time-form"].forEach(function(ele) { elem.select(ele).style.backgroundColor = '#fafafa' });
                 }());
 
                 //display the global object in the console
