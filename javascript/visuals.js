@@ -519,6 +519,8 @@ var VISUALS = (function() {
                         //assign new time = t to the time array
                         timeArr[2] = val;
 
+                        elem.select("current-end-text").innerText = val + " DTE - 16:00 EDT :";
+
                         //point clouds
                         for(i=1; i<7; i++) {
 
@@ -669,19 +671,63 @@ var VISUALS = (function() {
 
             callback = function() {
 
-                //remove load icon and change background color
-                elem.destroyChildren("output-data-tracker", ["BSM-load-icon"]);
-                elem.select("output-data-tracker").style.backgroundColor = '#333333';
-
-                elem.create({tag: 'div', content: obj.min(g.EXPIRY)+' days to expiry:', attributes: {id: 'today-end-text', class: 'data-tracker-text-sub', style: 'height: 1.5625vw; color: #0000ff'}}, 'output-data-tracker');
-                elem.create({tag: 'div', content: 'Mid-day on expiry:', attributes: {id: 'expiry-mid-text', class: 'data-tracker-text-sub', style: 'height: 1.5625vw; color: #aa00ff'}}, 'output-data-tracker');
-                elem.create({tag: 'div', content: 'End-day on expiry:', attributes: {id: 'expiry-end-text', class: 'data-tracker-text-sub', style: 'height: 1.5625vw; color: #ff0000'}}, 'output-data-tracker');
-
                 //remove push text
                 elem.destroyChildren("output-view-container", ["BSM-push-text"]);
 
                 //status message
                 console.log('point clouds full.');
+
+                //remove load icon and change background color
+                elem.destroyChildren("output-data-tracker", ["BSM-load-icon"]);
+                elem.select("output-data-tracker").style.backgroundColor = '#333333';
+
+                (function() {
+
+                    var style1 = "height: 1.125vw; padding-top: 0.35vw; font-size: 0.85vw; color: white",
+                        style2 = "height: 1.5vw;";
+
+                    elem.create({tag: "div",
+
+                                 content: obj.min(g.EXPIRY)+" DTE - 16:00 EDT :",
+
+                                 attributes: {id: "current-end-text", style: style1}},
+
+                                "output-data-tracker");
+
+                    elem.create({tag: "div",
+
+                                 attributes: {id: "current-end-val", style: style2+" border-bottom: 2px solid #444444"}},
+
+                                "output-data-tracker");
+
+                    elem.create({tag: "div",
+
+                                 content: "Expiry - 12:45 EDT :",
+
+                                 attributes: {id: "expiry-mid-text", style: style1}},
+
+                                "output-data-tracker");
+
+                    elem.create({tag: "div",
+
+                                 attributes: {id: "expiry-mid-val", style: style2+" border-bottom: 2px solid #444444"}},
+
+                                "output-data-tracker");
+
+                    elem.create({tag: "div",
+
+                                 content: "Expiry - 16:00 EDT :",
+
+                                 attributes: {id: "expiry-end-text", style: style1}},
+
+                                "output-data-tracker");
+
+                    elem.create({tag: "div",
+
+                                 attributes: {id: "expiry-end-val", style: style2}},
+
+                                "output-data-tracker");
+                }());
 
                 //get data info
                 dataVal = +elem.select("input[name=output-data-radio]:checked").value;
