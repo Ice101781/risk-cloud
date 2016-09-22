@@ -382,75 +382,98 @@ var VISUALS = (function() {
         }
 
 
-        //add mouse cursor tracker
+        //add mouse cursor tracker and its associated elements
         function addTracker() {
 
-            //line geometry 
-            var trackerGeom = new THREE.Geometry();
+            addLineAndMesh = (function() {
 
-            //top vertex
-            trackerGeom.vertices.push(new THREE.Vector3(
-                0,
-                h/2*(1-scalar/(numH-1)),
-                0.00002
-            ));
+                //line geometry 
+                var trackerGeom = new THREE.Geometry();
 
-            //center vertex
-            trackerGeom.vertices.push(new THREE.Vector3(
-                0,
-                h/2*(1-scalar*(numH)/(numH-1)),
-                0.00002
-            ));
+                //top vertex
+                trackerGeom.vertices.push(new THREE.Vector3(
+                    0,
+                    h/2*(1-scalar/(numH-1)),
+                    0.00002
+                ));
 
-            //bottom vertex
-            trackerGeom.vertices.push(new THREE.Vector3(
-                0,
-                h/2*(1-scalar*(2*numH-1)/(numH-1)),
-                0.00002
-            ));
+                //center vertex
+                trackerGeom.vertices.push(new THREE.Vector3(
+                    0,
+                    h/2*(1-scalar*(numH)/(numH-1)),
+                    0.00002
+                ));
 
-            trackerLine = new THREE.Line(
-                              trackerGeom,
-                              new THREE.LineBasicMaterial({color: 0x00ff00})
-                          );
+                //bottom vertex
+                trackerGeom.vertices.push(new THREE.Vector3(
+                    0,
+                    h/2*(1-scalar*(2*numH-1)/(numH-1)),
+                    0.00002
+                ));
 
-            //create the canvas
-            var trackerCanvas    = document.createElement('canvas');
-            trackerCanvas.width  = canvasW*0.75;
-            trackerCanvas.height = canvasH;
+                //line
+                trackerLine = new THREE.Line(
+                                  trackerGeom,
+                                  new THREE.LineBasicMaterial({color: 0x00ff00})
+                              );
 
-            //get context, set transparent canvas background
-            trackerContext           = trackerCanvas.getContext('2d');
-            trackerContext.fillStyle = 'rgba(100,100,100,0.5)';
-            trackerContext.fillRect(0, 0, canvasW*0.75, canvasH);
+                //create the canvas
+                var trackerCanvas    = document.createElement('canvas');
+                trackerCanvas.width  = canvasW*0.75;
+                trackerCanvas.height = canvasH;
 
-            //set color, font and alignment for the text
-            trackerContext.fillStyle    = 'rgb(25,255,25)';
-            trackerContext.font         = canvasH - 1 +'px Arial';
-            trackerContext.textAlign    = 'center';
-            trackerContext.textBaseline = 'middle';
+                //get context, set transparent canvas background
+                trackerContext           = trackerCanvas.getContext('2d');
+                trackerContext.fillStyle = 'rgba(100,100,100,0.5)';
+                trackerContext.fillRect(0, 0, canvasW*0.75, canvasH);
 
-            //set canvas as texture and specify texture parameters
-            trackerTexture             = new THREE.Texture(trackerCanvas);
-            trackerTexture.needsUpdate = true;
+                //set color, font and alignment for the text
+                trackerContext.fillStyle    = 'rgb(25,255,25)';
+                trackerContext.font         = canvasH - 1 +'px Arial';
+                trackerContext.textAlign    = 'center';
+                trackerContext.textBaseline = 'middle';
 
-            //what does this actually do?
-            trackerTexture.minFilter = THREE.LinearFilter;
+                //set canvas as texture and specify texture parameters
+                trackerTexture             = new THREE.Texture(trackerCanvas);
+                trackerTexture.needsUpdate = true;
 
-            //create mesh and map canvas texture to it
-            trackerMesh = new THREE.Mesh(
-                            new THREE.PlaneGeometry(w*(1-(1.01)*scalar)*0.75, h*(0.6)*scalar/(numH-1), 1, 1),
-                            new THREE.MeshBasicMaterial({transparent: true, map: trackerTexture})
-                          );
+                //what does this actually do?
+                trackerTexture.minFilter = THREE.LinearFilter;
 
-            //set mesh position
-            trackerMesh.position.set(w/2*(1-scalar), h*(scalar/(1-numH)*(numH+0.45)+0.5), 0.00002);
+                //create mesh and map canvas texture to it
+                trackerMesh = new THREE.Mesh(
+                                new THREE.PlaneGeometry(w*(1-(1.01)*scalar)*0.75, h*(0.6)*scalar/(numH-1), 1, 1),
+                                new THREE.MeshBasicMaterial({transparent: true, map: trackerTexture})
+                              );
 
-            //set initial visibility and add tracker line and mesh to the scene
-            trackerLine.visible = false;
-            trackerMesh.visible = false;
+                //set mesh position
+                trackerMesh.position.set(w/2*(1-scalar), h*(scalar/(1-numH)*(numH+0.45)+0.5), 0.00002);
 
-            scene.add(trackerLine, trackerMesh);
+                //set initial visibility and add tracker line and mesh to the scene
+                trackerLine.visible = false;
+                trackerMesh.visible = false;
+
+                scene.add(trackerLine, trackerMesh);
+            }());
+
+
+            addToOutputDataTracker = (function() {
+
+                var divs = [ [obj.min(g.EXPIRY)+" DTE - 16:00 EDT :", "current-end-text", "current-end-val"],
+                             ["Expiry - 12:45 EDT :", "expiry-mid-text", "expiry-mid-val"],
+                             ["Expiry - 16:00 EDT :", "expiry-end-text", "expiry-end-val"] ],
+
+                    sty1 = "height: 1.25vw; margin-top: 0.25vw; padding-top: 0.1875vw; font-size: 0.85vw; color: #aaaaaa; border-top: 1px solid #444444",
+                    sty2 = "height: 1.25vw; font-size: 0.85vw; border-bottom: 1px solid #444444;",
+                    ele  = "output-data-tracker";
+
+                divs.forEach(function(arr, idx) {
+
+                    elem.create({tag: "div", content: arr[0], attributes: {id: arr[1], style: sty1}}, ele);
+
+                    elem.create({tag: "div", attributes: {id: arr[2], style: sty2+" color: "+["#0000ff","#aa00ff","#ff0000"][idx]}}, ele);
+                });
+            }());
         }
 
 
@@ -568,10 +591,7 @@ var VISUALS = (function() {
                         trackerLine.position.x = tracker.x;
 
                         //mesh movement - restrict to the bounds of plane2
-                        if(tracker.x >= w*(-scalar*(1+1.01*0.375)+0.375+0.5) && tracker.x <= w*(scalar*(1.01*0.375)-0.375+0.5)) {
-
-                            trackerMesh.position.x = tracker.x;
-                        }
+                        if(tracker.x >= w*(-scalar*(1+1.01*0.375)+0.375+0.5) && tracker.x <= w*(scalar*(1.01*0.375)-0.375+0.5)) { trackerMesh.position.x = tracker.x }
 
                         //update the mesh
                         for(i=0; i<g.STOCKRANGE_LENGTH; i++) {
@@ -587,24 +607,36 @@ var VISUALS = (function() {
 
                                 //new value
                                 trackerContext.fillStyle = 'rgb(25,255,25)';
-                                trackerContext.fillText(Object.keys(dataArr[dataVal][0])[i], canvasW/2*0.75, canvasH/2);
+                                trackerContext.fillText(Object.keys(dataArr[dataVal-1][0])[i], canvasW/2*0.75, canvasH/2);
 
-                                //update
+                                //update texture
                                 trackerTexture.needsUpdate = true;
+
+                                //update 'output-data-tracker' values
+                                updateOutputDataTracker = (function() {
+
+                                    var exp = obj.min(g.EXPIRY);
+
+                                    [["current-end-val", +elem.select("output-time-field").value], ["expiry-mid-val", 0.5], ["expiry-end-val", 0]].forEach(function(arr) {
+
+                                        var dat = dataArr[dataVal-1][exp-arr[1]];
+
+                                        elem.select(arr[0]).innerText = dat[Object.keys(dat)[i]];
+                                    });
+                                }());
                             }
                         }
 
                         //visibility
-                        callback = function() {
-
-                            trackerLine.visible = true;
-                            trackerMesh.visible = true;
-                        }();
+                        callback = function() { [trackerLine, trackerMesh].forEach(function(ele) { ele.visible = true }) }();
                     })();
                 } else {
+
                     //visibility
-                    trackerLine.visible = false;
-                    trackerMesh.visible = false;
+                    [trackerLine, trackerMesh].forEach(function(ele) { ele.visible = false });
+
+                    //clear 'output-data-tracker' values
+                    ["current-end-val", "expiry-mid-val", "expiry-end-val"].forEach(function(ele) { elem.select(ele).innerText = "-" });
                 }
             } else { return }
         }
@@ -680,54 +712,6 @@ var VISUALS = (function() {
                 //remove load icon and change background color
                 elem.destroyChildren("output-data-tracker", ["BSM-load-icon"]);
                 elem.select("output-data-tracker").style.backgroundColor = '#333333';
-
-                (function() {
-
-                    var style1 = "height: 1.125vw; padding-top: 0.35vw; font-size: 0.85vw; color: white",
-                        style2 = "height: 1.5vw;";
-
-                    elem.create({tag: "div",
-
-                                 content: obj.min(g.EXPIRY)+" DTE - 16:00 EDT :",
-
-                                 attributes: {id: "current-end-text", style: style1}},
-
-                                "output-data-tracker");
-
-                    elem.create({tag: "div",
-
-                                 attributes: {id: "current-end-val", style: style2+" border-bottom: 2px solid #444444"}},
-
-                                "output-data-tracker");
-
-                    elem.create({tag: "div",
-
-                                 content: "Expiry - 12:45 EDT :",
-
-                                 attributes: {id: "expiry-mid-text", style: style1}},
-
-                                "output-data-tracker");
-
-                    elem.create({tag: "div",
-
-                                 attributes: {id: "expiry-mid-val", style: style2+" border-bottom: 2px solid #444444"}},
-
-                                "output-data-tracker");
-
-                    elem.create({tag: "div",
-
-                                 content: "Expiry - 16:00 EDT :",
-
-                                 attributes: {id: "expiry-end-text", style: style1}},
-
-                                "output-data-tracker");
-
-                    elem.create({tag: "div",
-
-                                 attributes: {id: "expiry-end-val", style: style2}},
-
-                                "output-data-tracker");
-                }());
 
                 //get data info
                 dataVal = +elem.select("input[name=output-data-radio]:checked").value;
