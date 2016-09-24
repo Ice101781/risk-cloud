@@ -11,6 +11,9 @@ initialParams = function(properties) {
 
     validate: function() {
 
+        //disable 'continue-button-1'
+        elem.avail("continue-button-1", false);
+
         //string objects containing element id's
         var numLegsRadio    = idStrings(["num-legs-radio"]),
             continueButton1 = "continue-button-1";
@@ -156,6 +159,9 @@ finalParams = function(properties) {
 
         elem.ease("in", "initial-params-container", 0.5, 30);
         elem.fade("in", "initial-params-container", 0.01);
+
+        //enable 'continue-button-1'
+        elem.avail("continue-button-1", true);
     },
 
     validate: function() {

@@ -1,4 +1,10 @@
-﻿/* HEADING ========================================================================================================================================*/
+﻿/* GENERAL AND HEADING ============================================================================================================================*/
+
+.general-group {
+  font-family: Century Gothic;
+  font-size: 1vw;
+  overflow: hidden;
+}
 
 .model-heading {
   margin: 0;
@@ -16,14 +22,7 @@
   color: #555555;
 }
 
-/* END HEADING ====================================================================================================================================*/
-
-
-.general-group {
-  overflow: hidden;
-  font-family: Century Gothic;
-  font-size: 1vw;
-}
+/* END GENERAL AND HEADING ========================================================================================================================*/
 
 
 /* CONTAINERS =====================================================================================================================================*/
@@ -136,11 +135,11 @@
   color: #9999ff;
 }
 
-/* aspect ratio is 2.5 : 1 for the #output-view-container */
 #output-view-container, #output-summary-container {
   width: 77.5vw;
 }
 
+/* aspect ratio is 2.5 : 1 for the #output-view-container */
 #output-view-container {
   margin-top: 1vw;
   background-color: #888888;
@@ -157,7 +156,11 @@
 /* TABLES =========================================================================================================================================*/
 
 #output-summary-table {
-  width: 65.60875vw;
+  display: inline-block;
+  position: relative;
+  right: 0.875vw;
+  height: 6.5vw;
+  width: 65.5vw;
   font-family: Arial;
   font-size: 0.65vw;
   border-spacing: 0;
@@ -169,17 +172,11 @@
 }
 
 #trade-summary-heading {
-  width: 18.12125vw;
+  width: 23.5vw;
 }
 
-/* width x 2 = 11.8vw */
-.price-iv-headings {
-  width: 5.9vw;
-}
-
-/* width x 5 = 35.6875vw */
-.greek-headings {
-  width: 7.1375vw;
+.price-iv-headings, .greek-headings {
+  width: 6vw;
 }
 
 .summary-group, td {
@@ -253,6 +250,13 @@
 #output-time-button {
   width: 2.75vw;
   font-size: 0.9vw;
+}
+
+#return-button-2 {
+  position: relative;
+  right: 0.5625vw;
+  bottom: 3vw;
+  width: 10vw;
 }
 
 /* END BUTTONS ====================================================================================================================================*/

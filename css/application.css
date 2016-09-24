@@ -74,11 +74,11 @@ html {
 }
 
 .nav-sub-container {
-  overflow: hidden;
   position: absolute;
   height: 0;
   width: 99vw;
   border-top: 0.125vw solid #555555;
+  overflow: hidden;
 }
 
 .nav-sub-menu {

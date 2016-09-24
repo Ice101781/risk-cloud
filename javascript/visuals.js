@@ -668,7 +668,7 @@ var VISUALS = (function() {
         addMouseListener = (function() {
 
             //normalize mouse coordinates with respect to the renderer
-            window.addEventListener('mousemove', function onMouseMove(e) {
+            window.addEventListener('mousemove', function onMouseMove(event) {
 
                 mouse.x =  ((event.clientX-renderer.domElement.offsetLeft)/renderer.domElement.width)*2-1;
                 mouse.y = -((event.clientY-renderer.domElement.offsetTop)/renderer.domElement.height)*2+1;
