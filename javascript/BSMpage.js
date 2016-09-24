@@ -47,6 +47,44 @@ finalParams = function(properties) {
 
     create: function(callback) {
 
+        function addSubContainerForms(n) {
+
+            //buy-sell & call-put radios
+            [ [["buy","1"],["sell","-1"]], [["call","1"],["put","-1"]] ].forEach(function(arr) { twoButtons(arr, n) });
+
+            //text fields
+            ["num-contracts", "strike-price", "option-price", "expiry", "div-yield", "risk-free-rate"].forEach(function(ele) { numberFields.create(ele, n) });
+        }
+
+        function dynamicSizing() {
+
+            var bdr = '1px solid #fafafa';
+
+            switch(g.TRADE_LEGS) {
+
+                case 1:
+                    elem.select("trade-legs-params-container").style.width = 45 + 'vw';
+                    elem.select("leg-1").style.borderLeft  = bdr;
+                    elem.select("leg-1").style.borderRight = bdr;
+                    break;
+                case 2:
+                    elem.select("trade-legs-params-container").style.width = 45 + 'vw';
+                    elem.select("leg-1").style.borderRight = bdr;
+                    break;
+
+                case 3:
+                    elem.select("trade-legs-params-container").style.width = 68 + 'vw';
+                    for(n=1; n<g.TRADE_LEGS; n++) { elem.select("leg-"+n).style.borderRight = bdr }
+                    break;
+
+                case 4:
+                    elem.select("trade-legs-params-container").style.width = 90 + 'vw';
+                    for(n=1; n<g.TRADE_LEGS; n++) { elem.select("leg-"+n).style.borderRight = bdr }
+                    break;
+            }
+        }
+
+
         for(i=1; i<g.TRADE_LEGS+1; i++) {
 
             //trade legs
@@ -84,44 +122,11 @@ finalParams = function(properties) {
             elem.select("leg-sub-container-1-"+i).style.backgroundColor = '#777777';
 
             //sub-container forms
-            (function(n) {
-
-                //buy-sell & call-put radios
-                [ [["buy","1"],["sell","-1"]], [["call","1"],["put","-1"]] ].forEach(function(arr) { twoButtons(arr, n) });
-
-                //text fields
-                ["num-contracts", "strike-price", "option-price", "expiry", "div-yield", "risk-free-rate"].forEach(function(ele) { numberFields.create(ele, n) });
-            })(i);
+            addSubContainerForms(i);
         }
 
-        //adaptive sizing, bordering
-        adaptSize = (function() {
-
-            var bdr = '1px solid #fafafa';
-
-            switch(g.TRADE_LEGS) {
-
-                case 1:
-                    elem.select("trade-legs-params-container").style.width = 45 + 'vw';
-                    elem.select("leg-1").style.borderLeft  = bdr;
-                    elem.select("leg-1").style.borderRight = bdr;
-                    break;
-                case 2:
-                    elem.select("trade-legs-params-container").style.width = 45 + 'vw';
-                    elem.select("leg-1").style.borderRight = bdr;
-                    break;
-
-                case 3:
-                    elem.select("trade-legs-params-container").style.width = 68 + 'vw';
-                    for(n=1; n<g.TRADE_LEGS; n++) { elem.select("leg-"+n).style.borderRight = bdr }
-                    break;
-
-                case 4:
-                    elem.select("trade-legs-params-container").style.width = 90 + 'vw';
-                    for(n=1; n<g.TRADE_LEGS; n++) { elem.select("leg-"+n).style.borderRight = bdr }
-                    break;
-            }
-        }());
+        //apply adaptive sizing, bordering
+        dynamicSizing();
 
         //some more logic needed to apply certain trade parameters to all legs on multi-leg trades
         if(g.TRADE_LEGS>1) {
@@ -187,6 +192,61 @@ finalParams = function(properties) {
             divYieldCond     = inputCheck("div-yield-field"),
             riskFreeCond     = inputCheck("risk-free-rate-field"),
             stockPriceCond   = (elem.select(stockPriceField).value != "" && elem.select(stockPriceField).value > 0);
+
+        //write to the trade table
+        function addTableSummaryPrice(n) {
+
+            //local vars
+            var ele      = "leg-"+n+"-",
+                buy_sell = g.LONG_SHORT[n]    == 1 ? "BUY &nbsp"    : "SELL &nbsp",
+                color    = g.LONG_SHORT[n]    == 1 ? "rgb(0,175,0)" : "rgb(200,0,0)",
+                call_put = g.CONTRACT_TYPE[n] == 1 ? " CALL "       : " PUT ",
+                expiry   = " &nbsp" + g.EXPIRY[n] + " DTE";
+
+            //trade summary
+            elem.select(ele+"summary").innerHTML   = buy_sell + g.NUM_CONTRACTS[n] + "&nbsp x &nbsp" + g.STRIKE_PRICE[n] + call_put + expiry;
+            elem.select(ele+"summary").style.color = color;
+            elem.select(ele+"summary").style.borderRightColor = "rgb(0,0,0)";
+
+            //option price
+            elem.select(ele+"price").innerHTML   = "$" + g.OPTION_PRICE[n].toFixed(2);
+            elem.select(ele+"price").style.color = color;
+        }
+
+        function addTableTradePrice() {
+
+            //local var
+            var price = 0;
+
+            for(i=1; i<g.TRADE_LEGS+1; i++) { price += g.LONG_SHORT[i]*g.NUM_CONTRACTS[i]*g.OPTION_PRICE[i].toFixed(2) }
+
+            elem.select("price-total").innerHTML   = "$" + Math.abs(price).toFixed(2);
+            elem.select("price-total").style.color = Math.sign(price) == 1 ? "rgb(0,150,0)" : "rgb(175,0,0)";
+        }
+
+        function addTableIVGreeks() {
+
+            //local var
+            var arr = ['delta','gamma','theta','vega','rho'];
+
+            for(i=1; i<g.TRADE_LEGS+1; i++) {
+
+                //loop var
+                var ele = "leg-"+i+"-";
+
+                //IV
+                elem.select(ele+"iv").innerHTML   = (g.IMPLIED_VOL[i]*Math.pow(10,2)).toFixed(2) + "%";
+                elem.select(ele+"iv").style.color = g.LONG_SHORT[i] == 1 ? "rgb(0,175,0)" : "rgb(200,0,0)";
+                elem.select(ele+"iv").style.borderRightColor = "rgb(0,0,0)";
+
+                //'greeks'
+                arr.forEach(function(greek) { elem.select(ele+greek).innerHTML = g[greek.toUpperCase()][i].toFixed(2) });
+            }
+
+            //'greeks' totals
+            arr.forEach(function(greek) { elem.select(greek+"-total").innerHTML = obj.sum(g[greek.toUpperCase()]).toFixed(2) });
+        }
+
 
         //input validation, error message handling
         switch(false) {
@@ -256,45 +316,16 @@ finalParams = function(properties) {
                         g.RISK_FREE[i] = elem.select("risk-free-rate-field-"+i).value/100;
                     }
 
-
-                    //write trade summary and option price info to elements of the trade summary table
-                    (function(n) {
-
-                        //local vars
-                        var ele      = "leg-"+n+"-",
-                            buy_sell = g.LONG_SHORT[n]    == 1 ? "BUY &nbsp"    : "SELL &nbsp",
-                            color    = g.LONG_SHORT[n]    == 1 ? "rgb(0,175,0)" : "rgb(200,0,0)",
-                            call_put = g.CONTRACT_TYPE[n] == 1 ? " CALL "       : " PUT ",
-                            expiry   = " &nbsp" + g.EXPIRY[n] + " DTE";
-
-                        //trade summary
-                        elem.select(ele+"summary").innerHTML   = buy_sell + g.NUM_CONTRACTS[n] + "&nbsp x &nbsp" + g.STRIKE_PRICE[n] + call_put + expiry;
-                        elem.select(ele+"summary").style.color = color;
-                        elem.select(ele+"summary").style.borderRightColor = "rgb(0,0,0)";
-
-                        //option price
-                        elem.select(ele+"price").innerHTML   = "$" + g.OPTION_PRICE[n].toFixed(2);
-                        elem.select(ele+"price").style.color = color;
-                    })(i);
+                    //write trade summary and option price info to the table
+                    addTableSummaryPrice(i);
                 }
 
-
-                //write option price total to its trade summary table element
-                (function() {
-
-                    var price = 0;
-
-                    for(i=1; i<g.TRADE_LEGS+1; i++) { price += g.LONG_SHORT[i]*g.NUM_CONTRACTS[i]*g.OPTION_PRICE[i].toFixed(2) }
-
-                    elem.select("price-total").innerHTML   = "$" + Math.abs(price).toFixed(2);
-                    elem.select("price-total").style.color = Math.sign(price) == 1 ? "rgb(0,150,0)" : "rgb(175,0,0)";
-                })();
-
+                //write trade price total to the table
+                addTableTradePrice();
 
                 //add nearest expiry value to the 'output-time-field' and set this value as the field's maximum
                 elem.select("output-time-field").value = obj.min(g.EXPIRY);
                 elem.select("output-time-field").setAttribute("max", obj.min(g.EXPIRY));
-
 
                 //transitions
                 elem.ease("out", "final-params-container", 0.65, 39);
@@ -313,33 +344,12 @@ finalParams = function(properties) {
 
                     setTimeout(function() {
 
-                        //calculate data and launch visuals
+                        //calculate data
                         BSM.data(function() {
 
-                            //write IV and 'greeks' info to the trade summary table
-                            addIVGreeks = (function() {
-
-                                //local var
-                                var arr = ['delta','gamma','theta','vega','rho'];
-
-                                for(i=1; i<g.TRADE_LEGS+1; i++) {
-
-                                    //loop var
-                                    var ele = "leg-"+i+"-";
-
-                                    //IV
-                                    elem.select(ele+"iv").innerHTML   = (g.IMPLIED_VOL[i]*Math.pow(10,2)).toFixed(2) + "%";
-                                    elem.select(ele+"iv").style.color = g.LONG_SHORT[i] == 1 ? "rgb(0,175,0)" : "rgb(200,0,0)";
-                                    elem.select(ele+"iv").style.borderRightColor = "rgb(0,0,0)";
-
-                                    //'greeks'
-                                    arr.forEach(function(greek) { elem.select(ele+greek).innerHTML = g[greek.toUpperCase()][i].toFixed(2) });
-                                }
-
-                                //'greeks' totals
-                                arr.forEach(function(greek) { elem.select(greek+"-total").innerHTML = obj.sum(g[greek.toUpperCase()]).toFixed(2) });
-                            }());
-
+                            //write IV(s) and Greeks to the table
+                            addTableIVGreeks();
+                            //launch visuals
                             VISUALS.init();
                         });
                     }, 50);
@@ -350,3 +360,43 @@ finalParams = function(properties) {
 })
 
 // END FINAL PARAMETERS =============================================================================================================================
+
+
+// OUTPUT ===========================================================================================================================================
+
+output = function(properties) {
+
+    var self = function() { return };
+
+    for(prop in properties) { self[prop] = properties[prop] }
+
+    return self;
+}({
+
+    destroy: function() {
+
+        //clear application output from the global object
+        g.STOCKRANGE_LENGTH = 0;
+        g.IMPLIED_VOL = {};
+        g.DELTA = {};
+        g.GAMMA = {};
+        g.THETA = {};
+        g.VEGA = {};
+        g.RHO = {};
+        g.PROFITLOSS_DATA = {};
+        g.DELTA_DATA = {};
+        g.GAMMA_DATA = {};
+        g.THETA_DATA = {};
+        g.VEGA_DATA = {};
+        g.RHO_DATA = {};
+
+
+        //transitions
+        elem.fade("out", "output-container", 0.02);
+
+        elem.fade("in", "final-params-container", 0.01);
+        elem.ease("in", "final-params-container", 0.65, 39);
+    }
+})
+
+// END OUTPUT =======================================================================================================================================
