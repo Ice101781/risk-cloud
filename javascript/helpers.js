@@ -1,11 +1,13 @@
+"use strict";
+
 // OBJECTS, ARRAYS AND ELEMENTS =====================================================================================================================
 
 //object functions
-obj = function(properties) {
+var obj = function(properties) {
 
     var self = function() { return };
 
-    for(prop in properties) { self[prop] = properties[prop] }
+    for(var prop in properties) { self[prop] = properties[prop] }
 
     return self;
 }({
@@ -13,7 +15,7 @@ obj = function(properties) {
     //reset parameter values in an object
     reset: function(obj) {
 
-        for(ele in obj) {
+        for(var ele in obj) {
 
             switch(typeof obj[ele]) {
 
@@ -34,7 +36,7 @@ obj = function(properties) {
 
         var crd = 0;
 
-        for(key in obj) { if(obj.hasOwnProperty(key)) { crd++ } }
+        for(var key in obj) { if(obj.hasOwnProperty(key)) { crd++ } }
 
         return crd;
     },
@@ -91,7 +93,7 @@ obj = function(properties) {
 
         var keys = [];
 
-        for(key in obj) { if(test(obj[key])) { keys.push(key) } }
+        for(var key in obj) { if(test(obj[key])) { keys.push(key) } }
 
         return keys;
     }
@@ -99,11 +101,11 @@ obj = function(properties) {
 
 
 //array functions
-array = function(properties) {
+var array = function(properties) {
 
     var self = function() { return };
 
-    for(prop in properties) { self[prop] = properties[prop] }
+    for(var prop in properties) { self[prop] = properties[prop] }
 
     return self;
 }({
@@ -120,9 +122,9 @@ array = function(properties) {
 
         var merged = [];
 
-        for(i=0; i<obj.size(arr); i++) {
+        for(var i=0; i<obj.size(arr); i++) {
 
-            for(j=0; j<obj.size(arr[i]); j++) { merged.push( arr[i][Object.keys(arr[i])[j]] ) }
+            for(var j=0; j<obj.size(arr[i]); j++) { merged.push( arr[i][Object.keys(arr[i])[j]] ) }
         }
 
         //remove duplicate elements
@@ -132,11 +134,11 @@ array = function(properties) {
 
 
 //HTML element functions
-elem = function(properties) {
+var elem = function(properties) {
 
     var self = function() { return };
 
-    for(prop in properties) { self[prop] = properties[prop] }
+    for(var prop in properties) { self[prop] = properties[prop] }
 
     return self;
 }({
@@ -167,7 +169,7 @@ elem = function(properties) {
         ele.appendChild(document.createTextNode(obj.content));
 
         //add attributes
-        for(attr in obj.attributes) { ele.setAttribute(attr, obj.attributes[attr]) }
+        for(var attr in obj.attributes) { ele.setAttribute(attr, obj.attributes[attr]) }
 
         //append the new element to a parent element
         this.select(par).appendChild(ele);
@@ -179,10 +181,8 @@ elem = function(properties) {
     //remove children from an element of the DOM
     destroyChildren: function(par, chd) {
 
-        chd = typeof chd !== 'undefined' ? chd : 'none specified';
-
         var parent   = this.select(par),
-            children = chd;
+            children = typeof chd !== 'undefined' ? chd : 'none specified';
 
         switch(children) {
 
@@ -193,7 +193,7 @@ elem = function(properties) {
 
             //remove specified children
             default:
-                for(i=0; i<children.length; i++) { parent.removeChild(this.select(children[i])) }
+                for(var i=0; i<children.length; i++) { parent.removeChild(this.select(children[i])) }
                 break;
         }
     },
@@ -256,11 +256,11 @@ elem = function(properties) {
 
 // MATH =============================================================================================================================================
 
-math = function(properties) {
+var math = function(properties) {
     
     var self = function() { return };
 
-    for(prop in properties) { self[prop] = properties[prop] }
+    for(var prop in properties) { self[prop] = properties[prop] }
 
     return self;
 }({
@@ -278,9 +278,9 @@ math = function(properties) {
             var sum1 = 0,
                 sum2 = 0;
 
-            for(i=1; i<(n/2);   i++) { sum1 += f(((((n/2)-i)*a)+(i*b))/(n/2)) }
+            for(var i=1; i<(n/2);   i++) { sum1 += f(((((n/2)-i)*a)+(i*b))/(n/2)) }
 
-            for(i=1; i<(n/2)+1; i++) { sum2 += f((((((n+1)/2)-i)*a)+((i-(1/2))*b))/(n/2)) }
+            for(var i=1; i<(n/2)+1; i++) { sum2 += f((((((n+1)/2)-i)*a)+((i-(1/2))*b))/(n/2)) }
 
             return ((b-a)/(3*n))*(f(a)+(2*sum1)+(4*sum2)+f(b));
 
@@ -328,9 +328,9 @@ math = function(properties) {
 // MISC =============================================================================================================================================
 
 //disable certain keys
-disableKey = function(key) {
+var disableKey = function(key) {
 
-    block = function(e) { if((e.keyCode || e.charCode) == key) {e.preventDefault()} }
+    var block = function(e) { if((e.keyCode || e.charCode) == key) {e.preventDefault()} }
 
     document.addEventListener('keydown', block);
 

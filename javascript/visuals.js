@@ -1,3 +1,5 @@
+"use strict";
+
 var VISUALS = (function() {
 
     var visuals = {};
@@ -29,9 +31,8 @@ var VISUALS = (function() {
             numH     = 25,
             numV     = 7,
 
-            //the multiplier for these dimensions fixes blurry text - is it related to 'devicePixelRatio'?
-            canvasW  = 2*Math.floor(width*(1-(1.01)*scalar)),
-            canvasH  = 2*Math.floor(height*(0.6)*scalar/(numH-1)),
+            canvasW  = Math.floor(width*(1-(1.01)*scalar)),
+            canvasH  = Math.floor(height*(0.6)*scalar/(numH-1)),
 
             lines    = { xaxis: {tick: {}, ext: {}, dots: {}}, yaxis: {} },
             labels   = { xaxis: {canvas: {}, context: {}, texture: {}, mesh: {}}, yaxis: {canvas: {}, context: {}, texture: {}, mesh: {}} },
@@ -50,9 +51,9 @@ var VISUALS = (function() {
         // SUPPORT FUNCTIONS ========================================================================================================================
 
         //push vertices to point cloud geometry
-        function pushVertices(oArr, tIdx, dVal) {
+        var pushVertices = function(oArr, tIdx, dVal) {
 
-            for(datum in oArr) {
+            for(var datum in oArr) {
 
                 cloud[dVal][tIdx].geometry.vertices.push(new THREE.Vector3(
 
@@ -69,10 +70,10 @@ var VISUALS = (function() {
         }
 
 
-        function addGraphComponents() {
+        var addGraphComponents = function() {
 
             //axis label canvas, context, etc.
-            function addAxisLabelCanvas(axis, n) {
+            var addAxisLabelCanvas = function(axis, n) {
 
                 var p = axis == 'yaxis' ? 1 : 0.75;
 
@@ -95,16 +96,14 @@ var VISUALS = (function() {
 
 
             //axis label texture, mesh, etc.
-            function addAxisLabelMesh(axis, n) {
+            var addAxisLabelMesh = function(axis, n) {
 
                 var p = axis == 'yaxis' ? 1 : 0.75;
 
-                //set canvas as texture and specify texture parameters
+                //set canvas as texture and specify texture property values
                 labels[axis].texture[n]             = new THREE.Texture(labels[axis].canvas[n]);
+                labels[axis].texture[n].minFilter   = THREE.LinearFilter;
                 labels[axis].texture[n].needsUpdate = true;
-
-                //what does this actually do?
-                labels[axis].texture[n].minFilter = THREE.LinearFilter;
 
                 //create label mesh and map canvas texture to it
                 labels[axis].mesh[n] = new THREE.Mesh( 
@@ -115,12 +114,15 @@ var VISUALS = (function() {
 
 
             //find the standard deviation distance in terms of the vertical gridline indicies
-            function sdd(idx) {
+            var sDD = function(idx) {
+
+                //local var
+                var d;
 
                 switch((g.STOCKRANGE_LENGTH-1) % (numV-1)) {
 
                     case 0:
-                        var d = (g.STOCKRANGE_LENGTH-1)/(numV-1)*idx;
+                        d = (g.STOCKRANGE_LENGTH-1)/(numV-1)*idx;
                         break;
 
                     default:
@@ -128,12 +130,12 @@ var VISUALS = (function() {
 
                             //the case where the fractional part of the remainder is < 0.5; thanks to Michael Wunder for his help with this
                             case Math.round((g.STOCKRANGE_LENGTH-1)/(numV-1)):
-                                var d = Math.floor((g.STOCKRANGE_LENGTH-1)/(numV-1))*idx+Math.floor((idx+1)/3);
+                                d = Math.floor((g.STOCKRANGE_LENGTH-1)/(numV-1))*idx+Math.floor((idx+1)/3);
                                 break;
 
                             //the case where the fractional part of the remainder is >= 0.5
                             default:
-                                var d = Math.ceil((g.STOCKRANGE_LENGTH-1)/(numV-1))*idx-Math.floor((idx+1)/3);
+                                d = Math.ceil((g.STOCKRANGE_LENGTH-1)/(numV-1))*idx-Math.floor((idx+1)/3);
                                 break;
                         }
                         break;
@@ -144,7 +146,7 @@ var VISUALS = (function() {
 
 
             //add dotted line
-            function addDots(idx, syz, col) {
+            var addDots = function(idx, syz, col) {
 
                 lines.xaxis.dots[idx] = new THREE.Points(
                                             new THREE.Geometry(),
@@ -152,10 +154,10 @@ var VISUALS = (function() {
                                         );
 
                 //add vertices to the dotted line geometry
-                for(j=0; j<(4*numH-6); j++) {
+                for(var j=0; j<(4*numH-6); j++) {
 
                     lines.xaxis.dots[idx].geometry.vertices.push(new THREE.Vector3(
-                        w*(scalar*(sdd(idx)/(g.STOCKRANGE_LENGTH-1)-1)+0.5),
+                        w*(scalar*(sDD(idx)/(g.STOCKRANGE_LENGTH-1)-1)+0.5),
                         h*(scalar*(0.25*(j+1)/(numH-1)-1)+0.5),
                         0
                     ));
@@ -164,7 +166,7 @@ var VISUALS = (function() {
 
 
             //extend left or right-most tick mark on the graph
-            function extendTick(idx) {
+            var extendTick = function(idx) {
 
                 var x = {  0: { left:   w*(-scalar+0.50),
                                 center: w*0.25*(-scalar*(1.01*0.75+4)+0.75+2),
@@ -207,7 +209,7 @@ var VISUALS = (function() {
             }
 
 
-            addBackground = (function() {
+            var addBackground = (function() {
 
                 //the background
                 var plane1 = new THREE.Mesh(
@@ -228,10 +230,10 @@ var VISUALS = (function() {
             }());
 
 
-            addYAxisComponents = (function() {
+            var addYAxisComponents = (function() {
 
                 //add horizontal gridlines and vertical axis labels
-                for(i=0; i<numH; i++) {
+                for(var i=0; i<numH; i++) {
 
                     //gridline geometry
                     var gridlineGeom = new THREE.Geometry();
@@ -294,31 +296,31 @@ var VISUALS = (function() {
             }());
             
 
-            addXAxisComponents = (function() {
+            var addXAxisComponents = (function() {
 
                 //add vertical tick marks, tick mark extensions, dotted lines and labels
-                for(i=0; i<numV; i++) {
+                for(var i=0; i<numV; i++) {
 
                     //tick mark geometry
                     var tickGeom = new THREE.Geometry();
 
                     //top vertex
                     tickGeom.vertices.push(new THREE.Vector3(
-                        w*(scalar*(sdd(i)/(g.STOCKRANGE_LENGTH-1)-1)+0.5),
+                        w*(scalar*(sDD(i)/(g.STOCKRANGE_LENGTH-1)-1)+0.5),
                         h/2*(1-scalar*2),
                         0
                     ));
 
                     //center vertex
                     tickGeom.vertices.push(new THREE.Vector3(
-                        w*(scalar*(sdd(i)/(g.STOCKRANGE_LENGTH-1)-1)+0.5),
+                        w*(scalar*(sDD(i)/(g.STOCKRANGE_LENGTH-1)-1)+0.5),
                         h/2*(1-scalar*(2*numH-1)/(numH-1)),
                         0
                     ));
 
                     //bottom vertex
                     tickGeom.vertices.push(new THREE.Vector3(
-                        w*(scalar*(sdd(i)/(g.STOCKRANGE_LENGTH-1)-1)+0.5),
+                        w*(scalar*(sDD(i)/(g.STOCKRANGE_LENGTH-1)-1)+0.5),
                         h/2*(1-scalar*(2*numH)/(numH-1)),
                         0
                     ));
@@ -335,7 +337,7 @@ var VISUALS = (function() {
                     addAxisLabelMesh('xaxis', i);
 
                     //label text
-                    labels.xaxis.context[i].fillText(Object.keys(g.PROFITLOSS_DATA[0])[sdd(i)], canvasW/2*0.75, canvasH/2);
+                    labels.xaxis.context[i].fillText(Object.keys(g.PROFITLOSS_DATA[0])[sDD(i)], canvasW/2*0.75, canvasH/2);
 
                     if(i==0 || i==6) {
 
@@ -349,7 +351,7 @@ var VISUALS = (function() {
 
                             //bump label right
                             labels.xaxis.mesh[i].position.set(
-                                w*(scalar*(sdd(i)/(g.STOCKRANGE_LENGTH-1)-1-1.01*0.375)+0.375+0.5),
+                                w*(scalar*(sDD(i)/(g.STOCKRANGE_LENGTH-1)-1-1.01*0.375)+0.375+0.5),
                                 h*(scalar/(1-numH)*(numH+0.45)+0.5),
                                 0
                             );
@@ -357,7 +359,7 @@ var VISUALS = (function() {
 
                             //bump label left
                             labels.xaxis.mesh[i].position.set(
-                                w*(scalar*(sdd(i)/(g.STOCKRANGE_LENGTH-1)-1+1.01*0.375)-0.375+0.5),
+                                w*(scalar*(sDD(i)/(g.STOCKRANGE_LENGTH-1)-1+1.01*0.375)-0.375+0.5),
                                 h*(scalar/(1-numH)*(numH+0.45)+0.5),
                                 0
                             );
@@ -369,7 +371,7 @@ var VISUALS = (function() {
 
                         //set label position
                         labels.xaxis.mesh[i].position.set(
-                            w*(scalar*(sdd(i)/(g.STOCKRANGE_LENGTH-1)-1)+0.5),
+                            w*(scalar*(sDD(i)/(g.STOCKRANGE_LENGTH-1)-1)+0.5),
                             h*(scalar/(1-numH)*(numH+0.45)+0.5),
                             0
                         );
@@ -383,9 +385,9 @@ var VISUALS = (function() {
 
 
         //add mouse cursor tracker and its associated elements
-        function addTracker() {
+        var addTracker = function() {
 
-            addLineAndMesh = (function() {
+            var addLineAndMesh = (function() {
 
                 //line geometry 
                 var trackerGeom = new THREE.Geometry();
@@ -418,9 +420,9 @@ var VISUALS = (function() {
                               );
 
                 //create the canvas
-                var trackerCanvas    = document.createElement('canvas');
-                trackerCanvas.width  = canvasW*0.75;
-                trackerCanvas.height = canvasH;
+                var trackerCanvas        = document.createElement('canvas');
+                    trackerCanvas.width  = canvasW*0.75;
+                    trackerCanvas.height = canvasH;
 
                 //get context, set transparent canvas background
                 trackerContext           = trackerCanvas.getContext('2d');
@@ -433,12 +435,10 @@ var VISUALS = (function() {
                 trackerContext.textAlign    = 'center';
                 trackerContext.textBaseline = 'middle';
 
-                //set canvas as texture and specify texture parameters
+                //set canvas as texture and specify texture property values
                 trackerTexture             = new THREE.Texture(trackerCanvas);
+                trackerTexture.minFilter   = THREE.LinearFilter;
                 trackerTexture.needsUpdate = true;
-
-                //what does this actually do?
-                trackerTexture.minFilter = THREE.LinearFilter;
 
                 //create mesh and map canvas texture to it
                 trackerMesh = new THREE.Mesh(
@@ -457,8 +457,9 @@ var VISUALS = (function() {
             }());
 
 
-            addToOutputDataTracker = (function() {
+            var addToOutputDataTracker = (function() {
 
+                //local vars
                 var divs = [ [obj.min(g.EXPIRY)+" DTE - 16:00 EDT :", "current-end-text", "current-end-val"],
                              ["Expiry - 12:45 EDT :", "expiry-mid-text", "expiry-mid-val"],
                              ["Expiry - 16:00 EDT :", "expiry-end-text", "expiry-end-val"] ],
@@ -478,9 +479,9 @@ var VISUALS = (function() {
 
 
         //listen for graph data display change
-        function addGraphChangeListener() {
+        var addGraphChangeListener = function() {
 
-            for(i=1; i<7; i++) {
+            for(var i=1; i<7; i++) {
 
                 (function(n) {
 
@@ -496,7 +497,7 @@ var VISUALS = (function() {
                         scene.add(cloud[dataVal][0], cloud[dataVal][1], cloud[dataVal][2]);
 
                         //change y-axis label values
-                        for(j=0; j<numH; j++) {
+                        for(var j=0; j<numH; j++) {
 
                             switch(true) {
 
@@ -523,10 +524,11 @@ var VISUALS = (function() {
 
 
         //listen for graph data time change
-        function addTimeChangeListener() {
+        var addTimeChangeListener = function() {
 
             elem.select("output-time-button").onclick = function() {
 
+                //local vars
                 var ele = "output-time-field",
                     val = +elem.select(ele).value;
 
@@ -545,7 +547,7 @@ var VISUALS = (function() {
                         elem.select("current-end-text").innerText = val + " DTE - 16:00 EDT :";
 
                         //point clouds
-                        for(i=1; i<7; i++) {
+                        for(var i=1; i<7; i++) {
 
                             //remove the old time = t cloud
                             scene.remove(cloud[i][2]);
@@ -568,19 +570,20 @@ var VISUALS = (function() {
         }
 
 
-        function animateTracker() {
+        var animateTracker = function() {
 
-            if(mouse.x != null && mouse.y != null) {
+            if(mouse.x != null && mouse.y != null && elem.select("output-data-tracker").children.length == 6) {
 
                 if(mouse.x > -0.85 && mouse.x < 1 && mouse.y < 1 && mouse.y > -1) {
 
                     (function(callback) {
 
-                        //thanks to 'uhura' on stackoverflow.com for this
+                        //local vars
                         var vec,
                             dir,
                             distance;
 
+                        //thanks to 'uhura' on stackoverflow.com for this
                         vec      = new THREE.Vector3(mouse.x, mouse.y, 0.5).unproject(camera);
                         dir      = vec.sub(camera.position).normalize();
                         distance = -camera.position.z/dir.z;
@@ -594,7 +597,7 @@ var VISUALS = (function() {
                         if(tracker.x >= w*(-scalar*(1+1.01*0.375)+0.375+0.5) && tracker.x <= w*(scalar*(1.01*0.375)-0.375+0.5)) { trackerMesh.position.x = tracker.x }
 
                         //update the mesh
-                        for(i=0; i<g.STOCKRANGE_LENGTH; i++) {
+                        for(var i=0; i<g.STOCKRANGE_LENGTH; i++) {
 
                             if(Math.abs(tracker.x-cloud[1][0].geometry.vertices[i].x) < (w*scalar)/(2*g.STOCKRANGE_LENGTH)) {
 
@@ -613,8 +616,9 @@ var VISUALS = (function() {
                                 trackerTexture.needsUpdate = true;
 
                                 //update 'output-data-tracker' values
-                                updateOutputDataTracker = (function() {
+                                var updateOutputDataTracker = (function() {
 
+                                    //local var
                                     var exp = obj.min(g.EXPIRY);
 
                                     [["current-end-val", +elem.select("output-time-field").value], ["expiry-mid-val", 0.5], ["expiry-end-val", 0]].forEach(function(arr) {
@@ -628,7 +632,7 @@ var VISUALS = (function() {
                         }
 
                         //visibility
-                        callback = function() { [trackerLine, trackerMesh].forEach(function(ele) { ele.visible = true }) }();
+                        var callback = function() { [trackerLine, trackerMesh].forEach(function(ele) { ele.visible = true }) }();
                     })();
                 } else {
 
@@ -643,7 +647,7 @@ var VISUALS = (function() {
 
         // MAIN =====================================================================================================================================
 
-        appendRenderer = (function() {
+        var appendRenderer = (function() {
 
             if(elem.select("output-view-container") != null) {
 
@@ -665,7 +669,7 @@ var VISUALS = (function() {
         }());
 
 
-        addMouseListener = (function() {
+        var addMouseListener = (function() {
 
             //normalize mouse coordinates with respect to the renderer
             window.addEventListener('mousemove', function onMouseMove(event) {
@@ -684,7 +688,7 @@ var VISUALS = (function() {
                 //range of the data
                 var rng = obj.range([ num[timeArr[0]], num[timeArr[1]], num[timeArr[2]] ]);
 
-                range[n+1] = rng !== 0 ? (rng*1.025) : 1;
+                range[n+1] = rng !== 0 ? (rng*1.02) : 1;
 
                 //clouds
                 cloud[n+1] = {};
@@ -701,17 +705,17 @@ var VISUALS = (function() {
                 });
             });
 
-            callback = function() {
+            var callback = function() {
+
+                //remove load icon and change background color
+                elem.destroyChildren("output-data-tracker", ["BSM-load-icon"]);
+                elem.select("output-data-tracker").style.backgroundColor = '#333333';
 
                 //remove push text
                 elem.destroyChildren("output-view-container", ["BSM-push-text"]);
 
                 //status message
                 console.log('point clouds full.');
-
-                //remove load icon and change background color
-                elem.destroyChildren("output-data-tracker", ["BSM-load-icon"]);
-                elem.select("output-data-tracker").style.backgroundColor = '#333333';
 
                 //get data info
                 dataVal = +elem.select("input[name=output-data-radio]:checked").value;
@@ -741,13 +745,13 @@ var VISUALS = (function() {
                 })();
 
                 //enable output data and output time elements
-                enableElements = (function() {
+                var enableOutputElems = (function(bool) {
 
                     //data radio buttons
-                    for(i=1; i<7; i++) { elem.avail("output-data-radio-"+i, true) }
+                    for(var i=1; i<7; i++) { elem.avail("output-data-radio-"+i, bool) }
 
-                    ["output-time-field", "output-time-button"].forEach(function(ele) { elem.avail(ele, true) });
-                }());
+                    ["output-time-field", "output-time-button"].forEach(function(ele) { elem.avail(ele, bool) });
+                }(true));
 
                 //display the global object in the console
                 console.log(g);

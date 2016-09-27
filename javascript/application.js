@@ -1,4 +1,6 @@
-﻿// GLOBAL OBJECT ====================================================================================================================================
+﻿"use strict";
+
+// GLOBAL OBJECT ====================================================================================================================================
 
 var g = {
 
@@ -36,11 +38,11 @@ var g = {
 // HEADER ===========================================================================================================================================
 
 //navigation menu
-nav = function(properties) {
+var nav = function(properties) {
 
     var self = function() { return };
       
-    for(prop in properties) { self[prop] = properties[prop] }
+    for(var prop in properties) { self[prop] = properties[prop] }
 
     return self;   
 }({
@@ -57,7 +59,7 @@ nav = function(properties) {
         elem.create({tag: "img", attributes: {id: "icon", alt: "Risk Cloud", src: "../images/icon.png"}}, "icon-link");
 
         //main menu
-        (mainMenu = function() {
+        var mainMenu = (function() {
 
             var headings = {
 
@@ -70,7 +72,7 @@ nav = function(properties) {
 
             elem.create({tag: "ul", attributes: {id: "nav-menu"}}, "header-main");
 
-            for(num in headings) {
+            for(var num in headings) {
 
                 elem.create({tag: "li", attributes: {id: "nav-list-item-"+num, class: "nav-list-item"}}, "nav-menu");
 
@@ -82,10 +84,10 @@ nav = function(properties) {
 
                             "nav-list-item-"+num);
             }
-        })();
+        }());
 
         //sub-menus
-        (subMenus = function() {
+        var subMenus = (function() {
 
             var subHeadings = {
 
@@ -98,13 +100,13 @@ nav = function(properties) {
                      b: {heading: "legal",                link: "#"} }
             };
 
-            for(num in subHeadings) {
+            for(var num in subHeadings) {
 
                 elem.create({tag: "div", attributes: {id: "nav-sub-container-"+num, class: "nav-sub-container", "data-open": "false"}}, ".body");
 
                 elem.create({tag: "ul", attributes: {id: "nav-sub-menu-"+num, class: "nav-sub-menu"}}, "nav-sub-container-"+num);
 
-                for(letter in subHeadings[num]) {
+                for(var letter in subHeadings[num]) {
 
                     elem.create({tag: "li", attributes: {id: "nav-sub-list-item-"+num+letter, class: "nav-sub-list-item"}}, "nav-sub-menu-"+num);
 
@@ -117,7 +119,7 @@ nav = function(properties) {
                                 "nav-sub-list-item-"+num+letter);
                 }
             }
-        })();
+        }());
     },
 
 
@@ -127,7 +129,7 @@ nav = function(properties) {
         var inc = 0.25,
             hgt = 4;
 
-        navSubEase = function(type, num) {
+        var navSubEase = function(type, num) {
 
             var bool = type == "in" ? "true" : "false";
 
@@ -135,7 +137,7 @@ nav = function(properties) {
             elem.select("nav-sub-container-"+num).setAttribute("data-open", bool);
         }
 
-        closeNavSubs = function(arr) {
+        var closeNavSubs = function(arr) {
 
             arr.forEach(function(n) { if(elem.select("nav-sub-container-"+n).getAttribute("data-open") == "true") { navSubEase("out", n) } });
         }
@@ -175,7 +177,7 @@ nav = function(properties) {
 // MISC =============================================================================================================================================
 
 //return an object comprised of numbered id strings
-idStrings = function(arr) {
+var idStrings = function(arr) {
 
     var idx = arr[0] != "num-legs-radio" ? g.TRADE_LEGS : 4,
         obj = {};
@@ -183,14 +185,14 @@ idStrings = function(arr) {
     switch(arr.length) {
 
         case 1:
-            for(i=1; i<idx+1; i++) {
+            for(var i=1; i<idx+1; i++) {
 
                 obj[i] = arr[0]+"-"+i;
             }
             break;
 
         case 2:
-            for(i=1; i<idx+1; i++) {
+            for(var i=1; i<idx+1; i++) {
 
                 obj[2*i-1] = arr[0]+"-"+i;
                 obj[2*i]   = arr[1]+"-"+i;
@@ -203,7 +205,7 @@ idStrings = function(arr) {
 
 
 //radio with two options
-twoButtons = function(arr, n) {
+var twoButtons = function(arr, n) {
 
     //form
     elem.create({tag: "form",
@@ -213,7 +215,7 @@ twoButtons = function(arr, n) {
                 "leg-sub-container-1-"+n);
 
     //buttons
-    for(j=0; j<2; j++) {
+    for(var j=0; j<2; j++) {
 
         elem.create({tag: "input",
 
@@ -249,11 +251,11 @@ twoButtons = function(arr, n) {
 }
 
 
-numberFields = function(properties) {
+var numberFields = function(properties) {
 
     var self = function() { return };
 
-    for(prop in properties) { self[prop] = properties[prop] }
+    for(var prop in properties) { self[prop] = properties[prop] }
 
     return self;  
 }({
@@ -344,7 +346,7 @@ numberFields = function(properties) {
         }
 
         //ease in or out, set field value to attribute "min" on ease out
-        for(i=2; i<g.TRADE_LEGS+1; i++) {
+        for(var i=2; i<g.TRADE_LEGS+1; i++) {
 
             (function(n) {
 
@@ -367,11 +369,11 @@ numberFields = function(properties) {
 
 
 //determine whether text input form conditions are met
-inputCheck = function(ele) {
+var inputCheck = function(ele) {
 
     var obj = {};
 
-    for(i=1; i<g.TRADE_LEGS+1; i++) {
+    for(var i=1; i<g.TRADE_LEGS+1; i++) {
 
         var val = elem.select(ele+"-"+i).value;
 
@@ -468,7 +470,7 @@ inputCheck = function(ele) {
 
 
 //some basic error message handling for text form input
-errorMsg = function(ele, msg) {
+var errorMsg = function(ele, msg) {
 
     elem.select(ele).style.borderColor = 'red';
 

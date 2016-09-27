@@ -1,9 +1,11 @@
+"use strict";
+
 //the Black-Scholes-Merton model for valuing multi-leg European-style options which pay a continuous dividend yield
-BSM = function(properties) {
+var BSM = function(properties) {
 
     var self = function() { return };
 
-    for(prop in properties) { self[prop] = properties[prop] }
+    for(var prop in properties) { self[prop] = properties[prop] }
 
     return self;
 }({
@@ -43,7 +45,7 @@ BSM = function(properties) {
                 var est = 0.2,
                     itr = 15;
 
-                for(j=0; j<itr; j++) {
+                for(var j=0; j<itr; j++) {
 
                     //local loop variables
                     var d1  = (Math.log(S/K)+((r-D+(Math.pow(est,2)/2))*T))/(est*Math.sqrt(T)),
@@ -74,7 +76,7 @@ BSM = function(properties) {
                     hgh = 2,
                     itr = 50;
 
-                for(j=0; j<itr; j++) {
+                for(var j=0; j<itr; j++) {
 
                     //local loop variables
                     var est = (low+hgh)/2,
@@ -106,7 +108,7 @@ BSM = function(properties) {
     //option price and greeks for the overall trade relative to a given time and stock price
     calc: function(t, S) {
 
-        for(i=1; i<g.TRADE_LEGS+1; i++) {
+        for(var i=1; i<g.TRADE_LEGS+1; i++) {
 
             //local variables
             var sgnN = g.LONG_SHORT[i]*g.NUM_CONTRACTS[i],
@@ -147,16 +149,16 @@ BSM = function(properties) {
         // HELPERS ==================================================================================================================================
 
         //calculate the implied volatility for each trade leg and store it to the global object
-        getImpliedVols = function() {
+        var getImpliedVols = function() {
 
-            for(i=1; i<g.TRADE_LEGS+1; i++) {
+            for(var i=1; i<g.TRADE_LEGS+1; i++) {
 
                 g.IMPLIED_VOL[i] = BSM.impVol(i, g.STOCK_PRICE, 'Newton-Raphson') || BSM.impVol(i, g.STOCK_PRICE, 'Bisection');
             }
         }
 
         //create the stock price space
-        getStockSpace = function() {
+        var getStockSpace = function() {
 
             //local vars
             var kDists = {},
@@ -169,20 +171,20 @@ BSM = function(properties) {
                 var eKeys = obj.filterKeys(g.EXPIRY, function(time) { return time == obj.min(g.EXPIRY) });
 
                 //distances from filtered strikes to the stock price
-                for(i=0; i<eKeys.length; i++) { kDists[eKeys[i]] = Math.abs(g.STRIKE_PRICE[eKeys[i]]-g.STOCK_PRICE) }
+                for(var i=0; i<eKeys.length; i++) { kDists[eKeys[i]] = Math.abs(g.STRIKE_PRICE[eKeys[i]]-g.STOCK_PRICE) }
 
                 //keys of filtered strikes 'nearest-to-the-money'
                 var kDistsKeys = obj.filterKeys(kDists, function(dist) { return dist == obj.min(kDists) });
 
                 //IV's of the options at the filtered strikes
-                for(j=0; j<kDistsKeys.length; j++) { vols[kDistsKeys[j]] = g.IMPLIED_VOL[kDistsKeys[j]] }
+                for(var j=0; j<kDistsKeys.length; j++) { vols[kDistsKeys[j]] = g.IMPLIED_VOL[kDistsKeys[j]] }
 
                 //stock price space IV (average of the IV's adjusted for the nearest trade horizon)
                 v = obj.avg(vols)*Math.sqrt(obj.min(g.EXPIRY)/365);
 
 
             //create the array of stock prices using a range of -3 to +3 v's
-            for(i=0; i<n+1; i++) { sPrices.push(+(g.STOCK_PRICE*(1-(3*v)*(1-(2*i/n)))).toFixed(2)) }
+            for(var i=0; i<n+1; i++) { sPrices.push(+(g.STOCK_PRICE*(1-(3*v)*(1-(2*i/n)))).toFixed(2)) }
 
             //delete any duplicate prices in the stock price array
             sPrices = array.unique(sPrices);
@@ -191,9 +193,9 @@ BSM = function(properties) {
             g.STOCKRANGE_LENGTH = sPrices.length;
         }
 
-        getStockSpaceData = function(t) {
+        var getStockSpaceData = function(t) {
 
-            for(s=0; s<g.STOCKRANGE_LENGTH; s++) {
+            for(var s=0; s<g.STOCKRANGE_LENGTH; s++) {
 
                 //clear old values
                 obj.reset(BSM);
@@ -207,13 +209,13 @@ BSM = function(properties) {
                 arr.forEach(function(greek) { g[greek.toUpperCase()+'_DATA'][t][sPrices[s].toFixed(2)] = +(obj.sum(BSM[greek])).toFixed(2) });
 
                 //store current 'greek' values to the global object for use in the trade summary table
-                if(t==0 && s==(g.STOCKRANGE_LENGTH-1)/2) { arr.forEach(function(greek) { for(n in BSM[greek]) { g[greek.toUpperCase()][n] = BSM[greek][n] } }) }
+                if(t==0 && s==(g.STOCKRANGE_LENGTH-1)/2) { arr.forEach(function(greek) { for(var n in BSM[greek]) { g[greek.toUpperCase()][n] = BSM[greek][n] } }) }
             }
         }
 
-        getTimeSpaceData = function(start, end) {
+        var getTimeSpaceData = function(start, end) {
 
-            for(t=start; t<=end; t++) {
+            for(var t=start; t<=end; t++) {
 
                 //declare objects for profit/loss and greeks data storage, get data for current day
                 g.PROFITLOSS_DATA[t] = {};
@@ -229,7 +231,7 @@ BSM = function(properties) {
 
         // MAIN =====================================================================================================================================
 
-        allData = function(callback) {
+        var allData = (function(callback) {
 
             getImpliedVols();
             getStockSpace();
@@ -247,7 +249,7 @@ BSM = function(properties) {
             //clear values after last calculation
             obj.reset(BSM);
 
-            callback = function() {
+            var callback = function() {
 
                 //remove calc text
                 elem.destroyChildren("output-view-container", ["BSM-calc-text"]);
@@ -261,7 +263,7 @@ BSM = function(properties) {
                 //status message
                 console.log('pushing vertices to point cloud geometries...');
             }();
-        }();
+        }());
 
         //data visualization callback
         callback();
