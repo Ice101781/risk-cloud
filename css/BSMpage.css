@@ -27,40 +27,46 @@
 
 /* CONTAINERS =====================================================================================================================================*/
 
-/* lightgreen background color test */
-#app-container {
-  height: 40vw;
+#app-container, .load-text {
   text-align: center;
-  background-color: transparent;
 }
 
-/* lightblue background color test */
+#app-container {
+  height: 39.5vw;
+  background-color: lightgreen; /* lightgreen background color test */
+}
+
+
 #initial-params-container {
   height: 30vw;
-  background-color: transparent;
+  background-color: lightblue; /* lightblue background color test */
 }
 
-#initial-params-sub-container {
+#initial-params-sub-container, #final-params-sub-container, .trade-leg, #output-sub-container, #output-sub-container-1, #output-sub-container-2, #output-data-tracker {
   display: inline-block;
-  height: 10vw;
-  width: 30vw;
-  margin-top: 2.5vw;
+}
+
+#initial-params-sub-container, #final-params-sub-container, #output-sub-container {
   background-color: #a6a6a6;
 }
 
-/* lightpink background color test */
+#initial-params-sub-container {
+  height: 10vw;
+  width: 30vw;
+  margin-top: 2.5vw;
+}
+
+
 #final-params-container {
   opacity: 0;
-  height: 39vw;
-  background-color: transparent;
+  height: 38vw;
+  background-color: lightpink; /* lightpink background color test */
 }
 
 /* zero width to vertically align #trade-legs-params-container and #current-price-form */
 #final-params-sub-container {
-  display: inline-block;
   height: 35vw;
   margin-top: 1.5vw;
-  background-color: #a6a6a6;
 }
 
 #trade-legs-params-container {
@@ -68,7 +74,6 @@
 }
 
 .trade-leg {
-  display: inline-block;
   height: 28.5vw;
   width: 20vw;
   padding-left: 1.125vw;
@@ -81,20 +86,13 @@
   background-color: #fafafa;
 }
 
-/* violet background color test */
 #output-container {
   opacity: 0;
-  height: 39.5vw;
-  background-color: transparent;
-}
-
-#output-sub-container {
-  display: inline-block;
-  background-color: #a6a6a6;
+  height: 39.25vw;
+  background-color: violet; /* violet background color test */
 }
 
 #output-sub-container-1, #output-sub-container-2 {
-  display: inline-block;
   height: 39vw;
 }
 
@@ -106,22 +104,24 @@
   width: 78.25vw;
 }
 
-#output-data-tracker, .load-icon {
+#output-data-tracker, .load-icon, #output-view-container {
   background-color: #888888;
+}
+
+#output-data-tracker {
+  height: 9.375vw;
+  width: 11vw;
+  margin-top: 1vw;
+}
+
+.load-icon, .load-text {
+  color: #9999ff;
 }
 
 .load-icon {
   height: 4vw;
   width: 6vw;
   padding-top: 2.5vw;
-  color: #9999ff;
-}
-
-#output-data-tracker {
-  display: inline-block;
-  height: 9.375vw;
-  width: 11vw;
-  margin-top: 0.625vw;
 }
 
 #output-view-container, .load-text {
@@ -130,19 +130,16 @@
 
 .load-text {
   line-height: 31vw;
-  text-align: center;
   font-size: 1.75vw;
-  color: #9999ff;
 }
 
 #output-view-container, #output-summary-container {
   width: 77.5vw;
 }
 
-/* aspect ratio is 2.5 : 1 for the #output-view-container */
+/* aspect ratio is 2.5 : 1 */
 #output-view-container {
   margin-top: 1vw;
-  background-color: #888888;
 }
 
 #output-summary-container {
@@ -253,10 +250,8 @@
 }
 
 #return-button-2 {
-  position: relative;
-  right: 0.575vw;
-  bottom: 3vw;
   width: 10vw;
+  margin: 2vw auto;
 }
 
 /* END BUTTONS ====================================================================================================================================*/
@@ -354,8 +349,8 @@ label.radio.output-data {
 }
 
 #output-time-form {
-  height: 4.25vw;
-  margin-top: 0.625vw;
+  height: 4.5vw;
+  margin-bottom: 0.75vw;
 }
 
 /* END FORMS ======================================================================================================================================*/

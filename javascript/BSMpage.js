@@ -335,15 +335,9 @@ var finalParams = function(properties) {
                 elem.select("output-time-field").setAttribute("max", obj.min(g.EXPIRY));
 
                 //transitions
-                elem.ease("out", "final-params-container", 0.65, 39);
+                elem.ease("out", "final-params-container", 0.5, 38);
                 elem.fade("out", "final-params-container", 0.03);
                 elem.fade("in", "output-container", 0.01, function() {
-
-                    //add load icon
-                    elem.create({tag: "img", attributes: {id: "BSM-load-icon", class: "load-icon", src: '../images/icon3.png'}}, "output-data-tracker");
-
-                    //add calc text
-                    elem.create({tag: "div", content: 'Calculating...', attributes: {id: "BSM-calc-text", class: "load-text"}}, "output-view-container");
 
                     //status message
                     console.log('now calculating...');
@@ -452,7 +446,7 @@ var output = function(properties) {
         //transitions
         elem.fade("out", "output-container", 0.02);
         elem.fade("in", "final-params-container", 0.01);
-        elem.ease("in", "final-params-container", 0.65, 39);
+        elem.ease("in", "final-params-container", 0.5, 38);
     }
 })
 
