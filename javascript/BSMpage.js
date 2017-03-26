@@ -446,7 +446,12 @@ var output = function(properties) {
         //transitions
         elem.fade("out", "output-container", 0.02);
         elem.fade("in", "final-params-container", 0.01);
-        elem.ease("in", "final-params-container", 0.5, 38);
+        elem.ease("in", "final-params-container", 0.5, 38, function() {
+
+            //replace loading graphics
+            elem.create({tag: "img", attributes: {id: "BSM-load-icon", class: "load-icon", src: '../images/icon3.png'}}, "output-data-tracker");
+            elem.create({tag: "div", content: 'Calculating...', attributes: {id: "BSM-calc-text", class: "load-text"}}, "output-view-container");
+        });
     }
 })
 

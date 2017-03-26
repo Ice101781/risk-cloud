@@ -6,17 +6,17 @@
   overflow: hidden;
 }
 
-.model-heading {
+.model-heading, .model-heading > pre {
   margin: 0;
   padding: 0;
-  margin-top: 1.5vw;
-  margin-bottom: 1.5vw;
+}
+
+.model-heading {
+  margin: 1.5vw 0;
   text-align: center;
 }
 
 .model-heading > pre {
-  margin: 0;
-  padding: 0;
   font-family: Corbel;
   font-size: 1.5vw;
   color: #555555;
@@ -33,13 +33,13 @@
 
 #app-container {
   height: 39.5vw;
-  background-color: lightgreen; /* lightgreen background color test */
+  background-color: transparent; /* lightgreen background color test */
 }
 
 
 #initial-params-container {
   height: 30vw;
-  background-color: lightblue; /* lightblue background color test */
+  background-color: transparent; /* lightblue background color test */
 }
 
 #initial-params-sub-container, #final-params-sub-container, .trade-leg, #output-sub-container, #output-sub-container-1, #output-sub-container-2, #output-data-tracker {
@@ -60,7 +60,7 @@
 #final-params-container {
   opacity: 0;
   height: 38vw;
-  background-color: lightpink; /* lightpink background color test */
+  background-color: transparent; /* lightpink background color test */
 }
 
 /* zero width to vertically align #trade-legs-params-container and #current-price-form */
@@ -76,8 +76,7 @@
 .trade-leg {
   height: 28.5vw;
   width: 20vw;
-  padding-left: 1.125vw;
-  padding-right: 1.125vw;
+  padding: 0 1.125vw;
 }
 
 .leg-sub-container {
@@ -89,7 +88,7 @@
 #output-container {
   opacity: 0;
   height: 39.25vw;
-  background-color: violet; /* violet background color test */
+  background-color: transparent; /* violet background color test */
 }
 
 #output-sub-container-1, #output-sub-container-2 {
@@ -216,13 +215,13 @@
 #current-price-align-helper {
   height: 1.5vw;
   width: 15vw;
-  padding-top: 0.25vw;
+  padding-top: 0.5vw;
   font-size: 0.95vw;
 }
 
 #output-time-align-helper {
   width: 10.5vw;
-  margin-left: 0.30625vw;
+  margin-bottom: 0.5vw;
   font-size: 0.9vw;
 }
 
@@ -251,7 +250,7 @@
 
 #return-button-2 {
   width: 10vw;
-  margin: 2vw auto;
+  margin: 1vw auto;
 }
 
 /* END BUTTONS ====================================================================================================================================*/
@@ -263,12 +262,17 @@ input[type=radio] {
   display: none;
 }
 
-input[type=radio] + .radio {
+input[type=radio] + .radio, #num-legs-form, #current-price-form, .trade-leg-field-forms, .output-forms {
   display: inline-block;
-  height: 1vw;
+}
+
+input[type=radio] + .radio, #num-legs-form, #current-price-form, .output-forms {
   margin: 0;
-  padding-top: 0.25vw;
-  padding-bottom: 0.5vw;
+}
+
+input[type=radio] + .radio {
+  height: 1vw;
+  padding: 0.25vw 0 0.5vw 0;
   background-color: #d8d8d8;
 }
 
@@ -283,74 +287,62 @@ label.radio.num-legs {
 
 label.radio.trade-leg-radios {
   width: 6vw;
-  margin-left: 1vw;
-  margin-right: 1vw;
+  margin: 0 1vw;
 }
 
 label.radio.output-data {
   width: 8vw;
-  margin-top: 0.625vw;
-  margin-bottom: 0.625vw;
-  padding-top: 0.375vw;
-  padding-bottom: 0.625vw;
+  margin: 0.625vw 0;
+  padding: 0.375vw 0 0.625vw 0;
 }
 
-#num-legs-form, #current-price-form {
-  display: inline-block;
-  height: 2vw;
-  margin: 0;
-  padding: 0.5vw;
+#num-legs-form, #current-price-form, .output-forms {
   background-color: #fafafa;
 }
 
 #num-legs-form {
+  height: 2vw;
   width: 27vw;
-  margin-top: 1vw;
-  margin-bottom: 3vw;
-  padding-top: 0.75vw;
+  margin: 1vw 0 3vw 0;
+  padding: 0.75vw 0.5vw 0.5vw 0.5vw; 
+}
+
+.trade-leg-radio-forms, .trade-leg-field-forms, .output-forms {
+  margin: 0;
+  padding: 0;
 }
 
 .trade-leg-radio-forms {
-  margin: 0;
-  padding: 0;
-  padding-top: 0.75vw;
-  padding-bottom: 0.25vw;
+  padding: 0.75vw 0 0.25vw 0;
 }
 
 .trade-leg-field-forms {
-  display: inline-block;
   height: 1.75vw;
   width: 19vw;
-  margin: 0;
-  padding: 0;
-  padding-top: 0.4375vw;
-  padding-bottom: 0.5vw;
+  padding: 0.4375vw 0 0.5vw 0;
   text-align: center;
 }
 
 #current-price-form {
-  margin-top: 0.75vw;
-  padding-left: 0.75vw;
-  padding-right: 0.75vw;
+  height: 2.5vw;
+  margin-top: 1vw;
+  padding: 0.5vw 0.75vw 0.1875vw 0.75vw;
 }
 
 .output-forms {
-  display: inline-block;
   width: 11vw;
-  margin: 0;
-  padding: 0;
-  padding-top: 0.5vw;
-  background-color: #fafafa;
+  padding: 0.5vw 0;
 }
 
 #output-data-form {
-  height: 21.125vw;
+  height: 23vw;
   margin-top: 1vw;
 }
 
 #output-time-form {
-  height: 4.5vw;
-  margin-bottom: 0.75vw;
+  height: 4.125vw;
+  margin-bottom: 0.375vw;
+  padding-top: 0.875vw;
 }
 
 /* END FORMS ======================================================================================================================================*/
@@ -373,17 +365,18 @@ label.radio.output-data {
   padding-left: 0.75vw;
 }
 
+#current-price-field, #output-time-field {
+  padding-left: 0.5vw;
+}
+
 #current-price-field {
   height: 1.75vw;
   width: 5vw;
-  padding-left: 0.5vw;
 }
 
 #output-time-field {
   height: 1.5vw;
   width: 4vw;
-  margin-top: 0.5vw;
-  padding-left: 0.5vw;
 }
 
 /* END FIELDS =====================================================================================================================================*/

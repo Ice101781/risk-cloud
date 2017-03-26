@@ -96,8 +96,7 @@ var nav = function(properties) {
 
                 2: { a: {heading: "#",                    link: "#"} },
 
-                3: { a: {heading: "FAQ",                  link: "#"},
-                     b: {heading: "legal",                link: "#"} }
+                3: { a: {heading: "#",                    link: "#"} }
             };
 
             for(var num in subHeadings) {
