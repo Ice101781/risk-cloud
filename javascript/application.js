@@ -24,12 +24,18 @@ var g = {
     THETA : {},
     VEGA : {},
     RHO : {},
+    VOMMA: {},
+    CHARM: {},
+    VETA: {},
     PROFITLOSS_DATA : {},
     DELTA_DATA : {},
     GAMMA_DATA : {},
     THETA_DATA : {},
     VEGA_DATA : {},
-    RHO_DATA : {}
+    RHO_DATA : {},
+    VOMMA_DATA: {},
+    CHARM_DATA: {},
+    VETA_DATA: {}
 };
 
 // END GLOBAL OBJECT ================================================================================================================================
@@ -67,7 +73,7 @@ var nav = function(properties) {
 
                 2: "LOGIN",
 
-                3: "info"
+                3: "INFO"
             };
 
             elem.create({tag: "ul", attributes: {id: "nav-menu"}}, "header-main");

@@ -63,9 +63,8 @@
   background-color: transparent; /* lightpink background color test */
 }
 
-/* zero width to vertically align #trade-legs-params-container and #current-price-form */
 #final-params-sub-container {
-  height: 35vw;
+  height: 35vw; /* zero width to vertically align #trade-legs-params-container and #current-price-form */
   margin-top: 1.5vw;
 }
 
@@ -136,8 +135,8 @@
   width: 77.5vw;
 }
 
-/* aspect ratio is 2.5 : 1 */
 #output-view-container {
+  /* aspect ratio is 2.5 : 1 */
   margin-top: 1vw;
 }
 
@@ -250,7 +249,7 @@
 
 #return-button-2 {
   width: 10vw;
-  margin: 1vw auto;
+  margin: 0.75vw auto;
 }
 
 /* END BUTTONS ====================================================================================================================================*/
@@ -291,9 +290,10 @@ label.radio.trade-leg-radios {
 }
 
 label.radio.output-data {
-  width: 8vw;
-  margin: 0.625vw 0;
-  padding: 0.375vw 0 0.625vw 0;
+  height: 0.875vw;
+  width: 8.5vw;
+  margin: 0.3vw 0;
+  padding: 0.25vw 0 0.625vw 0;
 }
 
 #num-legs-form, #current-price-form, .output-forms {
@@ -335,7 +335,7 @@ label.radio.output-data {
 }
 
 #output-data-form {
-  height: 23vw;
+  height: 22.75vw;
   margin-top: 1vw;
 }
 

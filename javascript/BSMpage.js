@@ -436,12 +436,18 @@ var output = function(properties) {
         g.THETA = {};
         g.VEGA = {};
         g.RHO = {};
+        g.VOMMA = {};
+        g.CHARM = {};
+        g.VETA = {};        
         g.PROFITLOSS_DATA = {};
         g.DELTA_DATA = {};
         g.GAMMA_DATA = {};
         g.THETA_DATA = {};
         g.VEGA_DATA = {};
         g.RHO_DATA = {};
+        g.VOMMA_DATA = {};
+        g.CHARM_DATA = {};
+        g.VETA_DATA = {};
 
         //transitions
         elem.fade("out", "output-container", 0.02);

@@ -23,6 +23,12 @@ var BSM = function(properties) {
 
     rho:   {},
 
+    vomma: {},
+
+    charm: {},
+
+    veta: {},
+
     //extract implied volatility from an option price using one of two methods
     impVol: function(leg, S, mtd) {
 
@@ -134,6 +140,12 @@ var BSM = function(properties) {
             this.vega[i]  = +(sgnN*S*Math.pow(Math.E,-D*tau)*math.NORM(d1)*Math.sqrt(tau)).toFixed(2);
 
             this.rho[i]   = +(sgnN*type*K*tau*Math.pow(Math.E,-r*tau)*math.LOGISTIC(type*d2)).toFixed(2);
+
+            this.vomma[i] = tau !== 0 ? +(sgnN*S*Math.pow(Math.E,-D*tau)*math.NORM(d1)*Math.sqrt(tau)*((d1*d2)/vol)).toFixed(2) : 0;
+
+            this.charm[i] = tau !== 0 ? +(sgnN*(Math.pow(Math.E,-D*tau)*(type*D*math.LOGISTIC(type*d1)-math.NORM(d1)*((2*(r-D)*tau-d2*vol*Math.sqrt(tau))/(2*vol*Math.pow(tau,1.5)))))/3.65).toFixed(2) : 0;
+
+            this.veta[i] = tau !== 0 ? +(sgnN*S*Math.pow(Math.E,-D*tau)*math.NORM(d1)*Math.sqrt(tau)*(D+((r-D)*d1/vol*Math.sqrt(tau))-((1+d1*d2)/2*tau))).toFixed(2) : 0;
         }
     },
 
@@ -144,7 +156,7 @@ var BSM = function(properties) {
         //local variables
         var sPrices = [],
             tCost,
-            arr     = ['delta','gamma','theta','vega','rho'];
+            arr     = ['delta','gamma','theta','vega','rho', 'vomma', 'charm', 'veta'];
 
         // HELPERS ==================================================================================================================================
 

@@ -42,7 +42,7 @@ var VISUALS = (function() {
             trackerTexture,
             trackerMesh,
 
-            dataArr  = [g.PROFITLOSS_DATA, g.DELTA_DATA, g.GAMMA_DATA, g.THETA_DATA, g.VEGA_DATA, g.RHO_DATA],
+            dataArr  = [g.PROFITLOSS_DATA, g.DELTA_DATA, g.GAMMA_DATA, g.THETA_DATA, g.VEGA_DATA, g.RHO_DATA, g.VOMMA_DATA, g.CHARM_DATA, g.VETA_DATA],
             dataVal,
             timeArr  = [obj.min(g.EXPIRY), obj.min(g.EXPIRY)-0.5, 0],
             range    = [],
@@ -481,7 +481,7 @@ var VISUALS = (function() {
         //listen for graph data display change
         var addGraphChangeListener = function() {
 
-            for(var i=1; i<7; i++) {
+            for(var i=1; i<=dataArr.length; i++) {
 
                 (function(n) {
 
@@ -547,7 +547,7 @@ var VISUALS = (function() {
                         elem.select("current-end-text").innerText = val + " DTE - 16:00 EDT :";
 
                         //point clouds
-                        for(var i=1; i<7; i++) {
+                        for(var i=1; i<=dataArr.length; i++) {
 
                             //remove the old time = t cloud
                             scene.remove(cloud[i][2]);
@@ -623,9 +623,10 @@ var VISUALS = (function() {
 
                                     [["current-end-val", +elem.select("output-time-field").value], ["expiry-mid-val", 0.5], ["expiry-end-val", 0]].forEach(function(arr) {
 
-                                        var dat = dataArr[dataVal-1][exp-arr[1]];
+                                        var dat  = dataArr[dataVal-1][exp-arr[1]],
+                                            text = dat[Object.keys(dat)[i]];
 
-                                        elem.select(arr[0]).innerText = dat[Object.keys(dat)[i]];
+                                        elem.select(arr[0]).innerText = text || "-";
                                     });
                                 }());
                             }
@@ -748,7 +749,7 @@ var VISUALS = (function() {
                 var enableOutputElems = (function(bool) {
 
                     //data radio buttons
-                    for(var i=1; i<7; i++) { elem.avail("output-data-radio-"+i, bool) }
+                    for(var i=1; i<=dataArr.length; i++) { elem.avail("output-data-radio-"+i, bool) }
 
                     ["output-time-field", "output-time-button"].forEach(function(ele) { elem.avail(ele, bool) });
                 }(true));
