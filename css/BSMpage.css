@@ -36,7 +36,6 @@
   background-color: transparent; /* lightgreen background color test */
 }
 
-
 #initial-params-container {
   height: 30vw;
   background-color: transparent; /* lightblue background color test */
@@ -56,7 +55,6 @@
   margin-top: 2.5vw;
 }
 
-
 #final-params-container {
   opacity: 0;
   height: 38vw;
@@ -69,10 +67,12 @@
 }
 
 #trade-legs-params-container {
+  height: 28.5vw;
   padding-top: 1.25vw;
 }
 
 .trade-leg {
+  vertical-align: middle; /* Safari fix */
   height: 28.5vw;
   width: 20vw;
   padding: 0 1.125vw;
@@ -203,7 +203,7 @@
 
 #num-legs-align-helper {
   height: 1.5vw;
-  width: 13.25vw;
+  width: 13.5vw;
   font-size: 0.95vw;
 }
 
