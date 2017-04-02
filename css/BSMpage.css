@@ -91,6 +91,7 @@
 }
 
 #output-sub-container-1, #output-sub-container-2 {
+  vertical-align: middle; /* Safari fix */
   height: 39vw;
 }
 
@@ -248,8 +249,10 @@
 }
 
 #return-button-2 {
+  position: relative;
+  top: 1.5%; /* Safari and Chrome fix */
   width: 10vw;
-  margin: 0.75vw auto;
+  margin: 0 auto;
 }
 
 /* END BUTTONS ====================================================================================================================================*/
@@ -304,7 +307,7 @@ label.radio.output-data {
   height: 2vw;
   width: 27vw;
   margin: 1vw 0 3vw 0;
-  padding: 0.75vw 0.5vw 0.5vw 0.5vw; 
+  padding: 0.75vw 0.5vw 0.5vw 0.5vw;
 }
 
 .trade-leg-radio-forms, .trade-leg-field-forms, .output-forms {
@@ -335,11 +338,13 @@ label.radio.output-data {
 }
 
 #output-data-form {
-  height: 22.75vw;
-  margin-top: 1vw;
+  margin: 1vw 0;
 }
 
 #output-time-form {
+  position: relative;
+  bottom: 42.5%;
+  vertical-align: middle; /* Safari and Chrome fixes */
   height: 4.125vw;
   margin-bottom: 0.375vw;
   padding-top: 0.875vw;
