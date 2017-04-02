@@ -73,14 +73,20 @@ html, .body, #nav-menu, .nav-sub-menu, .nav-list-item, .nav-sub-list-item, .nav-
   overflow: hidden;
 }
 
+/* sum to 99vw */
 #nav-sub-menu-1 {
   width: 9.75vw;
-  left: 89.25vw; /* sum to 99vw */
+  left: 89.25vw;
 }
 
-#nav-sub-menu-2, #nav-sub-menu-3 { 
+#nav-sub-menu-2 { 
   width: 3.5vw;
-  left: 95.5vw; /* sum to 99vw */
+  left: 95.5vw;
+}
+
+#nav-sub-menu-3 {
+  width: 8.25vw;
+  left: 90.75vw;
 }
 
 .nav-sub-list-item {
