@@ -102,7 +102,7 @@ var nav = function(properties) {
 
                 2: { a: {heading: "#",                    link: "#"} },
 
-                3: { a: {heading: "#",                    link: "#"} }
+                3: { a: {heading: "Github Repository",    link: "https://github.com/Ice101781/risk_cloud"} }
             };
 
             for(var num in subHeadings) {
