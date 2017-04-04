@@ -32,13 +32,13 @@
 }
 
 #app-container {
-  height: 39.5vw;
-  background-color: transparent; /* lightgreen background color test */
+  height: 39.75vw;
+  background-color: transparent; /* lightgreen */
 }
 
 #initial-params-container {
   height: 30vw;
-  background-color: transparent; /* lightblue background color test */
+  background-color: transparent; /* lightblue */
 }
 
 #initial-params-sub-container, #final-params-sub-container, .trade-leg, #output-sub-container, #output-sub-container-1, #output-sub-container-2, #output-data-tracker {
@@ -58,7 +58,7 @@
 #final-params-container {
   opacity: 0;
   height: 38vw;
-  background-color: transparent; /* lightpink background color test */
+  background-color: transparent; /* lightpink */
 }
 
 #final-params-sub-container {
@@ -86,8 +86,11 @@
 
 #output-container {
   opacity: 0;
-  height: 39.25vw;
-  background-color: transparent; /* violet background color test */
+  background-color: transparent; /* violet */
+}
+
+#output-sub-container {
+  height: 39.5vw;
 }
 
 #output-sub-container-1, #output-sub-container-2 {
@@ -143,7 +146,7 @@
 
 #output-summary-container {
   height: 6.5vw;
-  margin-top: 0.375vw;
+  margin-top: 0.625vw;
 }
 
 /* END CONTAINERS =================================================================================================================================*/
