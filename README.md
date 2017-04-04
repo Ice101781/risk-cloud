@@ -11,12 +11,19 @@
 <img width="" alt="BSM page 1" src="https://drive.google.com/uc?export=download&id=0B3rehuqgDPeVaXJ0eDh6WEZtNWM">
 <br>
 
-&nbsp; Enter the details of the trade and click the 'Calculate' button view the resulting structure, or click the 'Return' button to redefine the number of legs. Time spreads, etc. may be specified by clicking any of the blue tabs in the first column, which will open those parameters for editing in the others.
+&nbsp; Enter the details of the trade and click the 'Calculate' button view the resulting structure, or click the 'Return' button to redefine the number of legs. Time spreads, etc. may be specified via the blue tabs in the first column, which will open those parameters for editing in the other columns.
 
-&nbsp; <i>The parameters for the trade below reflect data from April 3rd, 2017 for the monthly SPX options expiring June 16th, 2017. They are provided only for demonstration purposes and do not constitute a recommendation.</i>
+&nbsp; <i>The parameters for the trade below reflect data from April 3rd, 2017 for the monthly SPX options expiring June 16th, 2017. They are provided for demonstration purposes only and do not constitute a recommendation.</i>
 
 <br>
 <img width="" alt="BSM page 2" src="https://drive.google.com/uc?export=download&id=0B3rehuqgDPeVZU9DMHR6ZkUtQXc">
 <br>
 
+&nbsp; Users familiar with the <a href="https://www.thinkorswim.com/t/trading.html">ThinkorSwim desktop</a> platform...
+
+<br>
+<img width="" alt="BSM page 3 profit" src="https://drive.google.com/uc?export=download&id=0B3rehuqgDPeVcTFObFluQVFLbzQ">
+<br>
+
 &nbsp; <i>Note that in the images above, the site is being accessed locally. In addition to a live version, users can opt to <a href="https://github.com/Ice101781/risk_cloud/archive/master.zip">download</a> the app for use offline.</i>
+
