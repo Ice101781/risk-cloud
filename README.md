@@ -11,7 +11,7 @@
 <img width="" alt="BSM page 1" src="https://drive.google.com/uc?export=download&id=0B3rehuqgDPeVaXJ0eDh6WEZtNWM">
 <br>
 
-&nbsp; Enter the details of the trade and click the 'Calculate' button view the resulting structure, or click the 'Return' button to redefine the number of legs. Time spreads, etc. may be specified via the blue tabs in the first column, which will open those parameters for editing in the other columns.
+&nbsp; Enter the details of the trade and click 'Calculate' to start loading the structure, or click 'Return' to redefine the number of legs. Time spreads, etc. may be specified via the blue tabs in the first column, which open those parameters for editing in the other columns.
 
 &nbsp; <i>The parameters for the trade below reflect data from April 3rd, 2017 for the monthly SPX options expiring June 16th, 2017. They are provided for demonstration purposes only and do not constitute a recommendation.</i>
 
@@ -19,10 +19,20 @@
 <img width="" alt="BSM page 2" src="https://drive.google.com/uc?export=download&id=0B3rehuqgDPeVZU9DMHR6ZkUtQXc">
 <br>
 
-&nbsp; Users familiar with the <a href="https://www.thinkorswim.com/t/trading.html">ThinkorSwim desktop</a> platform...
+&nbsp; The visual presentation of trades was inspired by the <a href="https://www.thinkorswim.com/t/trading.html">ThinkorSwim desktop</a> platform. Users familiar with that software will recognize similarities in both the graph as well as the mouse tracker and its output.
+
+&nbsp; The yellow vertical dotted lines mark the discrete range from -3 standard deviations to +3, with the <a href="https://en.wikipedia.org/wiki/Moneyness">at-the-money</a> center line being 0. An estimate of <a href="https://en.wikipedia.org/wiki/Implied_volatility">implied volatility</a> derived from trade parameters is used as a proxy for <a href="https://en.wikipedia.org/wiki/Standard_deviation">standard deviation</a>.
+
+&nbsp; The table below the graph offers a snapshot of the trade, which assumes the underlying will close the day at the current price.
 
 <br>
 <img width="" alt="BSM page 3 profit" src="https://drive.google.com/uc?export=download&id=0B3rehuqgDPeVcTFObFluQVFLbzQ">
+<br>
+
+&nbsp; In addition to P&L, eight <a href="https://en.wikipedia.org/wiki/Greeks_(finance)">greeks</a> are supported by the application.
+
+<br>
+<img width="" alt="BSM page 3 delta" src="https://drive.google.com/uc?export=download&id=">
 <br>
 
 &nbsp; <i>Note that in the images above, the site is being accessed locally. In addition to a live version, users can opt to <a href="https://github.com/Ice101781/risk_cloud/archive/master.zip">download</a> the app for use offline.</i>
