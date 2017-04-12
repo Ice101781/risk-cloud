@@ -1,9 +1,9 @@
-<a href="">Risk Cloud</a>
+<a href="http://www.riskcloud.xyz">Risk Cloud</a>
 ===
 
-&nbsp; An open-source desktop web application that's fully client-side, with a single dependency on <a href="https://github.com/mrdoob/three.js/">Three.js</a>. The current build allows users to visualize <a href="https://en.wikipedia.org/wiki/Option_(finance)">options</a> structures with a maximum of four legs and sixth months remaining to expiration using the <a href="https://en.wikipedia.org/wiki/Black%E2%80%93Scholes_model">Black-Scholes-Merton model</a>.
+&nbsp; A desktop web application that's fully client-side, and therefore open-source, with a single dependency on <a href="https://github.com/mrdoob/three.js/">Three.js</a>. The site is hosted on a virtual machine powered by Google Cloud Platform's Compute Engine. The instance is running Linux Debian with Apache2 Web Server.
 
-&nbsp; Click the corresponding link in the 'MODEL' sub-menu to begin. Select the number of legs in the trade and press the 'Continue' button.
+&nbsp; The current build allows users to visualize <a href="https://en.wikipedia.org/wiki/Option_(finance)">options</a> structures with a maximum of four legs and sixth months remaining to expiration using the <a href="https://en.wikipedia.org/wiki/Black%E2%80%93Scholes_model">Black-Scholes-Merton model</a>. Click the corresponding link in the 'MODEL' sub-menu to begin. Select the number of legs in the trade and press the 'Continue' button.
 
 <br>
 <img width="" alt="home page" src="https://drive.google.com/uc?export=download&id=0B3rehuqgDPeVM2JoaWkwQ1Zqcms">
