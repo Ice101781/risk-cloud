@@ -6,6 +6,7 @@ var g = {
 
     //user input
     TRADE_LEGS : 0,
+    ASSET_TYPE : "Equity Option(s)",
     LONG_SHORT : {},
     CONTRACT_TYPE : {},
     NUM_CONTRACTS : {},
