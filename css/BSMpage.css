@@ -41,7 +41,7 @@
   background-color: transparent; /* lightblue */
 }
 
-#initial-params-sub-container, #final-params-sub-container, .trade-leg, #output-sub-container, #output-sub-container-1, #output-sub-container-2, #output-data-tracker {
+#initial-params-sub-container, #final-params-sub-container, .trade-leg, #output-sub-container, #output-sub-container-1, #output-sub-container-2 {
   display: inline-block;
 }
 
@@ -111,9 +111,10 @@
 }
 
 #output-data-tracker {
+  display: block;
   height: 9.375vw;
   width: 11vw;
-  margin-top: 1vw;
+  margin: 1vw 0 0 0.75vw;
 }
 
 .load-icon, .load-text {
@@ -123,7 +124,7 @@
 .load-icon {
   height: 4vw;
   width: 6vw;
-  padding-top: 2.5vw;
+  padding-top: 2.6875vw;
 }
 
 #output-view-container, .load-text {
@@ -139,8 +140,7 @@
   width: 77.5vw;
 }
 
-#output-view-container {
-  /* aspect ratio is 2.5 : 1 */
+#output-view-container { /* aspect ratio is 2.5 : 1 */
   margin-top: 1vw;
 }
 
