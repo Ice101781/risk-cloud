@@ -17,9 +17,9 @@ var BSM = function(properties) {
 
     theta: {},
 
-    vega:  {},
+    vega: {},
 
-    rho:   {},
+    rho: {},
 
     vomma: {},
 
@@ -27,34 +27,37 @@ var BSM = function(properties) {
 
     veta: {},
 
-    getD1: function(U,K,r,D,T,vol) {
+    getD1: function(U,K,r,D,tau,vol) {
         var d1;
 
         switch(g.ASSET_TYPE) {
             case "Equity Option(s)":
-                d1 = (Math.log(U/K)+(r-D+(Math.pow(vol,2)/2))*T)/(vol*Math.sqrt(T));
-                break;
+                return d1 = (Math.log(U/K)+(r-D+(Math.pow(vol,2)/2))*tau)/(vol*Math.sqrt(tau));
             case "Futures Option(s)":
-                d1 = (Math.log(U/K)+(Math.pow(vol,2)/2)*T)/(vol*Math.sqrt(T));
-                break;
+                return d1 = (Math.log(U/K)+(Math.pow(vol,2)/2)*tau)/(vol*Math.sqrt(tau));
         }
-
-        return d1;
     },
 
-    getVega: function(U,r,D,T,d1) {
+    getPrice: function(type,U,K,r,D,tau,d1,d2) {
+        var price;
+
+        switch(g.ASSET_TYPE) {
+            case "Equity Option(s)":
+                return price = type*((U*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*tau))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*tau)));
+            case "Futures Option(s)":
+                return price = type*Math.pow(Math.E,-r*tau)*(U*math.LOGISTIC(type*d1)-K*math.LOGISTIC(type*d2));
+        }
+    },
+
+    getVega: function(U,r,D,tau,d1) {
         var vega;
 
         switch(g.ASSET_TYPE) {
             case "Equity Option(s)":
-                vega = U*Math.pow(Math.E,-D*T)*math.NORM(d1)*Math.sqrt(T);
-                break;
+                return vega = U*Math.pow(Math.E,-D*tau)*math.NORM(d1)*Math.sqrt(tau);
             case "Futures Option(s)":
-                vega = U*Math.pow(Math.E,-r*T)*math.NORM(d1)*Math.sqrt(T);
-                break;
+                return vega = U*Math.pow(Math.E,-r*tau)*math.NORM(d1)*Math.sqrt(tau);
         }
-
-        return vega;
     },
 
     //extract implied volatility from an option price using either the 'Newton-Raphson' or the 'Bisection' method
@@ -64,25 +67,25 @@ var BSM = function(properties) {
             n    = g.NUM_CONTRACTS[L],
             K    = g.STRIKE_PRICE[L],
             mktP = g.OPTION_PRICE[L],
-            T    = g.EXPIRY[L]/365,
+            tau  = g.EXPIRY[L]/365,
             D    = g.DIV_YIELD[L],
             r    = g.RISK_FREE[L],
             bsmP = 0;
 
         switch(M) {
             case 'Newton-Raphson':
-                //case-specific local vars
+                //local vars
                 var est = 0.2,
                     itr = 15;
 
                 for(var j=0; j<itr; j++) {
                     //local loop variables
-                    var d1   = this.getD1(U,K,r,D,T,est),
-                        d2   = d1-est*Math.sqrt(T),
-                        vega = this.getVega(U,r,D,T,d1);
+                    var d1   = this.getD1(U,K,r,D,tau,est),
+                        d2   = d1-est*Math.sqrt(tau),
+                        vega = this.getVega(U,r,D,tau,d1);
 
                     //option price based on current estimate for implied volatility
-                    bsmP = type*((U*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*T))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*T)));
+                    bsmP = this.getPrice(type,U,K,r,D,tau,d1,d2);
 
                     //return a value if threshold condition is met
                     if(Math.abs(mktP-bsmP) <= Math.pow(10,-2)) { return est }
@@ -95,9 +98,9 @@ var BSM = function(properties) {
 
             case 'Bisection':
                 //console message
-                console.log('The Newton-Raphson method did not converge for leg '+leg+'. Now implementing the Bisection method...');
+                console.log('The Newton-Raphson method did not converge for leg '+L+'. Now implementing the Bisection method...');
 
-                //case-specific local vars
+                //local vars
                 var low = 0.01,
                     hgh = 2,
                     itr = 50;
@@ -105,11 +108,11 @@ var BSM = function(properties) {
                 for(var j=0; j<itr; j++) {
                     //local loop variables
                     var est = (low+hgh)/2,
-                        d1  = this.getD1(U,K,r,D,T,est),
-                        d2  = d1-est*Math.sqrt(T);
+                        d1  = this.getD1(U,K,r,D,tau,est),
+                        d2  = d1-est*Math.sqrt(tau);
 
                     //option price based on current estimate for implied volatility
-                    bsmP = type*((U*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*T))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*T)));
+                    bsmP = this.getPrice(type,U,K,r,D,tau,d1,d2);
 
                     //next estimate for implied volatility
                     switch(Math.sign(mktP-bsmP)) {
@@ -130,7 +133,7 @@ var BSM = function(properties) {
     //option price and greeks for the overall trade relative to a given time and stock price
     calc: function(t,U) {
         for(var i=1; i<g.TRADE_LEGS+1; i++) {
-            //local variables
+            //local vars
             var sgnN = g.LONG_SHORT[i]*g.NUM_CONTRACTS[i],
                 type = g.CONTRACT_TYPE[i],
                 K    = g.STRIKE_PRICE[i],
@@ -142,7 +145,7 @@ var BSM = function(properties) {
                 d2   = d1-vol*Math.sqrt(tau);
 
             //price
-            this.price[i] = +(sgnN*type*((U*math.LOGISTIC(type*d1)*Math.pow(Math.E,-D*tau))-(K*math.LOGISTIC(type*d2)*Math.pow(Math.E,-r*tau)))*100).toFixed(2);
+            this.price[i] = +(sgnN*this.getPrice(type,U,K,r,D,tau,d1,d2)*100).toFixed(2);
 
             //greeks
             this.delta[i] = +(sgnN*type*Math.pow(Math.E,-D*tau)*math.LOGISTIC(type*d1)*100).toFixed(2);
@@ -151,9 +154,9 @@ var BSM = function(properties) {
 
             this.theta[i] = tau !== 0 ? +(sgnN*((U*Math.pow(Math.E,-D*tau)*(D*type*math.LOGISTIC(type*d1)))-(K*Math.pow(Math.E,-r*tau)*((r*type*math.LOGISTIC(type*d2))+((vol*math.NORM(d2))/(2*Math.sqrt(tau))))))/3.65).toFixed(2) : 0;
 
-            this.vega[i]  = +(sgnN*this.getVega(U,r,D,tau,d1)).toFixed(2);
+            this.vega[i] = +(sgnN*this.getVega(U,r,D,tau,d1)).toFixed(2);
 
-            this.rho[i]   = +(sgnN*type*K*tau*Math.pow(Math.E,-r*tau)*math.LOGISTIC(type*d2)).toFixed(2);
+            this.rho[i] = +(sgnN*type*K*tau*Math.pow(Math.E,-r*tau)*math.LOGISTIC(type*d2)).toFixed(2);
 
             this.vomma[i] = tau !== 0 ? +(sgnN*U*Math.pow(Math.E,-D*tau)*math.NORM(d1)*Math.sqrt(tau)*((d1*d2)/vol)).toFixed(2) : 0;
 
@@ -170,8 +173,6 @@ var BSM = function(properties) {
             tCost,
             arr = ['delta','gamma','theta','vega','rho', 'vomma', 'charm', 'veta'];
 
-        // HELPERS ==================================================================================================================================
-
         //calculate the implied volatility for each trade leg and store it to the global object
         var getAllImpVols = function() {
             for(var i=1; i<g.TRADE_LEGS+1; i++) {
@@ -182,27 +183,34 @@ var BSM = function(properties) {
         //create the stock price space
         var getStockSpace = function() {
             //local vars
-            var kDists = {},
-                vols   = {},
-                n      = 500,
+            var n = 500,
                 v;
 
-            //determine a standard deviation for use in generating the range of stock prices in the space
+            var getStanDev = function() {
+                //local vars
+                var kDists = {},
+                    vols = {},
+                    eKeys,
+                    kDistsKeys;
+
                 //keys of nearest expirys
-                var eKeys = obj.filterKeys(g.EXPIRY, function(time) { return time == obj.min(g.EXPIRY) });
+                eKeys = obj.filterKeys(g.EXPIRY, function(time) { return time == obj.min(g.EXPIRY) });
 
                 //distances from filtered strikes to the stock price
                 for(var i=0; i<eKeys.length; i++) { kDists[eKeys[i]] = Math.abs(g.STRIKE_PRICE[eKeys[i]]-g.STOCK_PRICE) }
 
                 //keys of filtered strikes 'nearest-to-the-money'
-                var kDistsKeys = obj.filterKeys(kDists, function(dist) { return dist == obj.min(kDists) });
+                kDistsKeys = obj.filterKeys(kDists, function(dist) { return dist == obj.min(kDists) });
 
                 //IV's of the options at the filtered strikes
                 for(var j=0; j<kDistsKeys.length; j++) { vols[kDistsKeys[j]] = g.IMPLIED_VOL[kDistsKeys[j]] }
 
                 //stock price space IV (average of the IV's adjusted for the nearest trade horizon)
                 v = obj.avg(vols)*Math.sqrt(obj.min(g.EXPIRY)/365);
+            }
 
+            //determine a standard deviation for use in generating the range of stock prices in the space
+            getStanDev();
 
             //create the array of stock prices using a range of -3 to +3 v's
             for(var i=0; i<n+1; i++) { sPrices.push(+(g.STOCK_PRICE*(1-(3*v)*(1-(2*i/n)))).toFixed(2)) }
@@ -243,12 +251,7 @@ var BSM = function(properties) {
             }
         }
 
-        // END HELPERS ==============================================================================================================================
-
-
-        // MAIN =====================================================================================================================================
-
-        var allData = (function(callback) {
+        var getAllData = function(callback) {
             getAllImpVols();
             getStockSpace();
 
@@ -268,21 +271,17 @@ var BSM = function(properties) {
             var callback = function() {
                 //remove calc text
                 elem.destroyChildren("output-view-container",["BSM-calc-text"]);
-
                 //status message
                 console.log('finished calculations.');
-
                 //add push text
                 elem.create({tag: "div", content: 'Pushing data to three.js...', attributes: {id: "BSM-push-text", class: "load-text"}}, "output-view-container");
-
                 //status message
                 console.log('pushing vertices to point cloud geometries...');
             }();
-        }());
+        }
 
+        getAllData();
         //data visualization callback
         callback();
-
-        // END MAIN =================================================================================================================================
     }
 })
