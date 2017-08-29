@@ -2,28 +2,28 @@
     <html lang="en-US">
         <head>
             <meta charset="UTF-8" />
-            <link rel="stylesheet" href="../css/application.css" />
-            <script src="../javascript/helpers.js"></script>
-            <script src="../javascript/application.js"></script>
-            <script src="../javascript/three.js"></script>
-            <script src="../javascript/visuals.js"></script>
+            <title>Options Trade Analytics | Black-Scholes-Merton Model | Risk Cloud</title>
 
-            <title>Option Trade Analytics | Black-Scholes-Merton Model | Risk Cloud</title>
+            <link rel="shortcut icon" type="image/x-icon" href="../images/ico3.ico">
+            <link rel="stylesheet" href="../css/application.css" />
             <link rel="stylesheet" href="../css/BSMpage.css" />
-            <script src="../javascript/BSMpage.js"></script>
-            <script src="../javascript/BSM.js"></script>
+
+            <script src="../javascript/application.js"></script>
+            <script src="../javascript/BSMmodel.js"></script>
         </head>
 
         <body class="body">
             <div id="loadScreen"></div>
 
             <script>
-                //prevent enter key and spacebar usage on the current page (fixes scrolling bug)
-                disableKey(13);
-                disableKey(32);
+                //prevent tab, enter and spacebar usage
+                [9,13,32].forEach(function(key) { disableKey(key) });
 
-                //render the navigation menu
+                //render navigation menu
                 nav.create();
+
+                //new trade
+                var trade = new BlackScholesTrade();
             </script>
 
             <h1 class="model-heading">
@@ -33,23 +33,46 @@
             <div id="app-container" class="general-group">
                 <div id="initial-params-container" class="general-group">
                     <div id="initial-params-sub-container" class="general-group">
-                        <form id="num-legs-form">
-                            <div id="num-legs-align-helper" class="general-group align-helper">Number of legs in the trade :</div>
+                        <form id="asset-type-form" class="ip-forms">
+                            <div id="asset-type-align-helper" class="general-group align-helper ip-align-helper">Underlying asset type :</div>
 
-                            <input type="radio" id="num-legs-radio-1" name="num-legs-radio" value="1" />
-                            <label class="general-group radio num-legs" for="num-legs-radio-1">1</label>
+                            <input type="radio" id="asset-type-radio-1" name="asset-type-radio" value="Stock" checked />
+                            <label class="general-group radio ip asset-type" for="asset-type-radio-1">Stock</label>
 
-                            <input type="radio" id="num-legs-radio-2" name="num-legs-radio" value="2" checked />
-                            <label class="general-group radio num-legs" for="num-legs-radio-2">2</label>
-
-                            <input type="radio" id="num-legs-radio-3" name="num-legs-radio" value="3" />
-                            <label class="general-group radio num-legs" for="num-legs-radio-3">3</label>
-
-                            <input type="radio" id="num-legs-radio-4" name="num-legs-radio" value="4" />
-                            <label class="general-group radio num-legs" for="num-legs-radio-4">4</label>
+                            <input type="radio" id="asset-type-radio-2" name="asset-type-radio" value="Futures" />
+                            <label class="general-group radio ip asset-type" for="asset-type-radio-2">Futures</label>
                         </form>
 
-                        <button id="continue-button-1" class="general-group buttons" type="button" onclick="initialParams.validate()">Continue</button>
+                        <form id="contract-mult-form" class="ip-forms">
+                            <div id="contract-mult-align-helper" class="general-group align-helper ip-align-helper">Contract multiplier :</div>
+
+                            <input type="radio" id="contract-mult-radio-1" name="contract-mult-radio" value="50" />
+                            <label class="general-group radio ip contract-mult" for="contract-mult-radio-1">50</label>
+
+                            <input type="radio" id="contract-mult-radio-2" name="contract-mult-radio" value="100" checked />
+                            <label class="general-group radio ip contract-mult" for="contract-mult-radio-2">100</label>
+
+                            <input type="radio" id="contract-mult-radio-3" name="contract-mult-radio" value="250" />
+                            <label class="general-group radio ip contract-mult" for="contract-mult-radio-3">250</label>
+                        </form>
+
+                        <form id="num-legs-form" class="ip-forms">
+                            <div id="num-legs-align-helper" class="general-group align-helper ip-align-helper">Number of legs in the trade :</div>
+
+                            <input type="radio" id="num-legs-radio-1" name="num-legs-radio" value="1" />
+                            <label class="general-group radio ip num-legs" for="num-legs-radio-1">1</label>
+
+                            <input type="radio" id="num-legs-radio-2" name="num-legs-radio" value="2" checked />
+                            <label class="general-group radio ip num-legs" for="num-legs-radio-2">2</label>
+
+                            <input type="radio" id="num-legs-radio-3" name="num-legs-radio" value="3" />
+                            <label class="general-group radio ip num-legs" for="num-legs-radio-3">3</label>
+
+                            <input type="radio" id="num-legs-radio-4" name="num-legs-radio" value="4" />
+                            <label class="general-group radio ip num-legs" for="num-legs-radio-4">4</label>
+                        </form>
+
+                        <button id="continue-button-1" class="general-group buttons params-buttons" type="button" onclick="initialParams.validate()">Continue</button>
                     </div>
                 </div>
 
@@ -57,21 +80,21 @@
                     <div id="final-params-sub-container" class="general-group">
                         <div id="trade-legs-params-container" class="general-group"></div>
 
-                        <button id="return-button-1" class="general-group buttons" type="button" onclick="finalParams.destroy()">Return</button>
+                        <button id="return-button-1" class="general-group buttons params-buttons" type="button" onclick="finalParams.destroy()">Return</button>
 
                         <form id="current-price-form">
-                            <div id="current-price-align-helper" class="align-helper">Current level of the underlying :</div>
+                            <div id="current-price-align-helper" class="align-helper">Underlying asset price :</div>
 
-                            <input type="number" id="current-price-field" class="general-group all-fields" min=".01" step=".01" value="100.25" />
+                            <input type="number" id="current-price-field" class="general-group all-fields" min="1" step=".25" value="100.25" />
                         </form>
 
-                        <button id="calculate-button-1" class="general-group buttons" type="button" onclick="finalParams.validate()">Calculate</button>
+                        <button id="calculate-button-1" class="general-group buttons params-buttons" type="button" onclick="finalParams.validate()">Calculate</button>
                     </div>
                 </div>
 
                 <div id="output-container" class="general-group">
                     <div id="output-sub-container" class="general-group">
-                        <div id="output-sub-container-1" class="general-group">
+                        <div id="output-sub-container-1" class="general-group osc-sub-containers">
                             <div id="output-data-tracker">
                                 <img id="BSM-load-icon" class="load-icon" src='../images/icon3.png' />
                             </div>
@@ -108,7 +131,7 @@
                             <button id="return-button-2" class="general-group buttons" type="button" onclick="output.destroy()">Return</button>
                         </div>
 
-                        <div id="output-sub-container-2" class="general-group">
+                        <div id="output-sub-container-2" class="general-group osc-sub-containers">
                             <div id="output-view-container">
                                 <div id="BSM-calc-text" class="load-text">Calculating...</div>
                             </div>
@@ -126,7 +149,6 @@
                                         <th class="greek-headings">Vega</th>
                                         <th class="greek-headings">Rho</th>
                                     </tr>
-
                                     <!-- leg 1 info -->
                                     <tr>
                                         <th id="leg-1-summary" class="summary-group border-right-group">- - -</th>
@@ -138,7 +160,6 @@
                                         <td id="leg-1-vega">- - -</td>
                                         <td id="leg-1-rho">- - -</td>
                                     </tr>
-
                                     <!-- leg 2 info -->
                                     <tr>
                                         <th id="leg-2-summary" class="summary-group border-right-group">- - -</th>
@@ -150,7 +171,6 @@
                                         <td id="leg-2-vega">- - -</td>
                                         <td id="leg-2-rho">- - -</td>
                                     </tr>
-
                                     <!-- leg 3 info -->
                                     <tr>
                                         <th id="leg-3-summary" class="summary-group border-right-group">- - -</th>
@@ -162,7 +182,6 @@
                                         <td id="leg-3-vega">- - -</td>
                                         <td id="leg-3-rho">- - -</td>
                                     </tr>
-
                                     <!-- leg 4 info -->
                                     <tr>
                                         <th id="leg-4-summary" class="summary-group border-right-group">- - -</th>
@@ -174,7 +193,6 @@
                                         <td id="leg-4-vega">- - -</td>
                                         <td id="leg-4-rho">- - -</td>
                                     </tr>
-
                                     <!-- totals info -->
                                     <tr>
                                         <th id="totals" class="totals-group border-right-group">Totals</th>
@@ -191,9 +209,9 @@
                                 <form id="output-time-form" class="general-group output-forms">
                                     <div id="output-time-align-helper" class="general-group">Days to expiry:</div>
 
-                                    <input type="number" id="output-time-field" class="general-group all-fields" min="1" step="1" disabled="true" />
+                                    <input type="number" id="output-time-field" class="general-group all-fields" min="1" max="183" disabled="true" />
 
-                                    <!-- 'onclick' function to be added dynamically when 'VISUALS.init()' is called -->
+                                    <!-- 'onclick' function to be added dynamically when 'graphics.initalize()' is called -->
                                     <button id="output-time-button" class="general-group buttons" type="button" onclick="" disabled="true">Go</button>
                                 </form>
                             </div>
@@ -202,6 +220,13 @@
                 </div>
             </div>
 
-            <script>window.onload = function() { document.getElementById("loadScreen").style.display = "none" }</script>
+            <script src="../javascript/BSMpage.js"></script>
+            <script src="../javascript/three.js"></script>
+            <script src="../javascript/graphics.js"></script>
+            <script>
+                window.onload = function() {
+                    document.getElementById("loadScreen").style.display = "none";
+                }
+            </script>
         </body>
     </html>

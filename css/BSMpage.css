@@ -19,11 +19,11 @@
 .model-heading > pre {
   font-family: Corbel;
   font-size: 1.5vw;
+  /* light black */
   color: #555555;
 }
 
 /* END GENERAL AND HEADING ========================================================================================================================*/
-
 
 /* CONTAINERS =====================================================================================================================================*/
 
@@ -31,38 +31,47 @@
   text-align: center;
 }
 
+#app-container, #initial-params-container, #final-params-container, #output-container {
+  background-color: transparent;
+}
+
 #app-container {
   height: 39.75vw;
-  background-color: transparent; /* lightgreen */
+  /* background-color: lightgreen; */
 }
 
 #initial-params-container {
   height: 30vw;
-  background-color: transparent; /* lightblue */
+  /* background-color: lightblue; */
 }
 
-#initial-params-sub-container, #final-params-sub-container, .trade-leg, #output-sub-container, #output-sub-container-1, #output-sub-container-2 {
+#initial-params-sub-container, #final-params-sub-container, .trade-leg, #output-sub-container, .osc-sub-containers {
   display: inline-block;
 }
 
 #initial-params-sub-container, #final-params-sub-container, #output-sub-container {
+  /* dark grey */
   background-color: #a6a6a6;
 }
 
 #initial-params-sub-container {
-  height: 10vw;
+  height: 17.5vw;
   width: 30vw;
   margin-top: 2.5vw;
 }
 
-#final-params-container {
+#final-params-container, #output-container {
   opacity: 0;
-  height: 38vw;
-  background-color: transparent; /* lightpink */
 }
 
+#final-params-container {
+  height: 38vw;
+  /* background-color: lightpink; */
+}
+
+/* zero width to vertically align #trade-legs-params-container and #current-price-form */
 #final-params-sub-container {
-  height: 35vw; /* zero width to vertically align #trade-legs-params-container and #current-price-form */
+  height: 35vw;
   margin-top: 1.5vw;
 }
 
@@ -71,8 +80,12 @@
   padding-top: 1.25vw;
 }
 
+.trade-leg, .osc-sub-containers {
+  /* Safari fix */
+  vertical-align: middle;
+}
+
 .trade-leg {
-  vertical-align: middle; /* Safari fix */
   height: 28.5vw;
   width: 20vw;
   padding: 0 1.125vw;
@@ -85,16 +98,14 @@
 }
 
 #output-container {
-  opacity: 0;
-  background-color: transparent; /* violet */
+  /* background-color: violet; */
 }
 
 #output-sub-container {
   height: 39.5vw;
 }
 
-#output-sub-container-1, #output-sub-container-2 {
-  vertical-align: middle; /* Safari fix */
+.osc-sub-containers {
   height: 39vw;
 }
 
@@ -107,6 +118,7 @@
 }
 
 #output-data-tracker, .load-icon, #output-view-container {
+  /* grey */
   background-color: #888888;
 }
 
@@ -118,6 +130,7 @@
 }
 
 .load-icon, .load-text {
+  /* risk-cloud blue */
   color: #9999ff;
 }
 
@@ -140,7 +153,8 @@
   width: 77.5vw;
 }
 
-#output-view-container { /* aspect ratio is 2.5 : 1 */
+/* aspect ratio is 2.5:1 */
+#output-view-container {
   margin-top: 1vw;
 }
 
@@ -150,7 +164,6 @@
 }
 
 /* END CONTAINERS =================================================================================================================================*/
-
 
 /* TABLES =========================================================================================================================================*/
 
@@ -165,8 +178,11 @@
   border-spacing: 0;
 }
 
-.table-headings {
+.table-headings, .totals-group {
   height: 1vw;
+}
+
+.table-headings {
   background-color: #9999ff;
 }
 
@@ -186,7 +202,6 @@
 }
 
 .totals-group {
-  height: 1vw;
   background-color: #d8d8d8;
   border-bottom: none;
 }
@@ -197,7 +212,6 @@
 
 /* END TABLES =====================================================================================================================================*/
 
-
 /* ALIGNMENT HELPERS ==============================================================================================================================*/
 
 .align-helper {
@@ -205,8 +219,11 @@
   text-align: left;
 }
 
-#num-legs-align-helper {
+.ip-align-helper, #current-price-align-helper {
   height: 1.5vw;
+}
+
+.ip-align-helper {
   width: 13.5vw;
   font-size: 0.95vw;
 }
@@ -216,8 +233,7 @@
 }
 
 #current-price-align-helper {
-  height: 1.5vw;
-  width: 15vw;
+  width: 12vw;
   padding-top: 0.5vw;
   font-size: 0.95vw;
 }
@@ -230,7 +246,6 @@
 
 /* END ALIGNMENT HELPERS ==========================================================================================================================*/
 
-
 /* BUTTONS ========================================================================================================================================*/
 
 .buttons {
@@ -241,14 +256,13 @@
   border: none;
 }
 
-#continue-button-1, #return-button-1, #calculate-button-1 {
+.params-buttons {
   width: 7vw;
   margin-right: 1vw;
 }
 
-#output-time-button {
-  width: 2.75vw;
-  font-size: 0.9vw;
+#continue-button-1 {
+  margin-top: 2vw;
 }
 
 #return-button-2 {
@@ -256,8 +270,12 @@
   margin: 0 auto;
 }
 
-/* END BUTTONS ====================================================================================================================================*/
+#output-time-button {
+  width: 2.75vw;
+  font-size: 0.9vw;
+}
 
+/* END BUTTONS ====================================================================================================================================*/
 
 /* FORMS ==========================================================================================================================================*/
 
@@ -265,11 +283,11 @@ input[type=radio] {
   display: none;
 }
 
-input[type=radio] + .radio, #num-legs-form, #current-price-form, .trade-leg-field-forms, .output-forms {
+input[type=radio] + .radio, .ip-forms, #current-price-form, .trade-leg-field-forms, .output-forms {
   display: inline-block;
 }
 
-input[type=radio] + .radio, #num-legs-form, #current-price-form, .output-forms {
+input[type=radio] + .radio, .ip-forms, #current-price-form, .trade-leg-radio-forms, .trade-leg-field-forms, .output-forms {
   margin: 0;
 }
 
@@ -283,9 +301,20 @@ input[type=radio]:checked + .radio {
   color: #ff5555;
 }
 
-label.radio.num-legs {
-  width: 2vw;
+label.radio.ip {
   margin-left: 1vw;
+}
+
+label.radio.ip.asset-type {
+  width: 5.375vw;
+}
+
+label.radio.ip.contract-mult {
+  width: 3.125vw;
+}
+
+label.radio.ip.num-legs {
+  width: 2vw;
 }
 
 label.radio.trade-leg-radios {
@@ -295,25 +324,20 @@ label.radio.trade-leg-radios {
 
 label.radio.output-data {
   height: 0.875vw;
-  width: 8.5vw;
-  margin: 0.3vw 0;
+  width: 9vw;
+  margin: 0.25vw 0;
   padding: 0.25vw 0 0.625vw 0;
 }
 
-#num-legs-form, #current-price-form, .output-forms {
-  background-color: #fafafa;
+.ip-forms, #current-price-form, .output-forms {
+  background-color: #ffffff;
 }
 
-#num-legs-form {
+.ip-forms {
   height: 2vw;
   width: 27vw;
-  margin: 1vw 0 3vw 0;
+  margin-top: 1vw;
   padding: 0.75vw 0.5vw 0.5vw 0.5vw;
-}
-
-.trade-leg-radio-forms, .trade-leg-field-forms, .output-forms {
-  margin: 0;
-  padding: 0;
 }
 
 .trade-leg-radio-forms {
@@ -335,7 +359,7 @@ label.radio.output-data {
 
 .output-forms {
   width: 11vw;
-  padding: 0.5vw 0;
+  padding: 0.75vw 0 0.5vw 0;
 }
 
 #output-data-form {
@@ -345,7 +369,8 @@ label.radio.output-data {
 #output-time-form {
   position: relative;
   bottom: 42.5%;
-  vertical-align: middle; /* Safari and Chrome fixes */
+  /* Safari and Chrome fixes */
+  vertical-align: middle;
   height: 4.125vw;
   margin-bottom: 0.375vw;
   padding-top: 0.875vw;
@@ -353,36 +378,30 @@ label.radio.output-data {
 
 /* END FORMS ======================================================================================================================================*/
 
-
 /* FIELDS =========================================================================================================================================*/
 
 .all-fields {
   display: inline-block;
   margin: 0;
   padding: 0.125vw;
+  font-size: 0.9vw;
   text-align: center;
   background-color: #ddffdd;
   border: 1px solid #ddffdd;
 }
 
-.small-fields {
-  height: 1.5vw;
-  width: 4vw;
-  padding-left: 0.75vw;
+.small-fields, #current-price-field, #output-time-field {
+  padding-left: 0.5vw;
 }
 
-#current-price-field, #output-time-field {
-  padding-left: 0.5vw;
+.small-fields, #output-time-field {
+  height: 1.5vw;
+  width: 4vw;
 }
 
 #current-price-field {
   height: 1.75vw;
   width: 5vw;
-}
-
-#output-time-field {
-  height: 1.5vw;
-  width: 4vw;
 }
 
 /* END FIELDS =====================================================================================================================================*/

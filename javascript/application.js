@@ -1,142 +1,306 @@
 ﻿"use strict";
 
-// GLOBAL OBJECT ====================================================================================================================================
+// MATH =============================================================================================================================================
 
-var g = {
+var math = function(properties) {
+    var self = function() { return };
 
-    //user input
-    TRADE_LEGS : 0,
-    ASSET_TYPE : "Equity Option(s)",
-    LONG_SHORT : {},
-    CONTRACT_TYPE : {},
-    NUM_CONTRACTS : {},
-    STRIKE_PRICE : {},
-    OPTION_PRICE : {},
-    EXPIRY : {},
-    DIV_YIELD : {},
-    RISK_FREE : {},
-    STOCK_PRICE : 0,
+    for(var prop in properties) { self[prop] = properties[prop] }
+    return self;
+}({
+    //standard Normal Distribution probability density function
+    NORM: function(x) {
+        return (1/Math.sqrt(2*Math.PI))*Math.pow(Math.E,(-1/2)*Math.pow(x,2));
+    },
 
-    //application output
-    STOCKRANGE_LENGTH: 0,
-    IMPLIED_VOL : {},
-    DELTA : {},
-    GAMMA : {},
-    THETA : {},
-    VEGA : {},
-    RHO : {},
-    VOMMA: {},
-    CHARM: {},
-    VETA: {},
-    PROFITLOSS_DATA : {},
-    DELTA_DATA : {},
-    GAMMA_DATA : {},
-    THETA_DATA : {},
-    VEGA_DATA : {},
-    RHO_DATA : {},
-    VOMMA_DATA: {},
-    CHARM_DATA: {},
-    VETA_DATA: {}
-};
+    //logistic approximation to the cumulative standard Normal Distribution function - thanks to http://http://www.jiem.org/index.php/jiem/article/viewFile/60/27
+    CUMNORM: function(z) {
+        return Math.pow((1+Math.pow(Math.E,-(0.07056*Math.pow(z,3)+1.5976*z))),-1);
+    }
+});
 
-// END GLOBAL OBJECT ================================================================================================================================
+// END MATH =========================================================================================================================================
 
+// OBJECTS, ARRAYS AND ELEMENTS =====================================================================================================================
 
-// HEADER ===========================================================================================================================================
+//object functions
+var obj = function(properties) {
+    var self = function() { return };
 
-//navigation menu
+    for(var prop in properties) { self[prop] = properties[prop] }
+    return self;
+}({
+    //clear values
+    reset: function(obj) {
+        for(var ele in obj) {
+            switch(typeof obj[ele]) {
+                case 'number':
+                    obj[ele] = 0;
+                    break;
+                case 'object':
+                    obj[ele] = {};
+                    break;
+            }
+        }
+    },
+
+    //thanks to 'James Coglan' on stackoverflow.com
+    size: function(obj) {
+        var crd = 0;
+
+        for(var key in obj) { if(obj.hasOwnProperty(key)) { crd++ } }
+
+        return crd;
+    },
+
+    //sum of all values
+    sum: function(obj) {
+        //thanks to 'Sirko' on stackoverflow.com
+        return Object.keys(obj).reduce(function(s,key) { return +(s+obj[key]).toFixed(2) }, 0);
+    },
+
+    //average of all values
+    avg: function(obj) {
+        return this.sum(obj)/this.size(obj);
+    },
+
+    //performs an operation on all corresponding values of an array of 'm' objects and returns a new object with the result
+    corr: function(op, arr) {
+        var obj = {};
+
+        for(var m=0; m<arr.length; m++) {
+            for(var n in arr[0]) {
+                if(m==0) {
+                    obj[n] = arr[m][n];
+                } else {
+                    switch(op) {
+                        case "sub":
+                            obj[n] -= arr[m][n];
+                            break;
+                        case "prod":
+                            obj[n] *= arr[m][n];
+                            break;
+                    }
+                }
+            }
+        }
+
+        return obj;
+    },
+
+    //thanks to 'levi' on stackoverflow.com
+    min: function(obj) {
+        return Object.keys(obj).reduce(function(m,n) { return obj[n] < m ? obj[n] : m }, Infinity);
+    },
+
+    max: function(obj) {
+        return Object.keys(obj).reduce(function(m,n) { return obj[n] > m ? obj[n] : m }, -Infinity);
+    },
+
+    //given two sets, define a range of values depending on the signs of the max and min of the merged set
+    range: function(obj) {
+        var max = this.max(array.merge(obj)),
+            min = this.min(array.merge(obj));
+
+        if(Math.sign(max) == 1 && Math.sign(min) == 1) {
+            return max;
+        } else if(Math.sign(max) == -1 && Math.sign(min) == -1) {
+            return Math.abs(min);
+        } else {
+            return max - min;
+        }
+    },
+
+    //return all keys of an object whose properties meet a given condition
+    filterKeys: function(obj, test) {
+        var keys = [];
+
+        for(var key in obj) { if(test(obj[key])) { keys.push(key) } }
+
+        return keys;
+    }
+});
+
+//array functions
+var array = function(properties) {
+    var self = function() { return };
+
+    for(var prop in properties) { self[prop] = properties[prop] }
+    return self;
+}({
+    //remove duplicate elements - thanks to 'georg' on stackoverflow.com
+    unique: function(arr) {
+        return arr.filter(function(ele, index) { return arr.indexOf(ele) == index });
+    },
+
+    //merge sums of object values between multiple arrays or objects, return an array of unique sums
+    merge: function(arr) {
+        var merged = [];
+
+        for(var i=0; i<obj.size(arr); i++) {
+            for(var j=0; j<obj.size(arr[i]); j++) {
+                merged.push( obj.sum(arr[i][Object.keys(arr[i])[j]]) );
+            }
+        }
+
+        //remove duplicates
+        return this.unique(merged);
+    }
+});
+
+//HTML element functions
+var elem = function(properties) {
+    var self = function() { return };
+
+    for(var prop in properties) { self[prop] = properties[prop] }
+    return self;
+}({
+    select: function(str) {
+        return document.getElementById(str) || document.querySelector(str);
+    },
+
+    //disable or enable an element
+    avail: function(ele, bool) {
+        this.select(ele).disabled = !bool;
+    },
+
+    create: function(obj, par) {
+        //create a new document element
+        var ele = document.createElement(obj.tag);
+
+        //add empty string as content if none is provided
+        if(typeof obj.content === 'undefined') { obj.content = "" }
+
+        ele.appendChild(document.createTextNode(obj.content));
+
+        //add attributes
+        for(var attr in obj.attributes) { ele.setAttribute(attr, obj.attributes[attr]) }
+
+        //append the new element to a parent element
+        this.select(par).appendChild(ele);
+
+        return ele;
+    },
+
+    //remove children from an element of the DOM
+    destroyChildren: function(par, chd) {
+        var parent   = this.select(par),
+            children = typeof chd !== 'undefined' ? chd : 'none specified';
+
+        switch(children) {
+            //remove all children - thanks to Gabriel McAdams on stackoverflow.com
+            case 'none specified':
+                while(parent.firstChild) { parent.removeChild(parent.firstChild) }
+                break;
+            //remove specified children
+            default:
+                for(var i=0; i<children.length; i++) { parent.removeChild(this.select(children[i])) }
+                break;
+        }
+    },
+
+    //transition animations
+    ease: function(type, str, inc, mht, callback) {
+        var ele = this.select(str).style,
+            hgt = 0,
+            tmr = setInterval(render, (1000/50)); //50 fps
+
+        function render() {
+            hgt = (mht-hgt > 0) ? hgt + inc : mht;
+
+            if(hgt == mht) {
+                clearInterval(tmr);
+                if(typeof callback === 'function') { callback() }
+            } else {
+                hgt += inc;
+                if(type == "in") { ele.height = hgt + 'vw' } else if(type == "out") { ele.height = mht - hgt + 'vw' }
+            }
+        }
+    },
+
+    fade: function(type, str, inc, callback) {
+        var ele = this.select(str).style,
+            opc = 0,
+            tmr = setInterval(render, (1000/50)); //50 fps
+
+        function render() {
+            opc = (1-opc > 0) ? opc + inc : 1;
+
+            if(opc == 1) {
+                clearInterval(tmr);
+                if(typeof callback === 'function') { callback() }
+            } else {
+                opc += inc;
+                if(type == "in") { ele.opacity = opc } else if(type == "out") { ele.opacity = 1 - opc }
+            }
+        }
+    }
+});
+
+//END OBJECTS, ARRAYS AND ELEMENTS ==================================================================================================================
+
+// NAVIGATION MENU ==================================================================================================================================
+
 var nav = function(properties) {
-
     var self = function() { return };
       
     for(var prop in properties) { self[prop] = properties[prop] }
-
     return self;   
 }({
-
     create: function() {
-
         //main header container
         elem.create({tag: "div", attributes: {id: "header-main"}}, ".body");
-
         //icon link
         elem.create({tag: "a", attributes: {id: "icon-link", href: "../html/home.html"}}, "header-main");
-
         //icon image
         elem.create({tag: "img", attributes: {id: "icon", alt: "Risk Cloud", src: "../images/icon.png"}}, "icon-link");
 
-        //main menu
         var mainMenu = (function() {
-
             var headings = {
-
                 1: "MODEL",
-
-                2: "LOGIN",
-
-                3: "INFO"
+                2: "INFO",
+                3: "LOGIN"
             };
 
             elem.create({tag: "ul", attributes: {id: "nav-menu"}}, "header-main");
 
             for(var num in headings) {
-
                 elem.create({tag: "li", attributes: {id: "nav-list-item-"+num, class: "nav-list-item"}}, "nav-menu");
-
                 elem.create({tag: "a",
-
                              content: headings[num],
-
                              attributes: { href: "#", class: "nav-list-item-link", onclick: "nav.anim("+num+")" }},
-
                             "nav-list-item-"+num);
             }
         }());
 
-        //sub-menus
         var subMenus = (function() {
-
             var subHeadings = {
-
                 1: { a: {heading: "Black-Scholes-Merton", link: "../html/BSMpage.html"}//,
-                   /*b: {heading: "Variance-Gamma",       link: "#"                   }*/ },
-
-                2: { a: {heading: "#",                    link: "#"} },
-
-                3: { a: {heading: "Github Repository",    link: "https://github.com/Ice101781/risk_cloud"} }
+                   /*b: {heading: "Variance-Gamma", link: "#"}*/ },
+                2: { a: {heading: "Github Repository", link: "https://github.com/Ice101781/risk_cloud"} },
+                3: { a: {heading: "#", link: "#"} }
             };
 
             for(var num in subHeadings) {
-
                 elem.create({tag: "div", attributes: {id: "nav-sub-container-"+num, class: "nav-sub-container", "data-open": "false"}}, ".body");
-
                 elem.create({tag: "ul", attributes: {id: "nav-sub-menu-"+num, class: "nav-sub-menu"}}, "nav-sub-container-"+num);
 
                 for(var letter in subHeadings[num]) {
-
                     elem.create({tag: "li", attributes: {id: "nav-sub-list-item-"+num+letter, class: "nav-sub-list-item"}}, "nav-sub-menu-"+num);
-
                     elem.create({tag: "a",
-
                                  content: subHeadings[num][letter].heading,
-
-                                 attributes: { href: subHeadings[num][letter].link, class: "nav-sub-list-item-link"}},
-                                                                                      
+                                 attributes: { href: subHeadings[num][letter].link, class: "nav-sub-list-item-link"}},           
                                 "nav-sub-list-item-"+num+letter);
                 }
             }
         }());
     },
 
-
-    anim: function(idx) {
-
-        //local vars
+    anim: function(num) {
         var inc = 0.25,
             hgt = 4;
 
         var navSubEase = function(type, num) {
-
             var bool = type == "in" ? "true" : "false";
 
             elem.ease(type, "nav-sub-container-"+num, inc, hgt);
@@ -144,351 +308,116 @@ var nav = function(properties) {
         }
 
         var closeNavSubs = function(arr) {
-
             arr.forEach(function(n) { if(elem.select("nav-sub-container-"+n).getAttribute("data-open") == "true") { navSubEase("out", n) } });
         }
 
         //open or close the sub-menu
-        switch(elem.select("nav-sub-container-"+idx).getAttribute("data-open")) {
-
+        switch(elem.select("nav-sub-container-"+num).getAttribute("data-open")) {
             case "false":
                 //close the other sub-menus if they're open
-                switch(idx) {
-
+                switch(num) {
                     case 1:
                         closeNavSubs([2,3]);
                         break;
-
                     case 2:
                         closeNavSubs([1,3]);
                         break;
-
                     case 3:
                         closeNavSubs([1,2]);
                         break;
                 }
-                navSubEase("in", idx);
+                navSubEase("in", num);
                 break;
-
             case "true":
-                navSubEase("out", idx);
+                navSubEase("out", num);
                 break;
         }
     }
-})
+});
 
-// END HEADER =======================================================================================================================================
-
+// END NAVIGATION MENU ==============================================================================================================================
 
 // MISC =============================================================================================================================================
 
-//return an object comprised of numbered id strings
-var idStrings = function(arr) {
+function disableKey(key) {
+    var block = function(e) { if((e.keyCode || e.charCode) == key) {e.preventDefault()} }
 
-    var idx = arr[0] != "num-legs-radio" ? g.TRADE_LEGS : 4,
-        obj = {};
-
-    switch(arr.length) {
-
-        case 1:
-            for(var i=1; i<idx+1; i++) {
-
-                obj[i] = arr[0]+"-"+i;
-            }
-            break;
-
-        case 2:
-            for(var i=1; i<idx+1; i++) {
-
-                obj[2*i-1] = arr[0]+"-"+i;
-                obj[2*i]   = arr[1]+"-"+i;
-            }
-            break;
-    }
-
-    return obj;
+    document.addEventListener('keydown', block);
+    //required for certain keys in Firefox; i.e., the spacebar
+    document.addEventListener('keyup', block);
 }
 
-
-//radio with two options
-var twoButtons = function(arr, n) {
-
-    //form
-    elem.create({tag: "form",
-
-                 attributes: {id: arr[0][0]+"-"+arr[1][0]+"-"+"form-"+n, class: "general-group trade-leg-radio-forms"}},
-
-                "leg-sub-container-1-"+n);
-
-    //buttons
-    for(var j=0; j<2; j++) {
-
-        elem.create({tag: "input",
-
-                     attributes: {type: "radio", id: arr[j][0]+"-"+"radio-"+n, name: arr[0][0]+"-"+arr[1][0]+"-"+"radio-"+n, value: arr[j][1]}},
-
-                    arr[0][0]+"-"+arr[1][0]+"-"+"form-"+n);
-
-        //labels
-        elem.create({tag: "label",
-
-                     content: arr[j][0].charAt(0).toUpperCase()+arr[j][0].slice(1),
-
-                     attributes: {"for": arr[j][0]+"-"+"radio-"+n, class: "general-group radio trade-leg-radios"}},
-
-                    arr[0][0]+"-"+arr[1][0]+"-"+"form-"+n);
-    }
-
-    //default settings for common trade setups
-    var bit;
-
-    switch(arr[0][0]) {
-
-        case "buy":
-            if(n == 1 || n == 4) { bit = 0 } else { bit = 1 }
-            break;
-
-        case "call":
-            if(n < 3) { bit = 1 } else { bit = 0 }
-            break;
-    }
-
-    elem.select(arr[bit][0]+"-"+"radio-"+n).setAttribute("checked", "");
-}
-
-
-var numberFields = function(properties) {
-
-    var self = function() { return };
-
-    for(var prop in properties) { self[prop] = properties[prop] }
-
-    return self;  
-}({
-
-    create: function(str, n) {
-
-        switch(str) {
-
-            case "num-contracts":
-                var content = "No. of contracts :",
-                    attr    = {min:"1", step:"1", value:"1"},
-                    subNum  = 2;
-                break;
-
-            case "strike-price":
-                var content = "Exercise price :",
-                    attr    = {min:".25", step:".25", value:"100"},
-                    subNum  = 3;
-                break;
-
-            case "option-price":
-                var content = "Option price :",
-                    attr    = {min:".01", step:".01", value:"1.25"},
-                    subNum  = 4;
-                break;
-
-            case "expiry":
-                var content = "Calendar days to expiry :",
-                    attr    = {min:"1", step:"1", value:"30"},
-                    subNum  = 5;
-                break;
-
-            case "div-yield":
-                var content = "Dividend yield % :",
-                    attr    = {min:"0", step:".01", value:"0"},
-                    subNum  = 6;
-                break;
-
-            case "risk-free-rate":
-                var content = "Risk-free rate % :",
-                    attr    = {min:"0", step:".01", value:"0.25"},
-                    subNum  = 7;
-                break;
-        }
-
-        //field form
-        elem.create({tag: "form",
-
-                     attributes: {id: str+"-form-"+n, class: "general group trade-leg-field-forms "+str+"-form"}},
-
-                    "leg-sub-container-"+subNum+"-"+n);
-
-        //align helper
-        elem.create({tag: "div",
-
-                     content: content,
-
-                     attributes: {class: "trade-leg-align-helpers align-helper"}},
-
-                    str+"-form-"+n);
-
-        elem.create({tag: "input",
-
-                     attributes: {type: "number", id: str+"-field-"+n, class: "general-group all-fields small-fields "+str+"-field", min: attr.min, step: attr.step, value: attr.value}},
-
-                    str+"-form-"+n);
-    },
-
-
-    //on first trade leg sub-container click, toggle visibility of remaining sub-containers
-    visible: function(ctr, mht, fld) {
-
-        switch(elem.select(ctr+'-1').getAttribute("data-clicked")) {
-
-            case "true":
-                var type  = "out",
-                    color = '#cbdafb';
-
-                elem.select(ctr+'-1').setAttribute("data-clicked", "false");
-                break;
-
-            case "false":
-                var type  = "in",
-                    color = '#ffcccc';
-
-                elem.select(ctr+'-1').setAttribute("data-clicked", "true");
-                break;
-        }
-
-        //ease in or out, set field value to attribute "min" on ease out
-        for(var i=2; i<g.TRADE_LEGS+1; i++) {
-
-            (function(n) {
-
-                elem.ease(type, ctr+'-'+n, 0.13625, mht, function() {
-
-                    if(type == "out") {
-
-                        var f = elem.select(fld+'-field-'+n);
-
-                        f.value = f.getAttribute("min");
-                    }
-                })
-            })(i);
-        }
-
-        //toggle background color of the first sub-container in the class
-        elem.select(ctr+'-1').style.backgroundColor = color;
-    }
-})
-
-
-//determine whether text input form conditions are met
-var inputCheck = function(ele) {
-
-    var obj = {};
-
-    for(var i=1; i<g.TRADE_LEGS+1; i++) {
-
-        var val = elem.select(ele+"-"+i).value;
-
-        if(val == "") {
-
-            obj[i] = false;
-            return obj;
-        }
-
-        switch(ele) {
-
-            case "num-contracts-field":
-                switch(false) {
-
-                    case val >= 1 && val == Math.floor(val):
-                        obj[i] = false;
-                        return obj;
-
-                    default:
-                        obj[i] = true;
-                        break;
-                }
-                break;
-
-            case "strike-price-field":
-                switch(false) {
-
-                    case val >= 0.25:
-                        obj[i] = false;
-                        return obj;
-
-                    default:
-                        obj[i] = true;
-                        break;
-                }
-                break;
-
-            case "option-price-field":
-                switch(false) {
-
-                    case val > 0:
-                        obj[i] = false;
-                        return obj;
-
-                    default:
-                        obj[i] = true;
-                        break;
-                }
-                break;
-
-            case "expiry-field":
-                switch(false) {
-
-                    case val >= 1 && val <= 183 && val == Math.floor(val):
-                        obj[i] = false;
-                        return obj;
-
-                    default:
-                        obj[i] = true;
-                        break;
-                }
-                break;
-
-            case "div-yield-field":
-                switch(false) {
-
-                    case val >= 0 && val <= 100:
-                        obj[i] = false;
-                        return obj;
-
-                    default:
-                        obj[i] = true;
-                        break;
-                }
-                break;
-
-            case "risk-free-rate-field":
-                switch(false) {
-
-                    case val >= 0 && val <= 25:
-                        obj[i] = false;
-                        return obj;
-
-                    default:
-                        obj[i] = true;
-                        break;
-                }
-                break;
-        }
-    }
-
-    return obj;
-}
-
-
-//some basic error message handling for text form input
-var errorMsg = function(ele, msg) {
-
+//error message handling for text form input
+function errorMsg(ele,msg) {
     elem.select(ele).style.borderColor = 'red';
 
     setTimeout(function() {
-
         alert(msg);
-
         //reset field value and border color
         elem.select(ele).value = "";
         elem.select(ele).style.borderColor = '#ddffdd';
-
-    }, 50);
+    });
 }
 
 // END MISC =========================================================================================================================================
+
+/* CODE DEPRECATED
+
+//compute integrals numerically using Simpson's rule
+INTEGRAL: function(lBnd, rBnd, subs, expr) {
+    var a = lBnd,
+        b = rBnd,
+        n = subs,
+        f = expr;
+
+    if(n % 2 == 0) {
+        var sum1 = 0,
+            sum2 = 0;
+
+        for(var i=1; i<(n/2); i++) { sum1 += f(((((n/2)-i)*a)+(i*b))/(n/2)) }
+
+        for(var j=1; j<(n/2)+1; j++) { sum2 += f((((((n+1)/2)-j)*a)+((j-(1/2))*b))/(n/2)) }
+
+        return ((b-a)/(3*n))*(f(a)+(2*sum1)+(4*sum2)+f(b));
+    } else {
+        //error handling
+        return "The number of sub-intervals, 'n', must be even.";
+    }
+}
+
+//approximation to the integral definition of the cumulative standard Normal Distribution function
+CUSTNORM: function(z, n) {
+    //this method is relatively slow; n >= 200 is typically necessary for reasonable accuracy
+    switch(b<0) {
+        case true:
+            return (1/2)-this.INTEGRAL(z, 0, n, this.NORM);
+            break;
+        case false:
+            return (1/2)+this.INTEGRAL(0, z, n, this.NORM);
+            break;
+    }
+}
+
+//return an object comprised of numbered id strings
+var idStrings = function(arr) {
+    var num = arr[0] != "num-legs-radio" ? trade.legCount : 4,
+        obj = {};
+
+    switch(arr.length) {
+        case 1:
+            for(var n=1; n<num+1; n++) {
+                obj[n] = arr[0]+"-"+n;
+            }
+            break;
+        case 2:
+            for(var n=1; n<num+1; n++) {
+                obj[2*n-1] = arr[0]+"-"+n;
+                obj[2*n] = arr[1]+"-"+n;
+            }
+            break;
+    }
+
+    return obj;
+}
+
+CODE DEPRECATED */

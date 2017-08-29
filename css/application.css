@@ -33,10 +33,11 @@ html, .body, #nav-menu, .nav-sub-menu, .nav-list-item, .nav-sub-list-item, .nav-
   position: relative;
 }
 
+/* aspect ratio is 4:1.5 */
 #icon {
   right: 40vw;
   height: 1.875vw;
-  width: 5vw; /* aspect ratio is 4 : 1.5 */
+  width: 5vw;
 }
 
 #nav-menu, .nav-sub-menu {
@@ -80,13 +81,13 @@ html, .body, #nav-menu, .nav-sub-menu, .nav-list-item, .nav-sub-list-item, .nav-
 }
 
 #nav-sub-menu-2 { 
-  width: 3.5vw;
-  left: 95.5vw;
+  width: 8.25vw;
+  left: 90.75vw;
 }
 
 #nav-sub-menu-3 {
-  width: 8.25vw;
-  left: 90.75vw;
+  width: 3.5vw;
+  left: 95.5vw;
 }
 
 .nav-sub-list-item {
