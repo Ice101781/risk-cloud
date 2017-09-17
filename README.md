@@ -37,4 +37,3 @@
 <img width="" alt="BSM page 3 delta" src="https://drive.google.com/uc?export=download&id=0B3rehuqgDPeVLUFHOEU2bjVfb1E">
 <br>
 <img width="" alt="BSM page 3 vomma" src="https://drive.google.com/uc?export=download&id=0B3rehuqgDPeVUXNMSDk2SUtpN2c">
-<br>
