@@ -243,15 +243,15 @@ var elem = function(properties) {
 
 var nav = function(properties) {
     var self = function() { return };
-      
+
     for(var prop in properties) { self[prop] = properties[prop] }
-    return self;   
+    return self;
 }({
     create: function() {
         //main header container
         elem.create({tag: "div", attributes: {id: "header-main"}}, ".body");
         //icon link
-        elem.create({tag: "a", attributes: {id: "icon-link", href: "../html/home.html"}}, "header-main");
+        elem.create({tag: "a", attributes: {id: "icon-link", href: "../"}}, "header-main");
         //icon image
         elem.create({tag: "img", attributes: {id: "icon", alt: "Risk Cloud", src: "../images/icon.png"}}, "icon-link");
 
@@ -289,7 +289,7 @@ var nav = function(properties) {
                     elem.create({tag: "li", attributes: {id: "nav-sub-list-item-"+num+letter, class: "nav-sub-list-item"}}, "nav-sub-menu-"+num);
                     elem.create({tag: "a",
                                  content: subHeadings[num][letter].heading,
-                                 attributes: { href: subHeadings[num][letter].link, class: "nav-sub-list-item-link"}},           
+                                 attributes: { href: subHeadings[num][letter].link, class: "nav-sub-list-item-link"}},
                                 "nav-sub-list-item-"+num+letter);
                 }
             }
