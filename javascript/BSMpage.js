@@ -288,22 +288,21 @@ var finalParams = function(properties) {
         //write to the trade table
         function printTableData() {
             var p = trade.priceSpace[(trade.priceSpace.length-1)/2].toFixed(2),
-                tCost = obj.sum(obj.corr("prod",[trade.contractSigns,trade.contractCounts,trade.optionPrices]));
+                tCost = trade.contractMultiplier/100*obj.sum(obj.corr("prod",[trade.contractSigns,trade.contractCounts,trade.optionPrices]));
 
             for(var n=1; n<trade.legCount+1; n++) {
                 var ele = "leg-"+n+"-",
                     buy_sell = trade.contractSigns[n] == 1 ? "BUY &nbsp" : "SELL &nbsp",
                     color = trade.contractSigns[n] == 1 ? "rgb(0,175,0)" : "rgb(200,0,0)",
-                    call_put = trade.contractTypes[n] == 1 ? " CALL " : " PUT ",
-                    expiry = "&nbsp" + trade.expirys[n] + " DTE";
+                    call_put = trade.contractTypes[n] == 1 ? " CALL " : " PUT ";
 
                 //summary
-                elem.select(ele+"summary").innerHTML = buy_sell + trade.contractCounts[n] + "&nbsp x &nbsp" + trade.strikePrices[n] + "&nbsp" + call_put + expiry;
+                elem.select(ele+"summary").innerHTML = buy_sell + trade.contractCounts[n] + "&nbsp x &nbsp" + trade.strikePrices[n] + "&nbsp" + call_put + "&nbsp @ &nbsp" + trade.optionPrices[n].toFixed(2) + "&nbsp&nbsp w/ &nbsp&nbsp" + trade.expirys[n] + " DTE";
                 elem.select(ele+"summary").style.color = color;
                 elem.select(ele+"summary").style.borderRightColor = "rgb(0,0,0)";
 
                 //option prices
-                elem.select(ele+"price").innerHTML = "$" + trade.optionPrices[n].toFixed(2);
+                elem.select(ele+"price").innerHTML = "$" + (trade.contractMultiplier/100*trade.contractCounts[n]*trade.optionPrices[n]).toFixed(2);
                 elem.select(ele+"price").style.color = color;
 
                 //IVs
