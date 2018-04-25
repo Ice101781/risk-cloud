@@ -36,7 +36,7 @@
 }
 
 #app-container {
-  height: 39.75vw;
+  height: 39vw;
   /* background-color: lightgreen; */
 }
 
@@ -102,7 +102,7 @@
 }
 
 #output-sub-container {
-  height: 39.5vw;
+  height: 39vw;
 }
 
 .osc-sub-containers {
@@ -126,7 +126,7 @@
   display: block;
   height: 9.375vw;
   width: 11vw;
-  margin: 1vw 0 0 0.75vw;
+  margin: 0.5vw 0 0 0.75vw;
 }
 
 .load-icon, .load-text {
@@ -155,7 +155,7 @@
 
 /* aspect ratio is 2.5:1 */
 #output-view-container {
-  margin-top: 1vw;
+  margin-top: 0.5vw;
 }
 
 #output-summary-container {
