@@ -567,8 +567,8 @@ var output = function(properties) {
         }());
 
         //clear properties from instance object
-        trade.data = { profit: {}, greeks: { delta: {}, gamma: {}, theta: {}, vega: {}, rho: {}, vomma: {}, charm: {}, veta: {} } };
-        trade.temp = { price: {}, greeks: { delta: {}, gamma: {}, theta: {}, vega: {}, rho: {}, vomma: {}, charm: {}, veta: {} } };
+        trade.data = { profit: {}, greeks: { delta: {}, gamma: {}, theta: {}, vega: {}, rho: {}, vanna: {}, vomma: {}, charm: {}, veta: {} } };
+        trade.temp = { price: {}, greeks: { delta: {}, gamma: {}, theta: {}, vega: {}, rho: {}, vanna: {}, vomma: {}, charm: {}, veta: {} } };
         trade.priceSpace = [];
         trade.standardDeviation = null;
         trade.expiryMin = null;

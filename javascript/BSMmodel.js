@@ -36,6 +36,12 @@ function BlackScholesTrade() {
                 rho: function() {
                     return (e*K*Math.pow(Math.E,-r*T)*math.CUMNORM(e*d2)*T)/100;
                 },
+                //interpreted here as the sensitivity of vega to moves in the underlying index
+                vanna: function() {
+                    if(T == 0) { return 0 } else {
+                        return ((S*Math.pow(Math.E,-D*T)*math.NORM(d1)*Math.sqrt(T))/100)/S*(1-(d1/(v*Math.sqrt(T))));
+                    }
+                },
                 vomma: function() {
                     if(T == 0) { return 0 } else {
                         return (S*Math.pow(Math.E,-D*T)*math.NORM(d1)*Math.sqrt(T)*d1*d2/v)/100;
@@ -81,6 +87,12 @@ function BlackScholesTrade() {
                 },
                 rho: function() {
                     return (e*K*Math.pow(Math.E,-r*T)*math.CUMNORM(e*d2)*T)/100;
+                },
+                //interpreted here as the sensitivity of delta to moves in volatility
+                vanna: function() {
+                    if(T == 0) { return 0 } else {
+                        return (Math.pow(-Math.E,-r*T)*math.NORM(d1)*(d2/v))/100;
+                    }
                 },
                 vomma: function() {
                     if(T == 0) { return 0 } else {
@@ -317,8 +329,8 @@ function BlackScholesTrade() {
     self.expiryMin = null;
     self.standardDeviation = null;
     self.priceSpace = [];
-    self.temp = { price: {}, greeks: { delta: {}, gamma: {}, theta: {}, vega: {}, rho: {}, vomma: {}, charm: {}, veta: {} } };
-    self.data = { profit: {}, greeks: { delta: {}, gamma: {}, theta: {}, vega: {}, rho: {}, vomma: {}, charm: {}, veta: {} } };
+    self.temp = { price: {}, greeks: { delta: {}, gamma: {}, theta: {}, vega: {}, rho: {}, vanna: {}, vomma: {}, charm: {}, veta: {} } };
+    self.data = { profit: {}, greeks: { delta: {}, gamma: {}, theta: {}, vega: {}, rho: {}, vanna: {}, vomma: {}, charm: {}, veta: {} } };
 
     if(typeof(self.initialize) !== "function") {
         BlackScholesTrade.prototype.initialize = function(callback) {
