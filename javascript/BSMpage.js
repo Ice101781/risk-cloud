@@ -78,7 +78,7 @@ var finalParams = function(properties) {
                 var self = function() { return };
 
                 for(var prop in properties) { self[prop] = properties[prop] }
-                return self;  
+                return self;
             }({
                 create: function(str, n) {
                     switch(str) {
@@ -312,7 +312,7 @@ var finalParams = function(properties) {
 
                 //greeks
                 for(var greek in trade.data.greeks) {
-                    if(greek !== "vomma") { elem.select(ele+greek).innerHTML = trade.data.greeks[greek][0][p][n].toFixed(2) } else { break }
+                    if(greek !== "vanna") { elem.select(ele+greek).innerHTML = trade.data.greeks[greek][0][p][n].toFixed(2) } else { break }
                 }
             }
 
@@ -322,7 +322,7 @@ var finalParams = function(properties) {
 
             //totals for the greeks
             for(var greek in trade.data.greeks) {
-                if(greek !== "vomma") { elem.select(greek+"-total").innerHTML = obj.sum(trade.data.greeks[greek][0][p]).toFixed(2) } else { break }
+                if(greek !== "vanna") { elem.select(greek+"-total").innerHTML = obj.sum(trade.data.greeks[greek][0][p]).toFixed(2) } else { break }
             }
         }
 
@@ -516,7 +516,7 @@ var output = function(properties) {
     destroy: function() {
         //disable output data buttons and output time elements
         var disableOutputElems = (function(bool) {
-            for(var b=1; b<=9; b++) { elem.avail("output-data-radio-"+b, !bool) }
+            for(var b=1; b<=10; b++) { elem.avail("output-data-radio-"+b, !bool) }
             ["output-time-field", "output-time-button"].forEach(function(ele) { elem.avail(ele, !bool) });
         }(true));
 
@@ -546,7 +546,7 @@ var output = function(properties) {
 
                 //clear greeks from each row
                 for(var greek in trade.data.greeks) {
-                    if(greek !== "vomma") { elem.select(ele+greek).innerHTML = "- - -" } else { break }
+                    if(greek !== "vanna") { elem.select(ele+greek).innerHTML = "- - -" } else { break }
                 }
             }
 
@@ -556,7 +556,7 @@ var output = function(properties) {
 
             //clear greeks totals
             for(var greek in trade.data.greeks) {
-                if(greek !== "vomma") { elem.select(greek+"-total").innerHTML = "- - -" } else { break }
+                if(greek !== "vanna") { elem.select(greek+"-total").innerHTML = "- - -" } else { break }
             }
         }());
 

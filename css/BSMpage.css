@@ -265,14 +265,18 @@
   margin-top: 2vw;
 }
 
+#return-button-2, #output-time-button {
+  font-size: 0.9vw;
+}
+
 #return-button-2 {
+  height: 1.5vw;
   width: 10vw;
   margin: 0 auto;
 }
 
 #output-time-button {
   width: 2.75vw;
-  font-size: 0.9vw;
 }
 
 /* END BUTTONS ====================================================================================================================================*/
@@ -323,10 +327,11 @@ label.radio.trade-leg-radios {
 }
 
 label.radio.output-data {
-  height: 0.875vw;
+  height: 0.7875vw;
   width: 9vw;
   margin: 0.25vw 0;
   padding: 0.25vw 0 0.625vw 0;
+  font-size: 0.9vw;
 }
 
 .ip-forms, #current-price-form, .output-forms {
@@ -363,7 +368,7 @@ label.radio.output-data {
 }
 
 #output-data-form {
-  margin: 1vw 0;
+  margin: 0.625vw 0 0.5vw 0;
 }
 
 #output-time-form {

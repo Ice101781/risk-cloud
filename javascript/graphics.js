@@ -64,7 +64,7 @@ var graphics = (function() {
 
             timeArr.forEach(function(time,t) {
                 cloud[n+1][t] = new THREE.Points(
-                                    new THREE.Geometry(), 
+                                    new THREE.Geometry(),
                                     new THREE.PointsMaterial({ size: 0.0035*w*scalar, color: [0xff0000, 0xaa00ff, 0x0000ff][t] })
                                 );
 
@@ -346,7 +346,7 @@ var graphics = (function() {
 
             //line
             tracker.line = new THREE.Line(trackerGeom,new THREE.LineBasicMaterial({color: 0x00ff00}));
-            
+
             trackerCanvas.width = canvasW*0.75;
             trackerCanvas.height = canvasH;
 
@@ -477,7 +477,7 @@ var graphics = (function() {
 
         //enable output data buttons and output time elements
         var enableOutputElems = (function(bool) {
-            for(var b=1; b<=9; b++) { elem.avail("output-data-radio-"+b, bool) }
+            for(var b=1; b<=10; b++) { elem.avail("output-data-radio-"+b, bool) }
             ["output-time-field","output-time-button"].forEach(function(ele) { elem.avail(ele, bool) });
         }(true));
 
@@ -503,7 +503,7 @@ var graphics = (function() {
 
         //detect user data change
         var addOutputDataListener = (function() {
-            for(var num=1; num<=9; num++) {
+            for(var num=1; num<=10; num++) {
                 (function(n) {
                     elem.select("output-data-radio-"+n).addEventListener('click', function() {
                         //remove old point clouds
@@ -552,7 +552,7 @@ var graphics = (function() {
                         elem.select("current-end-text").innerText = val + " DTE - 16:00 EDT :";
 
                         //update point clouds
-                        for(var n=1; n<=9; n++) {
+                        for(var n=1; n<=10; n++) {
                             //remove old cloud
                             scene.remove(cloud[n][2]);
                             //create new cloud
