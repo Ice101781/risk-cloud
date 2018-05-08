@@ -91,7 +91,7 @@ function BlackScholesTrade() {
                 //interpreted here as the sensitivity of delta to moves in volatility
                 vanna: function() {
                     if(T == 0) { return 0 } else {
-                        return (Math.pow(-Math.E,-r*T)*math.NORM(d1)*(d2/v))/100;
+                        return (-Math.pow(Math.E,-r*T)*math.NORM(d1)*(d2/v))/100;
                     }
                 },
                 vomma: function() {

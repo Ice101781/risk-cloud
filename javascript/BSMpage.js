@@ -104,12 +104,12 @@ var finalParams = function(properties) {
                             break;
                         case fields[4]:
                             var content = "Dividend yield % :",
-                                attr = {min:"0.00", step:".05", value:"0.00"},
+                                attr = {min:"0.00", value:"0.00"},
                                 subNum = 6;
                             break;
                         case fields[5]:
                             var content = "Risk-free rate % :",
-                                attr = {min:"0.00", step:".05", value:"0.00"},
+                                attr = {min:"0.00", value:"0.00"},
                                 subNum = 7;
                             break;
                     }
